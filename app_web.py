@@ -23,13 +23,10 @@ def obtener_posts():
 def init_db():
     with sqlite3.connect('temugram.db') as conn:
         cursor = conn.cursor()
-        # Tabla de usuarios (aseguramos que exista)
         cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios 
                           (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)''')
-        # Tabla de posts (aseguramos que exista)
         cursor.execute('''CREATE TABLE IF NOT EXISTS posts 
                           (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, descripcion TEXT, url_foto TEXT)''')
-        # NUEVA: Tabla de comentarios
         cursor.execute('''CREATE TABLE IF NOT EXISTS comentarios (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             post_id INTEGER,
@@ -39,25 +36,17 @@ def init_db():
         conn.commit()
 
 # Ejecutamos la creación de tablas al abrir el archivo
-
 @app.route('/')
 def home():
-    # 1. Obtenemos los posts usando la función que ya definiste arriba
     posts = obtener_posts() 
-    
-    # 2. Conectamos para traer los comentarios
-    conn = sqlite3.connect('temugram.db')
-    cursor = conn.cursor()
-    
-    # IMPORTANTE: Asegúrate de que la tabla 'comentarios' ya exista
-    cursor.execute('SELECT post_id, usuario, texto FROM comentarios')
-    todos_los_comentarios = cursor.fetchall()
-    
-    # 3. CERRAMOS la conexión (Esto evita errores de base de datos bloqueada)
-    conn.close()
-    
-    # 4. Enviamos TODO al HTML
+    with sqlite3.connect('temugram.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT post_id, usuario, texto FROM comentarios')
+        todos_los_comentarios = cursor.fetchall()
     return render_template('index.html', posts=posts, comentarios=todos_los_comentarios)
+
+# AL FINAL DEL ARCHIVO, fuera de todo:
+init_db()
 
 # RUTA 2: El Registro
 @app.route('/registro', methods=['GET', 'POST'])
@@ -151,8 +140,4 @@ def comentar(post_id):
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    init_db()  # Creamos las tablas justo antes de arrancar
     app.run(debug=True, host='0.0.0.0', port=5000)
-else:
-    # Esto es para Render (que usa gunicorn)
-    init_db()
