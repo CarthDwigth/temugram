@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>TemuGram</title>
+    <title>📸 TemuGram</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fafafa; margin: 0; }
         .navbar { 
@@ -12,6 +12,15 @@
         }
         .nav-links a { margin-left: 15px; text-decoration: none; color: #0095f6; font-weight: bold; }
         .container { max-width: 500px; margin: 20px auto; }
+        
+        /* Estilos del Dashboard */
+        .dashboard {
+            background: #ffffff; border: 1px solid #dbdbdb; padding: 15px; 
+            border-radius: 8px; margin-bottom: 20px;
+        }
+        .progress-bar { background: #efefef; height: 8px; border-radius: 4px; margin-bottom: 10px; }
+        .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+
         .post { background: white; border: 1px solid #dbdbdb; margin-bottom: 30px; }
         .post-header { padding: 10px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         .btn-borrar { color: #ed4956; text-decoration: none; font-size: 0.8em; border: 1px solid #ed4956; padding: 2px 8px; border-radius: 3px; }
@@ -35,6 +44,26 @@
     </nav>
 
     <div class="container">
+        <div class="dashboard">
+            <h4 style="margin: 0 0 10px 0;">📊 Estado del Servidor</h4>
+            
+            <div style="font-size: 0.8em; margin-bottom: 5px; display: flex; justify-content: space-between;">
+                <span>Base de Datos (Postgres)</span>
+                <span>{{ db_uso }}%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="background: #0095f6; width: {{ db_uso }}%;"></div>
+            </div>
+
+            <div style="font-size: 0.8em; margin-bottom: 5px; display: flex; justify-content: space-between;">
+                <span>Fotos en Nube (64MB límite)</span>
+                <span>{{ img_uso }} fotos</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="background: #00f645; width: {{ img_porcentaje }}%;"></div>
+            </div>
+        </div>
+
         {% for p in posts %}
         <div class="post">
             <div class="post-header">
@@ -44,39 +73,36 @@
                 {% endif %}
             </div>
             
-            <img src="{{ p[2] }}" style="width:100%; display: block; min-height: 200px; background-color: #eee;" 
-                 onerror="this.onerror=null;this.src='https://via.placeholder.com/500x500?text=Error+en+Link+de+Nube'">
+            <img src="{{ p[2] }}" style="width:100%; display: block; min-height: 200px; background-color: #eee;">
             
             <div style="padding: 10px;">
                 <strong>@{{ p[0] }}</strong> {{ p[1] }}
                 
-                <br>
-                <button onclick="toggleComentarios('coments-{{ p[3] }}')" style="background:none; border:none; color:#8e8e8e; cursor:pointer; font-size:0.9em; padding:5px 0 0 0;">
-                    Ver comentarios
-                </button>
-                <div style="padding: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <div style="margin-top: 10px; display: flex; gap: 10px; font-size: 0.9em;">
                     {% set me_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Me gusta') | list | length %}
                     {% set no_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'No me gusta') | list | length %}
                     {% set loca = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Eso es pa las Loca') | list | length %}
 
-                    <a href="/reaccionar/{{ p[3] }}/Me gusta" style="text-decoration:none;">👍 ({{ me_gusta }})</a>
-                    <a href="/reaccionar/{{ p[3] }}/No me gusta" style="text-decoration:none;">👎 ({{ no_gusta }})</a>
-                    <a href="/reaccionar/{{ p[3] }}/Eso es pa las Loca" style="text-decoration:none;">💅 Eso es pa las Loca ({{ loca }})</a>
-</div>
+                    <a href="/reaccionar/{{ p[3] }}/Me gusta" style="text-decoration:none;">👍 {{ me_gusta }}</a>
+                    <a href="/reaccionar/{{ p[3] }}/No me gusta" style="text-decoration:none;">👎 {{ no_gusta }}</a>
+                    <a href="/reaccionar/{{ p[3] }}/Eso es pa las Loca" style="text-decoration:none;">💅 {{ loca }}</a>
+                </div>
 
-                <div id="coments-{{ p[3] }}" style="display: none; margin-top: 10px; border-top: 1px solid #eee; padding-top: 5px;">
+                <button onclick="toggleComentarios('coments-{{ p[3] }}')" style="background:none; border:none; color:#8e8e8e; cursor:pointer; font-size:0.85em; padding:10px 0 0 0;">
+                    Ver comentarios...
+                </button>
+
+                <div id="coments-{{ p[3] }}" style="display: none; margin-top: 10px; border-top: 1px solid #eee;">
                     {% for c in comentarios %}
                         {% if c[0] == p[3] %}
-                            <p style="margin: 3px 0; font-size: 0.9em;">
-                                <strong>@{{ c[1] }}</strong> {{ c[2] }}
-                            </p>
+                            <p style="margin: 5px 0; font-size: 0.9em;"><strong>@{{ c[1] }}</strong> {{ c[2] }}</p>
                         {% endif %}
                     {% endfor %}
 
                     {% if session.get('username') %}
                     <form action="/comentar/{{ p[3] }}" method="POST" style="display:flex; margin-top:10px;">
-                        <input type="text" name="texto" placeholder="Añade un comentario..." required style="flex-grow:1; border:1px solid #dbdbdb; padding:5px; border-radius:3px;">
-                        <button type="submit" style="color:#0095f6; background:none; border:none; font-weight:bold; cursor:pointer; margin-left: 5px;">Publicar</button>
+                        <input type="text" name="texto" placeholder="Escribe un comentario..." required style="flex-grow:1; border:1px solid #dbdbdb; padding:5px; border-radius:3px;">
+                        <button type="submit" style="color:#0095f6; background:none; border:none; font-weight:bold; cursor:pointer;">Post</button>
                     </form>
                     {% endif %}
                 </div>
@@ -91,6 +117,5 @@
         x.style.display = (x.style.display === "none") ? "block" : "none";
     }
     </script>
-
 </body>
 </html>

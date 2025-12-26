@@ -96,8 +96,8 @@ def obtener_metricas():
 @app.route('/')
 def home():
     metricas = obtener_metricas()
-    posts_base = obtener_posts()
-    posts_base = obtener_posts() 
+    posts_base = obtener_posts() # Borra la línea repetida que tenías abajo
+    
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute('SELECT post_id, usuario, texto FROM comentarios')
@@ -106,7 +106,17 @@ def home():
     todas_las_reacciones = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template('index.html', posts=posts_base, comentarios=todos_los_comentarios, reacciones=todas_las_reacciones, metricas=metricas)
+
+    # Calculamos el porcentaje de imágenes (usando un límite de 1000 fotos por ejemplo)
+    total_fotos = len(posts_base)
+    metricas['img_uso'] = total_fotos
+    metricas['img_porcentaje'] = min((total_fotos / 1000) * 100, 100)
+
+    return render_template('index.html', 
+                           posts=posts_base, 
+                           comentarios=todos_los_comentarios, 
+                           reacciones=todas_las_reacciones, 
+                           metricas=metricas)
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
