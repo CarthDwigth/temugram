@@ -134,7 +134,7 @@ def home():
     metricas['img_uso'] = total_fotos
     metricas['img_porcentaje'] = min((total_fotos / 1000) * 100, 100)
 
-return render_template('index.html', 
+    return render_template('index.html', 
                        posts=posts_base, 
                        usuarios_sidebar=lista_usuarios, # <-- Esto es lo que usa la lista de la izquierda
                        comentarios=todos_los_comentarios, 
