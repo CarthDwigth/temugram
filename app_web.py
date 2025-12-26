@@ -55,10 +55,19 @@ def registro():
     if request.method == 'POST':
         u = request.form['username']
         p = request.form['password']
+        
+        # 1. Intentamos registrar al usuario
         if auth.registrar_usuario(u, p):
-            return redirect(url_for('home'))
+            # 2. Si tuvo éxito, buscamos su ID recién creado para loguearlo
+            user_id = auth.login(u, p) 
+            
+            if user_id:
+                session['user_id'] = user_id
+                session['username'] = u
+                return redirect(url_for('home'))
         else:
-            return "Error: El usuario ya existe."
+            return "Error: El usuario ya existe o hubo un problema."
+            
     return render_template('registro.html')
 
 @app.route('/login', methods=['GET', 'POST'])
