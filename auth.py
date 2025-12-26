@@ -3,7 +3,7 @@ import os
 from urllib.parse import urlparse
 
 def get_connection():
-    url = os.getenv('DATABASE_URL')
+    url = os.getenv('postgresql://temugram_db_user:5gEUWXA2Lv890abWdyrRY6gUZbx01M1V@dpg-d572oe6uk2gs73cpnli0-a.oregon-postgres.render.com/temugram_db')
     if url:
         result = urlparse(url)
         return psycopg2.connect(
