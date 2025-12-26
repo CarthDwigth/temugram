@@ -19,8 +19,8 @@ def obtener_posts():
         '''
         cursor.execute(query)
         return cursor.fetchall()
-
-def init_db():
+    
+def inicializar_base_de_datos():
     with sqlite3.connect('temugram.db') as conn:
         cursor = conn.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios 
@@ -35,7 +35,7 @@ def init_db():
                             FOREIGN KEY (post_id) REFERENCES posts (id))''')
         conn.commit()
 
-# Ejecutamos la creación de tablas al abrir el archivo
+# --- 2. RUTA HOME (REVISA EL @) ---
 @app.route('/')
 def home():
     posts = obtener_posts() 
@@ -45,8 +45,9 @@ def home():
         todos_los_comentarios = cursor.fetchall()
     return render_template('index.html', posts=posts, comentarios=todos_los_comentarios)
 
-# AL FINAL DEL ARCHIVO, fuera de todo:
-init_db()
+# --- 3. AL FINAL DEL ARCHIVO (IMPORTANTE) ---
+# Llamamos a la función con el nuevo nombre para romper la caché de Render
+inicializar_base_de_datos()
 
 # RUTA 2: El Registro
 @app.route('/registro', methods=['GET', 'POST'])
