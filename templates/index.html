@@ -43,7 +43,7 @@
                 {% endif %}
             </div>
             
-            <img src="{{ url_for('static', filename='uploads/' + p[2]) }}" style="width:100%">
+            <img src="{{ p[2] }}" style="width:100%; display: block; background-color: #f0f0f0;" onerror="this.src='https://via.placeholder.com/500x500?text=Error+al+cargar+imagen'">
             
             <div style="padding: 10px;">
                 <strong>@{{ p[0] }}</strong> {{ p[1] }}

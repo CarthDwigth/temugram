@@ -28,24 +28,32 @@ def get_db_connection():
 
 # --- 2. SUBIDA DE FOTOS A LA NUBE (FreeImage) ---
 def subir_foto_nube(archivo):
-    # PONEMOS LA CLAVE DIRECTA PARA TESTEAR
     api_key = "6d207e02198a847aa98d0a2a901485a5" 
-    
     url = "https://freeimage.host/api/1/upload"
-    payload = {"key": api_key, "action": "upload", "format": "json"}
     
-    # Importante: resetear el puntero del archivo por si Flask lo leyó antes
+    # Preparamos los datos según tu captura de pantalla
+    payload = {
+        "key": api_key,
+        "action": "upload",
+        "format": "json"
+    }
+    
     archivo.seek(0)
+    # Según tu imagen, el parámetro se llama 'source'
     files = {"source": archivo.read()}
     
     try:
         response = requests.post(url, data=payload, files=files)
+        data = response.json()
+        
         if response.status_code == 200:
-            return response.json()['image']['url']
+            # Aquí está el truco: FreeImage suele devolverlo en data['image']['url']
+            # o a veces en data['image']['display_url']
+            return data['image']['url'] 
         else:
-            print(f"Error de FreeImage: {response.text}")
+            print(f"Error API: {data}")
     except Exception as e:
-        print(f"Error de conexión: {e}")
+        print(f"Error enviando a FreeImage: {e}")
     return None
 
 # --- 3. INICIALIZAR TABLAS EN POSTGRES ---
@@ -149,6 +157,25 @@ def comentar(post_id):
         cur.execute('INSERT INTO comentarios (post_id, usuario, texto) VALUES (%s, %s, %s)', 
                    (post_id, session['username'], texto))
         conn.commit()
+        cur.close()
+        conn.close()
+    return redirect(url_for('home'))
+
+@app.route('/borrar/<int:post_id>')
+def borrar_post(post_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # Borramos primero comentarios (por seguridad) y luego el post
+        cur.execute("DELETE FROM comentarios WHERE post_id = %s", (post_id,))
+        cur.execute("DELETE FROM posts WHERE id = %s AND user_id = %s", (post_id, session['user_id']))
+        conn.commit()
+    except Exception as e:
+        print(f"Error al borrar: {e}")
+    finally:
         cur.close()
         conn.close()
     return redirect(url_for('home'))
