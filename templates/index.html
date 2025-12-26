@@ -5,7 +5,6 @@
     <title>TemuGram</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #fafafa; margin: 0; }
-        /* Barra superior */
         .navbar { 
             background: white; border-bottom: 1px solid #dbdbdb; 
             padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
@@ -39,7 +38,6 @@
         <div class="post">
             <div class="post-header">
                 <span>👤 @{{ p[0] }}</span>
-                
                 {% if session.get('username') == p[0] %}
                     <a href="/borrar/{{ p[3] }}" class="btn-borrar">Eliminar</a>
                 {% endif %}
@@ -49,10 +47,39 @@
             
             <div style="padding: 10px;">
                 <strong>@{{ p[0] }}</strong> {{ p[1] }}
+                
+                <br>
+                <button onclick="toggleComentarios('coments-{{ p[3] }}')" style="background:none; border:none; color:#8e8e8e; cursor:pointer; font-size:0.9em; padding:5px 0 0 0;">
+                    Ver comentarios
+                </button>
+
+                <div id="coments-{{ p[3] }}" style="display: none; margin-top: 10px; border-top: 1px solid #eee; padding-top: 5px;">
+                    {% for c in comentarios %}
+                        {% if c[0] == p[3] %}
+                            <p style="margin: 3px 0; font-size: 0.9em;">
+                                <strong>@{{ c[1] }}</strong> {{ c[2] }}
+                            </p>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if session.get('username') %}
+                    <form action="/comentar/{{ p[3] }}" method="POST" style="display:flex; margin-top:10px;">
+                        <input type="text" name="texto" placeholder="Añade un comentario..." required style="flex-grow:1; border:1px solid #dbdbdb; padding:5px; border-radius:3px;">
+                        <button type="submit" style="color:#0095f6; background:none; border:none; font-weight:bold; cursor:pointer; margin-left: 5px;">Publicar</button>
+                    </form>
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
+
+    <script>
+    function toggleComentarios(id) {
+        var x = document.getElementById(id);
+        x.style.display = (x.style.display === "none") ? "block" : "none";
+    }
+    </script>
 
 </body>
 </html>

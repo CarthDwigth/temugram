@@ -20,11 +20,41 @@ def obtener_posts():
         cursor.execute(query)
         return cursor.fetchall()
 
-# RUTA 1: El Muro de Inicio
 @app.route('/')
+
+def init_db():
+    with sqlite3.connect('temugram.db') as conn:
+        cursor = conn.cursor()
+        # Tabla de usuarios (aseguramos que exista)
+        cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios 
+                          (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)''')
+        # Tabla de posts (aseguramos que exista)
+        cursor.execute('''CREATE TABLE IF NOT EXISTS posts 
+                          (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, descripcion TEXT, url_foto TEXT)''')
+        # NUEVA: Tabla de comentarios
+        cursor.execute('''CREATE TABLE IF NOT EXISTS comentarios (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            post_id INTEGER,
+                            usuario TEXT,
+                            texto TEXT,
+                            FOREIGN KEY (post_id) REFERENCES posts (id))''')
+        conn.commit()
+
+# Ejecutamos la creación de tablas al abrir el archivo
+init_db()
+
+app.route('/')
 def home():
-    posts = obtener_posts()
-    return render_template('index.html', posts=posts)
+    # Usamos la función que ya tienes arriba que hace el JOIN correctamente
+    posts = obtener_posts() 
+    
+    with sqlite3.connect('temugram.db') as conn:
+        cursor = conn.cursor()
+        # Obtenemos todos los comentarios
+        cursor.execute('SELECT post_id, usuario, texto FROM comentarios')
+        todos_los_comentarios = cursor.fetchall()
+    
+    return render_template('index.html', posts=posts, comentarios=todos_los_comentarios)
 
 # RUTA 2: El Registro
 @app.route('/registro', methods=['GET', 'POST'])
@@ -97,6 +127,24 @@ def borrar_post(post_id):
         cursor.execute("DELETE FROM posts WHERE id = ? AND user_id = ?", (post_id, session['user_id']))
         conn.commit()
         
+    return redirect(url_for('home'))
+
+@app.route('/comentar/<int:post_id>', methods=['POST'])
+def comentar(post_id):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
+    texto = request.form.get('texto')
+    usuario = session['username']
+    
+    if texto:
+        conn = sqlite3.connect('temugram.db')
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO comentarios (post_id, usuario, texto) VALUES (?, ?, ?)', 
+                       (post_id, usuario, texto))
+        conn.commit()
+        conn.close()
+    
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
