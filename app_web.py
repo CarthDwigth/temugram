@@ -41,7 +41,7 @@ def init_db():
 # Ejecutamos la creación de tablas al abrir el archivo
 init_db()
 
-app.route('/')
+@app.route('/')
 def home():
     # Usamos la función que ya tienes arriba que hace el JOIN correctamente
     posts = obtener_posts() 
