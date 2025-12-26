@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - TemuGram</title>
+    <style>
+        body { font-family: Arial; background: #fafafa; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .card { background: white; border: 1px solid #dbdbdb; padding: 40px; width: 300px; text-align: center; }
+        input { width: 100%; margin: 10px 0; padding: 10px; box-sizing: border-box; }
+        button { width: 100%; background: #0095f6; color: white; border: none; padding: 10px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📸 TemuGram</h1>
+        <form method="POST">
+            <input type="text" name="username" placeholder="Usuario" required>
+            <input type="password" name="password" placeholder="Contraseña" required>
+            <button type="submit">Entrar</button>
+        </form>
+        <p>¿No tienes cuenta? <a href="/registro">Regístrate</a></p>
+    </div>
+</body>
+</html>

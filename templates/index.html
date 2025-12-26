@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>TemuGram</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #fafafa; margin: 0; }
+        /* Barra superior */
+        .navbar { 
+            background: white; border-bottom: 1px solid #dbdbdb; 
+            padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-links a { margin-left: 15px; text-decoration: none; color: #0095f6; font-weight: bold; }
+        .container { max-width: 500px; margin: 20px auto; }
+        .post { background: white; border: 1px solid #dbdbdb; margin-bottom: 30px; }
+        .post-header { padding: 10px; font-weight: bold; display: flex; justify-content: space-between; }
+        .btn-borrar { color: #ed4956; text-decoration: none; font-size: 0.8em; border: 1px solid #ed4956; padding: 2px 5px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo"><strong>📸 TemuGram</strong></div>
+        <div class="nav-links">
+            {% if session.get('username') %}
+                <span>Hola, @{{ session['username'] }}</span>
+                <a href="/publicar">Publicar</a>
+                <a href="/logout" style="color: #999;">Salir</a>
+            {% else %}
+                <a href="/login">Iniciar Sesión</a>
+                <a href="/registro">Crear Cuenta</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% for p in posts %}
+        <div class="post">
+            <div class="post-header">
+                <span>👤 @{{ p[0] }}</span>
+                
+                {% if session.get('username') == p[0] %}
+                    <a href="/borrar/{{ p[3] }}" class="btn-borrar">Eliminar</a>
+                {% endif %}
+            </div>
+            
+            <img src="{{ url_for('static', filename='uploads/' + p[2]) }}" style="width:100%">
+            
+            <div style="padding: 10px;">
+                <strong>@{{ p[0] }}</strong> {{ p[1] }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
