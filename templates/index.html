@@ -3,83 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <title>📸 TemuGram</title>
-    <style>
+<style>
     :root {
-        --insta-blue: #0095f6;
-        --insta-red: #ed4956;
-        --bg-gray: #fafafa;
-        --border-color: #dbdbdb;
+        /* Paleta de colores Dark Pro */
+        --bg-dark: #0b0e11;      /* Fondo principal muy oscuro */
+        --card-dark: #15191c;    /* Fondo de posts y barras */
+        --border-dark: #2d3339;  /* Bordes sutiles */
+        --text-main: #e3e6e8;    /* Blanco suave para lectura */
+        --text-dim: #949ba2;     /* Gris para fechas y secundarios */
+        --accent: #0095f6;       /* Azul acento */
+        --accent-hover: #18a0fb;
+        --danger: #ff4d4d;
+        
+        /* Transición global suave */
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body { 
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-        background-color: var(--bg-gray); 
+        background-color: var(--bg-dark); 
         margin: 0; 
-        color: #262626;
+        color: var(--text-main);
+        transition: var(--transition-smooth);
     }
 
-    /* Navbar elegante */
+    /* Navbar elegante y traslúcida */
     .navbar { 
-        background: white; border-bottom: 1px solid var(--border-color); 
+        background: rgba(21, 25, 28, 0.95); 
+        backdrop-filter: blur(10px); /* Efecto de cristal */
+        border-bottom: 1px solid var(--border-dark); 
         padding: 0 20px; height: 60px; display: flex; justify-content: space-between; align-items: center;
         position: sticky; top: 0; z-index: 1000;
+        transition: var(--transition-smooth);
     }
 
     .nav-links a { 
-        margin-left: 15px; text-decoration: none; color: var(--insta-blue); font-weight: 600; font-size: 0.9em;
+        margin-left: 15px; text-decoration: none; color: var(--accent); 
+        font-weight: 600; font-size: 0.9em; transition: var(--transition-smooth);
     }
+    .nav-links a:hover { color: var(--accent-hover); opacity: 0.8; }
 
-    /* Layout principal */
+    /* Layout Principal */
     .main-layout { 
         display: flex; max-width: 935px; margin: 30px auto; gap: 28px; padding: 0 20px;
     }
 
-    /* Sidebar minimalista */
-    .sidebar {
-        width: 300px; height: fit-content; position: sticky; top: 90px;
-    }
-    
+    /* Sidebar con diseño suave */
     .sidebar-card {
-        background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; margin-bottom: 15px;
+        background: var(--card-dark); 
+        border: 1px solid var(--border-dark); 
+        border-radius: 12px; padding: 16px; 
+        transition: var(--transition-smooth);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     .user-item {
-        display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 5px; transition: 0.2s;
+        display: flex; align-items: center; gap: 12px; margin-bottom: 12px; 
+        padding: 8px; border-radius: 8px; transition: var(--transition-smooth);
     }
-    .user-item:hover { background: #fdfdfd; transform: translateX(5px); }
+    .user-item:hover { background: rgba(255,255,255,0.05); cursor: pointer; }
 
-    /* Feed y Posts */
-    .feed { flex-grow: 1; max-width: 470px; }
-
+    /* Posts con bordes redondeados y fluidez */
     .post { 
-        background: white; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 24px; overflow: hidden;
+        background: var(--card-dark); 
+        border: 1px solid var(--border-dark); 
+        border-radius: 12px; margin-bottom: 24px; overflow: hidden;
+        transition: var(--transition-smooth);
     }
+    .post:hover { border-color: #404850; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
 
     .post-header { padding: 14px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
 
     .btn-borrar { 
-        color: var(--insta-red); text-decoration: none; font-size: 0.75em; border: 1px solid var(--insta-red); 
-        padding: 4px 10px; border-radius: 4px; font-weight: 500;
+        color: var(--danger); text-decoration: none; font-size: 0.75em; border: 1px solid var(--danger); 
+        padding: 4px 12px; border-radius: 6px; font-weight: 500; transition: var(--transition-smooth);
     }
-    .btn-borrar:hover { background-color: var(--insta-red); color: white; }
+    .btn-borrar:hover { background-color: var(--danger); color: white; }
 
-    /* Badges de Roles Modernos */
+    /* Badges con gradientes suaves */
     .badge { 
-        font-size: 0.65em; padding: 2px 8px; border-radius: 12px; margin-left: 6px; 
-        color: white; font-weight: bold; text-transform: uppercase; letter-spacing: 0.4px;
+        font-size: 0.6em; padding: 2px 8px; border-radius: 12px; margin-left: 6px; 
+        color: white; font-weight: 800; text-transform: uppercase;
     }
-    .rol-admin { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); } /* Estilo Instagram */
-    .rol-verificado { background-color: var(--insta-blue); }
-    .rol-usuario { background-color: #a8a8a8; }
+    .rol-admin { background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); }
+    .rol-verificado { background-color: var(--accent); }
+    .rol-usuario { background-color: #4a4a4a; }
 
-    /* Dashboard Estilizado */
+    /* Dashboard y Metas */
     .dashboard {
-        background: white; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 24px;
+        background: var(--card-dark); border: 1px solid var(--border-dark); 
+        padding: 20px; border-radius: 12px; margin-bottom: 24px;
     }
+    .progress-bar { background: #262c31; height: 6px; border-radius: 10px; overflow: hidden; }
 
-    /* Animación para la barra de progreso */
-    .progress-fill { border-radius: 4px; transition: width 1s ease-in-out; }
+    /* Inputs y Formularios */
+    input[type="text"] {
+        background: #1e2327; border: 1px solid var(--border-dark); 
+        color: white; padding: 8px 12px; border-radius: 8px; transition: var(--transition-smooth);
+    }
+    input[type="text"]:focus { border-color: var(--accent); outline: none; }
 
+    /* Enlaces de Reacciones */
+    .reaction-link {
+        text-decoration: none; color: var(--text-dim); transition: var(--transition-smooth);
+        padding: 5px 10px; border-radius: 6px;
+    }
+    .reaction-link:hover { background: rgba(255,255,255,0.1); color: var(--text-main); }
 </style>
 </head>
 <body>
@@ -103,17 +132,22 @@
 
     <div class="main-layout">
         <aside class="sidebar">
-            <h4 style="margin-top: 0;">👥 Comunidad</h4>
-            {% for user in usuarios_sidebar %}
-            <div style="margin-bottom: 12px; font-size: 0.85em; border-bottom: 1px dotted #eee; padding-bottom: 8px;">
-                <a href="/perfil/{{ user[0] }}" style="text-decoration:none; color:inherit;">
-                    <strong>@{{ user[0] }}</strong> 
-                </a>
-                <span class="badge rol-{{ user[1]|lower }}" style="font-size: 0.6em;">{{ user[1] }}</span><br>
-                <span style="color: #999; font-size: 0.8em;">Unido: {{ user[2] }}</span>
+    <div class="sidebar-card">
+        <h4 style="margin: 0 0 15px 0; color: #8e8e8e; font-size: 0.9em;">Comunidad Registrada</h4>
+        {% for user in usuarios_sidebar %}
+        <div class="user-item">
+            <div style="width: 32px; height: 32px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8em;">👤</div>
+            <div style="flex-grow: 1;">
+                <div style="display: flex; align-items: center;">
+                    <a href="/perfil/{{ user[0] }}" style="text-decoration:none; color:#262626; font-weight: 600; font-size: 0.9em;">{{ user[0] }}</a>
+                    <span class="badge rol-{{ user[1]|lower }}">{{ user[1] }}</span>
+                </div>
+                <div style="color: #8e8e8e; font-size: 0.75em;">Unido el {{ user[2] }}</div>
             </div>
-            {% endfor %}
-        </aside>
+        </div>
+        {% endfor %}
+    </div>
+    </aside>
 
         <main class="feed">
             <div class="dashboard">
