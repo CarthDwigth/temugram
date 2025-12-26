@@ -67,8 +67,36 @@ def obtener_posts():
     conn.close()
     return posts
 
+def obtener_metricas():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    # Contamos el total de registros en todas tus tablas
+    cur.execute("""
+        SELECT 
+            (SELECT COUNT(*) FROM usuarios) + 
+            (SELECT COUNT(*) FROM posts) + 
+            (SELECT COUNT(*) FROM comentarios) + 
+            (SELECT COUNT(*) FROM reacciones)
+    """)
+    total_filas = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+
+    # Estimación para Render Free (Límite 1GB es inmenso para texto, 
+    # pero podemos simular un límite de 10,000 filas para el dashboard)
+    limite_filas = 10000 
+    porcentaje_db = min((total_filas / limite_filas) * 100, 100)
+    
+    return {
+        'db_porcentaje': round(porcentaje_db, 1),
+        'total_filas': total_filas,
+        'limite_filas': limite_filas
+    }
+
 @app.route('/')
 def home():
+    metricas = obtener_metricas()
+    posts_base = obtener_posts()
     posts_base = obtener_posts() 
     conn = get_db_connection()
     cur = conn.cursor()
@@ -78,7 +106,7 @@ def home():
     todas_las_reacciones = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template('index.html', posts=posts_base, comentarios=todos_los_comentarios, reacciones=todas_las_reacciones)
+    return render_template('index.html', posts=posts_base, comentarios=todos_los_comentarios, reacciones=todas_las_reacciones, metricas=metricas)
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
