@@ -44,10 +44,26 @@ def subir_foto_nube(archivo):
 def inicializar_base_de_datos():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('CREATE TABLE IF NOT EXISTS usuarios (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT)')
+    
+    # TRUCO: Si te da error de "column rol does not exist", 
+    # descomenta la siguiente línea UNA VEZ, haz deploy, y luego vuelve a comentarla.
+    # cur.execute('DROP TABLE IF EXISTS usuarios CASCADE') 
+
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id SERIAL PRIMARY KEY, 
+            username TEXT UNIQUE, 
+            password TEXT,
+            rol TEXT DEFAULT 'Usuario'
+        )
+    ''')
     cur.execute('CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, user_id INTEGER, descripcion TEXT, url_foto TEXT)')
     cur.execute('CREATE TABLE IF NOT EXISTS comentarios (id SERIAL PRIMARY KEY, post_id INTEGER, usuario TEXT, texto TEXT)')
     cur.execute('CREATE TABLE IF NOT EXISTS reacciones (id SERIAL PRIMARY KEY, post_id INTEGER, user_id INTEGER, tipo TEXT)')
+    
+    # AUTO-ASIGNARTE ADMIN: Cambia 'TuUsuario' por tu nombre real en TemuGram
+    cur.execute("UPDATE usuarios SET rol = 'Admin' WHERE username = 'Carth'")
+    
     conn.commit()
     cur.close()
     conn.close()
@@ -55,8 +71,9 @@ def inicializar_base_de_datos():
 def obtener_posts():
     conn = get_db_connection()
     cur = conn.cursor()
+    # Ahora pedimos el username (p[0]), descripcion (p[1]), url (p[2]), id (p[3]) y ROL (p[4])
     query = '''
-        SELECT usuarios.username, posts.descripcion, posts.url_foto, posts.id 
+        SELECT usuarios.username, posts.descripcion, posts.url_foto, posts.id, usuarios.rol
         FROM posts 
         JOIN usuarios ON posts.user_id = usuarios.id
         ORDER BY posts.id DESC
