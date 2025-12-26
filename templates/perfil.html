@@ -25,10 +25,32 @@
         <a href="/" class="back-link">← Volver al Inicio</a>
     </div>
 
+        <div class="sidebar-card" style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 4rem; margin-bottom: 10px;">{{ emoji }}</div>
+            <h2 style="margin: 0;">@{{ username }}</h2>
+            <span class="badge rol-{{ rol|lower }}">{{ rol }}</span>
+
+            {% if session.get('username') == username %}
+            <form action="/cambiar_emoji" method="POST" style="margin-top: 15px;">
+                <p style="font-size: 0.8em; color: var(--text-dim);">Elige tu avatar:</p>
+                <select name="emoji" onchange="this.form.submit()" style="background: #1e2327; color: white; border: 1px solid var(--border-dark); padding: 5px; border-radius: 5px;">
+                    <option value="👤" {% if emoji == '👤' %}selected{% endif %}>👤 Silueta</option>
+                    <option value="🔥" {% if emoji == '🔥' %}selected{% endif %}>🔥 Fuego</option>
+                    <option value="🕶️" {% if emoji == '🕶️' %}selected{% endif %}>🕶️ Pro</option>
+                    <option value="🐱" {% if emoji == '🐱' %}selected{% endif %}>🐱 Gato</option>
+                    <option value="👾" {% if emoji == '👾' %}selected{% endif %}>👾 Gamer</option>
+                    <option value="👑" {% if emoji == '👑' %}selected{% endif %}>👑 Rey</option>
+                    <option value="🍀" {% if emoji == '🍀' %}selected{% endif %}>🍀 Suerte</option>
+                </select>
+            </form>
+            {% endif %}
+        </div>
+
     <div class="grid-fotos">
         {% for p in posts %}
             <img src="{{ p[2] }}" alt="Post de {{ username }}">
         {% endfor %}
     </div>
+
 </body>
 </html>

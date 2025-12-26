@@ -43,6 +43,12 @@ def subir_foto_nube(archivo):
 def inicializar_base_de_datos():
     conn = get_db_connection()
     cur = conn.cursor()
+
+    try:
+        cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS emoji_perfil TEXT DEFAULT '👤'")
+        conn.commit()
+    except:
+        conn.rollback()
     
     # 1. Aseguramos las tablas base
     cur.execute('CREATE TABLE IF NOT EXISTS usuarios (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT)')
@@ -229,34 +235,27 @@ def logout():
 
 @app.route('/perfil/<username>')
 def perfil(username):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    
-    # 1. Buscamos al usuario para obtener su ID
-    cur.execute("SELECT id FROM usuarios WHERE username = %s", (username,))
+    conn = get_db_connection(); cur = conn.cursor()
+    # Traemos el emoji_perfil y el rol también
+    cur.execute("SELECT id, emoji_perfil, rol FROM usuarios WHERE username = %s", (username,))
     user_data = cur.fetchone()
     
     if not user_data:
-        cur.close()
-        conn.close()
+        cur.close(); conn.close()
         return "Usuario no encontrado", 404
         
-    user_id = user_data[0]
+    user_id, emoji, rol = user_data[0], user_data[1], user_data[2]
     
-    # 2. Traemos solo los posts de este usuario
     cur.execute('''
-        SELECT username, descripcion, url_foto, posts.id 
+        SELECT usuarios.username, posts.descripcion, posts.url_foto, posts.id, usuarios.rol
         FROM posts 
         JOIN usuarios ON posts.user_id = usuarios.id
-        WHERE user_id = %s
-        ORDER BY posts.id DESC
+        WHERE user_id = %s ORDER BY posts.id DESC
     ''', (user_id,))
     user_posts = cur.fetchall()
+    cur.close(); conn.close()
     
-    cur.close()
-    conn.close()
-    
-    return render_template('perfil.html', username=username, posts=user_posts)
+    return render_template('perfil.html', username=username, emoji=emoji, rol=rol, posts=user_posts)
 
 @app.route('/admin/panel')
 def admin_panel():
@@ -298,6 +297,20 @@ def cambiar_rol():
     conn.commit(); cur.close(); conn.close()
     
     return redirect(url_for('admin_panel'))
+
+@app.route('/cambiar_emoji', methods=['POST'])
+def cambiar_emoji():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    
+    nuevo_emoji = request.form.get('emoji')
+    if nuevo_emoji:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("UPDATE usuarios SET emoji_perfil = %s WHERE id = %s", (nuevo_emoji, session['user_id']))
+        conn.commit()
+        cur.close(); conn.close()
+        
+    return redirect(url_for('perfil', username=session['username']))
 
 inicializar_base_de_datos()
 
