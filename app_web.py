@@ -28,14 +28,14 @@ def get_db_connection():
 
 # --- 2. SUBIDA DE FOTOS A LA NUBE (FreeImage) ---
 def subir_foto_nube(archivo):
-    # Buscamos la API KEY que configuraste en el panel de Render
-    api_key = os.getenv('FREEIMAGE_API_KEY')
-    if not api_key:
-        print("ERROR: No se encontró la API KEY en las variables de entorno")
-        return None
-
+    # PONEMOS LA CLAVE DIRECTA PARA TESTEAR
+    api_key = "6d207e02198a847aa98d0a2a901485a5" 
+    
     url = "https://freeimage.host/api/1/upload"
     payload = {"key": api_key, "action": "upload", "format": "json"}
+    
+    # Importante: resetear el puntero del archivo por si Flask lo leyó antes
+    archivo.seek(0)
     files = {"source": archivo.read()}
     
     try:
@@ -43,9 +43,9 @@ def subir_foto_nube(archivo):
         if response.status_code == 200:
             return response.json()['image']['url']
         else:
-            print(f"ERROR FreeImage: {response.text}")
+            print(f"Error de FreeImage: {response.text}")
     except Exception as e:
-        print(f"ERROR de conexión: {e}")
+        print(f"Error de conexión: {e}")
     return None
 
 # --- 3. INICIALIZAR TABLAS EN POSTGRES ---
