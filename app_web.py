@@ -67,6 +67,8 @@ def inicializar_base_de_datos():
                   (id SERIAL PRIMARY KEY, user_id INTEGER, descripcion TEXT, url_foto TEXT)''')
     cur.execute('''CREATE TABLE IF NOT EXISTS comentarios 
                   (id SERIAL PRIMARY KEY, post_id INTEGER, usuario TEXT, texto TEXT)''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS reacciones 
+              (id SERIAL PRIMARY KEY, post_id INTEGER, tipo TEXT)''')
     conn.commit()
     cur.close()
     conn.close()
@@ -169,12 +171,27 @@ def borrar_post(post_id):
     conn = get_db_connection()
     cur = conn.cursor()
     try:
-        # Borramos primero comentarios (por seguridad) y luego el post
+        # En Postgres usamos %s obligatoriamente
         cur.execute("DELETE FROM comentarios WHERE post_id = %s", (post_id,))
         cur.execute("DELETE FROM posts WHERE id = %s AND user_id = %s", (post_id, session['user_id']))
         conn.commit()
     except Exception as e:
         print(f"Error al borrar: {e}")
+    finally:
+        cur.close()
+        conn.close()
+    return redirect(url_for('home'))
+
+@app.route('/reaccionar/<int:post_id>/<tipo>')
+def reaccionar(post_id, tipo):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # Insertamos la reacción (Me gusta, No me gusta, o Eso es pa las Loca)
+        cur.execute("INSERT INTO reacciones (post_id, tipo) VALUES (%s, %s)", (post_id, tipo))
+        conn.commit()
+    except Exception as e:
+        print(f"Error al reaccionar: {e}")
     finally:
         cur.close()
         conn.close()

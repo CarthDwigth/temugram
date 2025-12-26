@@ -13,8 +13,9 @@
         .nav-links a { margin-left: 15px; text-decoration: none; color: #0095f6; font-weight: bold; }
         .container { max-width: 500px; margin: 20px auto; }
         .post { background: white; border: 1px solid #dbdbdb; margin-bottom: 30px; }
-        .post-header { padding: 10px; font-weight: bold; display: flex; justify-content: space-between; }
-        .btn-borrar { color: #ed4956; text-decoration: none; font-size: 0.8em; border: 1px solid #ed4956; padding: 2px 5px; border-radius: 3px; }
+        .post-header { padding: 10px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .btn-borrar { color: #ed4956; text-decoration: none; font-size: 0.8em; border: 1px solid #ed4956; padding: 2px 8px; border-radius: 3px; }
+        .btn-borrar:hover { background-color: #ed4956; color: white; }
     </style>
 </head>
 <body>
@@ -39,11 +40,12 @@
             <div class="post-header">
                 <span>👤 @{{ p[0] }}</span>
                 {% if session.get('username') == p[0] %}
-                    <a href="/borrar/{{ p[3] }}" class="btn-borrar">Eliminar</a>
+                    <a href="{{ url_for('borrar_post', post_id=p[3]) }}" class="btn-borrar">Eliminar</a>
                 {% endif %}
             </div>
             
-            <img src="{{ p[2] }}" style="width:100%; display: block; background-color: #f0f0f0;" onerror="this.src='https://via.placeholder.com/500x500?text=Error+al+cargar+imagen'">
+            <img src="{{ p[2] }}" style="width:100%; display: block; min-height: 200px; background-color: #eee;" 
+                 onerror="this.onerror=null;this.src='https://via.placeholder.com/500x500?text=Error+en+Link+de+Nube'">
             
             <div style="padding: 10px;">
                 <strong>@{{ p[0] }}</strong> {{ p[1] }}
@@ -52,6 +54,11 @@
                 <button onclick="toggleComentarios('coments-{{ p[3] }}')" style="background:none; border:none; color:#8e8e8e; cursor:pointer; font-size:0.9em; padding:5px 0 0 0;">
                     Ver comentarios
                 </button>
+                <div style="padding: 10px; display: flex; gap: 10px;">
+                    <a href="/reaccionar/{{ p[3] }}/Me gusta" style="text-decoration:none;">👍 Me gusta</a>
+                    <a href="/reaccionar/{{ p[3] }}/No me gusta" style="text-decoration:none;">👎 No me gusta</a>
+                    <a href="/reaccionar/{{ p[3] }}/Eso es pa las Loca" style="text-decoration:none;">💅 Eso es pa las Loca</a>
+                </div>
 
                 <div id="coments-{{ p[3] }}" style="display: none; margin-top: 10px; border-top: 1px solid #eee; padding-top: 5px;">
                     {% for c in comentarios %}
