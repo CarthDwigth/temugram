@@ -118,6 +118,8 @@ def home():
     
     conn = get_db_connection()
     cur = conn.cursor()
+    cur.execute("SELECT username, rol, fecha_registro FROM usuarios ORDER BY rol DESC")
+    lista_usuarios = cur.fetchall()
     cur.execute('SELECT post_id, usuario, texto FROM comentarios')
     todos_los_comentarios = cur.fetchall()
     cur.execute('SELECT post_id, tipo FROM reacciones')
@@ -134,7 +136,7 @@ def home():
                            posts=posts_base, 
                            comentarios=todos_los_comentarios, 
                            reacciones=todas_las_reacciones, 
-                           metricas=metricas)
+                           metricas=metricas, usuarios_sidebar=lista_usuarios)
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
@@ -183,18 +185,23 @@ def comentar(post_id):
 
 @app.route('/borrar/<int:post_id>')
 def borrar_post(post_id):
-    if 'user_id' not in session: return redirect(url_for('login'))
+    if 'username' not in session: return redirect(url_for('login'))
+    
     conn = get_db_connection(); cur = conn.cursor()
-    try:
-        # Borramos todo lo relacionado al post para evitar errores de integridad
+    # Verificamos si es el dueño O si es Admin
+    cur.execute("SELECT rol FROM usuarios WHERE username = %s", (session['username'],))
+    es_admin = cur.fetchone()[0] == 'Admin'
+    
+    cur.execute("SELECT user_id FROM posts WHERE id = %s", (post_id,))
+    post_owner_id = cur.fetchone()[0]
+
+    if es_admin or post_owner_id == session.get('user_id'):
         cur.execute("DELETE FROM reacciones WHERE post_id = %s", (post_id,))
         cur.execute("DELETE FROM comentarios WHERE post_id = %s", (post_id,))
-        cur.execute("DELETE FROM posts WHERE id = %s AND user_id = %s", (post_id, session['user_id']))
+        cur.execute("DELETE FROM posts WHERE id = %s", (post_id,))
         conn.commit()
-    except Exception as e:
-        print(f"Error al borrar: {e}")
-    finally:
-        cur.close(); conn.close()
+    
+    cur.close(); conn.close()
     return redirect(url_for('home'))
 
 @app.route('/reaccionar/<int:post_id>/<tipo>')

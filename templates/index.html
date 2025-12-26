@@ -11,9 +11,31 @@
             position: sticky; top: 0; z-index: 100;
         }
         .nav-links a { margin-left: 15px; text-decoration: none; color: #0095f6; font-weight: bold; }
-        .container { max-width: 500px; margin: 20px auto; }
         
-        /* Estilos del Dashboard */
+        /* Contenedor Principal con Flexbox */
+        .main-layout { 
+            display: flex; 
+            max-width: 900px; 
+            margin: 20px auto; 
+            gap: 20px; 
+            padding: 0 10px;
+        }
+
+        /* Barra Lateral */
+        .sidebar {
+            width: 250px;
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            padding: 15px;
+            height: fit-content;
+            position: sticky;
+            top: 70px;
+        }
+
+        /* Contenedor de Posts */
+        .feed { flex-grow: 1; max-width: 500px; }
+
         .dashboard {
             background: #ffffff; border: 1px solid #dbdbdb; padding: 15px; 
             border-radius: 8px; margin-bottom: 20px;
@@ -24,19 +46,11 @@
         .post { background: white; border: 1px solid #dbdbdb; margin-bottom: 30px; }
         .post-header { padding: 10px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         .btn-borrar { color: #ed4956; text-decoration: none; font-size: 0.8em; border: 1px solid #ed4956; padding: 2px 8px; border-radius: 3px; }
-        .btn-borrar:hover { background-color: #ed4956; color: white; }
-        .badge {
-        font-size: 0.7em;
-        padding: 2px 6px;
-        border-radius: 4px;
-        margin-left: 5px;
-        color: white;
-        font-weight: bold;
-        text-transform: uppercase;
-        }
-        .rol-admin { background-color: #ed4956; } /* Rojo */
-        .rol-verificado { background-color: #0095f6; } /* Azul */
-        .rol-usuario { background-color: #8e8e8e; } /* Gris */
+        
+        .badge { font-size: 0.7em; padding: 2px 6px; border-radius: 4px; margin-left: 5px; color: white; font-weight: bold; text-transform: uppercase; }
+        .rol-admin { background-color: #ed4956; }
+        .rol-verificado { background-color: #0095f6; }
+        .rol-usuario { background-color: #8e8e8e; }
     </style>
 </head>
 <body>
@@ -58,75 +72,92 @@
         </div>
     </nav>
 
-    <div class="container">
-        <div class="dashboard">
-            <h4 style="margin: 0 0 10px 0;">📊 Estado del Servidor</h4>
-    
-            <div style="font-size: 0.8em; margin-bottom: 5px; display: flex; justify-content: space-between;">
-                <span>Base de Datos (Render Postgres)</span>
-                <span>{{ metricas.db_porcentaje }}%</span>
-        </div>
-        <div class="progress-bar">
-            <div class="progress-fill" style="background: #0095f6; width: {{ metricas.db_porcentaje }}%;"></div>
-        </div>
+    <div class="main-layout">
+        <aside class="sidebar">
+            <h4 style="margin-top: 0;">👥 Comunidad</h4>
+            {% for user in usuarios_sidebar %}
+            <div style="margin-bottom: 12px; font-size: 0.85em; border-bottom: 1px dotted #eee; padding-bottom: 8px;">
+                <a href="/perfil/{{ user[0] }}" style="text-decoration:none; color:inherit;">
+                    <strong>@{{ user[0] }}</strong> 
+                </a>
+                <span class="badge rol-{{ user[1]|lower }}" style="font-size: 0.6em;">{{ user[1] }}</span><br>
+                <span style="color: #999; font-size: 0.8em;">Unido: {{ user[2] }}</span>
+            </div>
+            {% endfor %}
+        </aside>
 
-        <div style="font-size: 0.8em; margin-bottom: 5px; display: flex; justify-content: space-between;">
-            <span>Fotos en Nube (64MB límite)</span>
-            <span>{{ posts | length }} fotos</span>
-        </div>
-        <div class="progress-bar">
-            <div class="progress-fill" style="background: #00f645; width: 10%;"></div>
-        </div>
+        <main class="feed">
+            <div class="dashboard">
+                <h4 style="margin: 0 0 10px 0;">📊 Estado del Servidor</h4>
+                <div style="font-size: 0.8em; margin-bottom: 5px; display: flex; justify-content: space-between;">
+                    <span>Base de Datos</span>
+                    <span>{{ metricas.db_porcentaje }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="background: #0095f6; width: {{ metricas.db_porcentaje }}%;"></div>
+                </div>
+                <div style="font-size: 0.8em; margin-bottom: 5px; display: flex; justify-content: space-between;">
+                    <span>Fotos en Nube</span>
+                    <span>{{ posts | length }} fotos</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="background: #00f645; width: {{ metricas.img_porcentaje }}%;"></div>
+                </div>
             </div>
 
-        {% for p in posts %}
-        <div class="post">
-            <div class="post-header">
-                <a href="/perfil/{{ p[0] }}" style="text-decoration: none; color: inherit;">
-                    <span>👤 <strong>@{{ p[0] }}</strong></span>
-                    <span class="badge rol-{{ p[4]|lower }}">{{ p[4] }}</span>
-                </a>
-                {% if session.get('username') == p[0] %}
-                    <a href="{{ url_for('borrar_post', post_id=p[3]) }}" class="btn-borrar">Eliminar</a>
-                {% endif %}
-        </div>
-            
-            <img src="{{ p[2] }}" style="width:100%; display: block; min-height: 200px; background-color: #eee;">
-            
-            <div style="padding: 10px;">
-                <strong>@{{ p[0] }}</strong> {{ p[1] }}
-                
-                <div style="margin-top: 10px; display: flex; gap: 10px; font-size: 0.9em;">
-                    {% set me_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Me gusta') | list | length %}
-                    {% set no_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'No me gusta') | list | length %}
-                    {% set loca = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Eso es pa las Loca') | list | length %}
-
-                    <a href="/reaccionar/{{ p[3] }}/Me gusta" style="text-decoration:none;">👍 {{ me_gusta }}</a>
-                    <a href="/reaccionar/{{ p[3] }}/No me gusta" style="text-decoration:none;">👎 {{ no_gusta }}</a>
-                    <a href="/reaccionar/{{ p[3] }}/Eso es pa las Loca" style="text-decoration:none;">💅 {{ loca }}</a>
-                </div>
-
-                <button onclick="toggleComentarios('coments-{{ p[3] }}')" style="background:none; border:none; color:#8e8e8e; cursor:pointer; font-size:0.85em; padding:10px 0 0 0;">
-                    Ver comentarios...
-                </button>
-
-                <div id="coments-{{ p[3] }}" style="display: none; margin-top: 10px; border-top: 1px solid #eee;">
-                    {% for c in comentarios %}
-                        {% if c[0] == p[3] %}
-                            <p style="margin: 5px 0; font-size: 0.9em;"><strong>@{{ c[1] }}</strong> {{ c[2] }}</p>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if session.get('username') %}
-                    <form action="/comentar/{{ p[3] }}" method="POST" style="display:flex; margin-top:10px;">
-                        <input type="text" name="texto" placeholder="Escribe un comentario..." required style="flex-grow:1; border:1px solid #dbdbdb; padding:5px; border-radius:3px;">
-                        <button type="submit" style="color:#0095f6; background:none; border:none; font-weight:bold; cursor:pointer;">Post</button>
-                    </form>
+            {% for p in posts %}
+            <div class="post">
+                <div class="post-header">
+                    <a href="/perfil/{{ p[0] }}" style="text-decoration: none; color: inherit;">
+                        <span>👤 <strong>@{{ p[0] }}</strong></span>
+                        <span class="badge rol-{{ p[4]|lower }}">{{ p[4] }}</span>
+                    </a>
+                    {% if session.get('username') == 'Carth' or session.get('username') == p[0] %}
+                        <a href="{{ url_for('borrar_post', post_id=p[3]) }}" class="btn-borrar">Eliminar</a>
                     {% endif %}
                 </div>
+                
+                <img src="{{ p[2] }}" style="width:100%; display: block; min-height: 200px; background-color: #eee;">
+                
+                <div style="padding: 10px;">
+                    <strong>@{{ p[0] }}</strong> {{ p[1] }}
+                    
+                    <div style="margin-top: 10px; display: flex; gap: 10px; font-size: 0.9em;">
+                        {% set me_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Me gusta') | list | length %}
+                        {% set no_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'No me gusta') | list | length %}
+                        {% set loca = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Eso es pa las Loca') | list | length %}
+
+                        <a href="/reaccionar/{{ p[3] }}/Me gusta" style="text-decoration:none;">👍 {{ me_gusta }}</a>
+                        <a href="/reaccionar/{{ p[3] }}/No me gusta" style="text-decoration:none;">👎 {{ no_gusta }}</a>
+                        <a href="/reaccionar/{{ p[3] }}/Eso es pa las Loca" style="text-decoration:none;">💅 {{ loca }}</a>
+                    </div>
+
+                    {% set n_comentarios = comentarios | selectattr('0', 'equalto', p[3]) | list | length %}
+                    <button onclick="toggleComentarios('coments-{{ p[3] }}')" style="background:none; border:none; color:#8e8e8e; cursor:pointer; font-size:0.85em; padding:10px 0 0 0;">
+                        Ver comentarios... 
+                        {% if n_comentarios > 0 %}
+                            <strong>({{ n_comentarios }})</strong>
+                        {% endif %}
+                    </button>
+
+                    <div id="coments-{{ p[3] }}" style="display: none; margin-top: 10px; border-top: 1px solid #eee;">
+                        {% for c in comentarios %}
+                            {% if c[0] == p[3] %}
+                                <p style="margin: 5px 0; font-size: 0.9em;"><strong>@{{ c[1] }}</strong> {{ c[2] }}</p>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if session.get('username') %}
+                        <form action="/comentar/{{ p[3] }}" method="POST" style="display:flex; margin-top:10px;">
+                            <input type="text" name="texto" placeholder="Escribe un comentario..." required style="flex-grow:1; border:1px solid #dbdbdb; padding:5px; border-radius:3px;">
+                            <button type="submit" style="color:#0095f6; background:none; border:none; font-weight:bold; cursor:pointer;">Post</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        </main>
     </div>
 
     <script>
