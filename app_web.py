@@ -39,19 +39,24 @@ def init_db():
         conn.commit()
 
 # Ejecutamos la creación de tablas al abrir el archivo
-init_db()
 
 @app.route('/')
 def home():
-    # Usamos la función que ya tienes arriba que hace el JOIN correctamente
+    # 1. Obtenemos los posts usando la función que ya definiste arriba
     posts = obtener_posts() 
     
-    with sqlite3.connect('temugram.db') as conn:
-        cursor = conn.cursor()
-        # Obtenemos todos los comentarios
-        cursor.execute('SELECT post_id, usuario, texto FROM comentarios')
-        todos_los_comentarios = cursor.fetchall()
+    # 2. Conectamos para traer los comentarios
+    conn = sqlite3.connect('temugram.db')
+    cursor = conn.cursor()
     
+    # IMPORTANTE: Asegúrate de que la tabla 'comentarios' ya exista
+    cursor.execute('SELECT post_id, usuario, texto FROM comentarios')
+    todos_los_comentarios = cursor.fetchall()
+    
+    # 3. CERRAMOS la conexión (Esto evita errores de base de datos bloqueada)
+    conn.close()
+    
+    # 4. Enviamos TODO al HTML
     return render_template('index.html', posts=posts, comentarios=todos_los_comentarios)
 
 # RUTA 2: El Registro
@@ -146,4 +151,8 @@ def comentar(post_id):
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
+    init_db()  # Creamos las tablas justo antes de arrancar
     app.run(debug=True, host='0.0.0.0', port=5000)
+else:
+    # Esto es para Render (que usa gunicorn)
+    init_db()
