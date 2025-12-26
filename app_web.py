@@ -63,7 +63,7 @@ def inicializar_base_de_datos():
     cur.execute('CREATE TABLE IF NOT EXISTS reacciones (id SERIAL PRIMARY KEY, post_id INTEGER, user_id INTEGER, tipo TEXT)')
     
     # AUTO-ASIGNARTE ADMIN (Cambia 'TuUsuario' por tu nick real)
-    cur.execute("UPDATE usuarios SET rol = 'Admin' WHERE username = 'TuUsuario'")
+    cur.execute("UPDATE usuarios SET rol = 'Admin' WHERE username = 'Carth'")
     
     conn.commit()
     cur.close()
@@ -247,6 +247,47 @@ def perfil(username):
     conn.close()
     
     return render_template('perfil.html', username=username, posts=user_posts)
+
+@app.route('/admin/panel')
+def admin_panel():
+    # Solo permitimos la entrada si el usuario logueado es Admin
+    if 'username' not in session: return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Verificamos el rol del usuario actual
+    cur.execute("SELECT rol FROM usuarios WHERE username = %s", (session['username'],))
+    user_rol = cur.fetchone()[0]
+    
+    if user_rol != 'Admin':
+        cur.close(); conn.close()
+        return "Acceso Denegado: No tienes permisos de Administrador", 403
+
+    # Traemos todos los usuarios para mostrar en la lista
+    cur.execute("SELECT id, username, rol FROM usuarios ORDER BY username ASC")
+    usuarios_lista = cur.fetchall()
+    cur.close(); conn.close()
+    
+    return render_template('admin_panel.html', usuarios=usuarios_lista)
+
+@app.route('/admin/cambiar_rol', methods=['POST'])
+def cambiar_rol():
+    if 'username' not in session: return redirect(url_for('login'))
+    
+    # Verificación de seguridad (doble check de Admin)
+    conn = get_db_connection(); cur = conn.cursor()
+    cur.execute("SELECT rol FROM usuarios WHERE username = %s", (session['username'],))
+    if cur.fetchone()[0] != 'Admin':
+        return "No autorizado", 403
+
+    nuevo_rol = request.form.get('rol')
+    usuario_id = request.form.get('usuario_id')
+    
+    cur.execute("UPDATE usuarios SET rol = %s WHERE id = %s", (nuevo_rol, usuario_id))
+    conn.commit(); cur.close(); conn.close()
+    
+    return redirect(url_for('admin_panel'))
 
 inicializar_base_de_datos()
 

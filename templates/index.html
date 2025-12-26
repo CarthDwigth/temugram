@@ -52,6 +52,9 @@
                 <a href="/login">Iniciar Sesión</a>
                 <a href="/registro">Crear Cuenta</a>
             {% endif %}
+            {% if session.get('username') == 'Carth' %}
+                <a href="/admin/panel" style="color: gold;">⚙️ Admin</a>
+            {% endif %}
         </div>
     </nav>
 
