@@ -3,15 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Panel de Administración - TemuGram</title>
-    <style>
-        body { font-family: sans-serif; background: #fafafa; padding: 20px; }
-        .panel { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border: 1px solid #dbdbdb; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
-        .select-rol { padding: 5px; border-radius: 4px; border: 1px solid #dbdbdb; }
-        .btn-save { background: #0095f6; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-        .btn-back { display: inline-block; margin-bottom: 20px; color: #0095f6; text-decoration: none; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
 <body>
     <div class="panel">

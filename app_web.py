@@ -78,19 +78,17 @@ def inicializar_base_de_datos():
     conn.close()
 
 def obtener_posts():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    # Ahora pedimos el username (p[0]), descripcion (p[1]), url (p[2]), id (p[3]) y ROL (p[4])
+    conn = get_db_connection(); cur = conn.cursor()
+    # Añadimos usuarios.emoji_perfil a la consulta (será el p[5])
     query = '''
-        SELECT usuarios.username, posts.descripcion, posts.url_foto, posts.id, usuarios.rol
+        SELECT usuarios.username, posts.descripcion, posts.url_foto, posts.id, usuarios.rol, usuarios.emoji_perfil
         FROM posts 
         JOIN usuarios ON posts.user_id = usuarios.id
         ORDER BY posts.id DESC
     '''
     cur.execute(query)
     posts = cur.fetchall()
-    cur.close()
-    conn.close()
+    cur.close(); conn.close()
     return posts
 
 def obtener_metricas():
@@ -122,30 +120,32 @@ def obtener_metricas():
 @app.route('/')
 def home():
     metricas = obtener_metricas()
-    posts_base = obtener_posts() # Borra la línea repetida que tenías abajo
+    posts_base = obtener_posts()
     
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT username, rol, fecha_registro FROM usuarios ORDER BY rol DESC")
+    conn = get_db_connection(); cur = conn.cursor()
+    
+    # 1. Traemos usuarios para la sidebar incluyendo su emoji (u[3])
+    cur.execute("SELECT username, rol, fecha_registro, emoji_perfil FROM usuarios ORDER BY rol DESC")
     lista_usuarios = cur.fetchall()
-    cur.execute('SELECT post_id, usuario, texto FROM comentarios')
-    todos_los_comentarios = cur.fetchall()
+    
+    # 2. Traemos comentarios UNIDOS con la tabla usuarios para sacar el emoji del comentador
+    cur.execute('''
+        SELECT comentarios.post_id, comentarios.usuario, comentarios.texto, usuarios.emoji_perfil
+        FROM comentarios
+        JOIN usuarios ON comentarios.usuario = usuarios.username
+    ''')
+    todos_los_comentarios = cur.fetchall() # El emoji será c[3]
+    
     cur.execute('SELECT post_id, tipo FROM reacciones')
     todas_las_reacciones = cur.fetchall()
-    cur.close()
-    conn.close()
-
-    # Calculamos el porcentaje de imágenes (usando un límite de 1000 fotos por ejemplo)
-    total_fotos = len(posts_base)
-    metricas['img_uso'] = total_fotos
-    metricas['img_porcentaje'] = min((total_fotos / 1000) * 100, 100)
+    cur.close(); conn.close()
 
     return render_template('index.html', 
-                       posts=posts_base, 
-                       usuarios_sidebar=lista_usuarios, # <-- Esto es lo que usa la lista de la izquierda
-                       comentarios=todos_los_comentarios, 
-                       reacciones=todas_las_reacciones, 
-                       metricas=metricas)
+                           posts=posts_base, 
+                           usuarios_sidebar=lista_usuarios, 
+                           comentarios=todos_los_comentarios, 
+                           reacciones=todas_las_reacciones, 
+                           metricas=metricas)
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
