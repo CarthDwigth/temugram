@@ -1,13 +1,11 @@
-import psycopg2
 import os
+import psycopg2
 from urllib.parse import urlparse
+from werkzeug.security import generate_password_hash, check_password_hash
 
 def get_connection():
     url = os.getenv('DATABASE_URL')
-    
-    # Si estamos en Render, esta variable DEBE existir
     if url and url.startswith('postgres'):
-        print("--- CONECTANDO A POSTGRES ---")
         result = urlparse(url)
         return psycopg2.connect(
             database=result.path[1:],
@@ -17,17 +15,17 @@ def get_connection():
             port=result.port
         )
     else:
-        # Si entra aquí en Render, es que DATABASE_URL está vacía
-        print("--- ERROR: NO SE ENCONTRÓ DATABASE_URL, USANDO SQLITE (ESTO CAUSARÁ ERROR) ---")
         import sqlite3
         return sqlite3.connect('temugram.db')
 
 def registrar_usuario(username, password):
     conn = get_connection()
     cur = conn.cursor()
+    # Encriptamos la contraseña antes de guardarla
+    password_segura = generate_password_hash(password)
     try:
-        # Usamos %s porque en Render MANDARÁ Postgres
-        cur.execute('INSERT INTO usuarios (username, password) VALUES (%s, %s)', (username, password))
+        cur.execute('INSERT INTO usuarios (username, password) VALUES (%s, %s)', 
+                   (username, password_segura))
         conn.commit()
         return True
     except Exception as e:
@@ -40,9 +38,15 @@ def registrar_usuario(username, password):
 def login(username, password):
     conn = get_connection()
     cur = conn.cursor()
-    # Aquí es donde fallaba antes. Ahora funcionará con Postgres.
-    cur.execute('SELECT id FROM usuarios WHERE username = %s AND password = %s', (username, password))
+    # Buscamos al usuario por nombre para obtener su hash
+    cur.execute('SELECT id, password FROM usuarios WHERE username = %s', (username,))
     user = cur.fetchone()
     cur.close()
     conn.close()
-    return user[0] if user else None
+    
+    if user:
+        user_id, hashed_password = user
+        # Comparamos la clave ingresada con el hash guardado
+        if check_password_hash(hashed_password, password):
+            return user_id
+    return None
