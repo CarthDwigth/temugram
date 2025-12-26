@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 def get_connection():
     url = os.getenv('postgresql://temugram_db_user:5gEUWXA2Lv890abWdyrRY6gUZbx01M1V@dpg-d572oe6uk2gs73cpnli0-a.oregon-postgres.render.com/temugram_db')
     if url:
+        # Si encuentra la URL, usa Postgres
         result = urlparse(url)
         return psycopg2.connect(
             database=result.path[1:],
@@ -13,8 +14,10 @@ def get_connection():
             host=result.hostname,
             port=result.port
         )
-    import sqlite3
-    return sqlite3.connect('temugram.db')
+    else:
+        # ESTO ES LO QUE ESTÁ PASANDO: No encuentra la variable
+        # Vamos a forzar el error para saber qué pasa
+        raise Exception("ERROR CRÍTICO: No se encontró la variable DATABASE_URL en Render")
 
 def registrar_usuario(username, password):
     conn = get_connection()
