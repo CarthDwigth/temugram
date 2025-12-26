@@ -1,19 +1,39 @@
-import sqlite3
+import psycopg2
+import os
+from urllib.parse import urlparse
+
+def get_connection():
+    url = os.getenv('DATABASE_URL')
+    if url:
+        result = urlparse(url)
+        return psycopg2.connect(
+            database=result.path[1:],
+            user=result.username,
+            password=result.password,
+            host=result.hostname,
+            port=result.port
+        )
+    import sqlite3
+    return sqlite3.connect('temugram.db')
 
 def registrar_usuario(username, password):
+    conn = get_connection()
+    cur = conn.cursor()
     try:
-        with sqlite3.connect('temugram.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO usuarios (username, password) VALUES (?, ?)", (username, password))
-            conn.commit()
-            return True
-    except sqlite3.IntegrityError:
-        print("❌ Error: Ese nombre de usuario ya existe.")
+        cur.execute('INSERT INTO usuarios (username, password) VALUES (%s, %s)', (username, password))
+        conn.commit()
+        return True
+    except:
         return False
+    finally:
+        cur.close()
+        conn.close()
 
 def login(username, password):
-    with sqlite3.connect('temugram.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT id FROM usuarios WHERE username = ? AND password = ?", (username, password))
-        user = cursor.fetchone()
-        return user[0] if user else None # Devuelve el ID si existe, o None
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT id FROM usuarios WHERE username = %s AND password = %s', (username, password))
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
+    return user[0] if user else None

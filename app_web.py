@@ -11,8 +11,9 @@ app.secret_key = 'clave_secreta_muy_segura'
 
 # --- 1. CONEXIÓN INTELIGENTE (Postgres en Render / SQLite en tu PC) ---
 def get_db_connection():
-    url = os.getenv('postgresql://temugram_db_user:5gEUWXA2Lv890abWdyrRY6gUZbx01M1V@dpg-d572oe6uk2gs73cpnli0-a.oregon-postgres.render.com/temugram_db')
-    if url: # Si existe la variable en Render, usa Postgres
+    # Buscamos la variable que configuraste en el panel de Render
+    url = os.getenv('postgresql://temugram_db_user:5gEUWXA2Lv890abWdyrRY6gUZbx01M1V@dpg-d572oe6uk2gs73cpnli0-a.oregon-postgres.render.com/temugram_db') 
+    if url: 
         result = urlparse(url)
         return psycopg2.connect(
             database=result.path[1:],
@@ -21,17 +22,18 @@ def get_db_connection():
             host=result.hostname,
             port=result.port
         )
-    else: # Si estás en tu PC local
+    else: 
         import sqlite3
-        conn = sqlite3.connect('temugram.db')
-        conn.row_factory = sqlite3.Row
-        return conn
+        return sqlite3.connect('temugram.db')
 
 # --- 2. SUBIDA DE FOTOS A LA NUBE (FreeImage) ---
 def subir_foto_nube(archivo):
-    api_key = os.getenv('6d207e02198a847aa98d0a2a901485a5EY')
+    # Buscamos la API KEY que configuraste en el panel de Render
+    api_key = os.getenv('6d207e02198a847aa98d0a2a901485a5')
     if not api_key:
+        print("ERROR: No se encontró la API KEY en las variables de entorno")
         return None
+
     url = "https://freeimage.host/api/1/upload"
     payload = {"key": api_key, "action": "upload", "format": "json"}
     files = {"source": archivo.read()}
@@ -40,8 +42,10 @@ def subir_foto_nube(archivo):
         response = requests.post(url, data=payload, files=files)
         if response.status_code == 200:
             return response.json()['image']['url']
-    except:
-        return None
+        else:
+            print(f"ERROR FreeImage: {response.text}")
+    except Exception as e:
+        print(f"ERROR de conexión: {e}")
     return None
 
 # --- 3. INICIALIZAR TABLAS EN POSTGRES ---
