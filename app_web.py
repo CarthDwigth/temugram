@@ -40,32 +40,34 @@ def subir_foto_nube(archivo):
         print(f"Error enviando a FreeImage: {e}")
         return None
 
-# --- 3. INICIALIZAR TABLAS ---
 def inicializar_base_de_datos():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Creamos las tablas base si no existen (esto no borra nada)
+    # 1. Aseguramos las tablas base
     cur.execute('CREATE TABLE IF NOT EXISTS usuarios (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT)')
     cur.execute('CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, user_id INTEGER, descripcion TEXT, url_foto TEXT)')
     
-    # --- EL TRUCO PARA NO BORRAR NADA ---
-    try:
-        # Intentamos añadir la columna 'rol'. Si ya existe, saltará al 'except'
-        cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS rol TEXT DEFAULT 'Usuario'")
-        conn.commit()
-    except Exception as e:
-        print(f"La columna rol ya existe o hubo un error: {e}")
-        conn.rollback() # Si falla, cancelamos esa instrucción para no trabar el resto
+    # 2. Forzamos la creación de columnas nuevas una por una
+    columnas = [
+        ("rol", "TEXT DEFAULT 'Usuario'"),
+        ("fecha_registro", "TEXT DEFAULT '26/12/2025'")
+    ]
+    
+    for nombre_col, definicion in columnas:
+        try:
+            # Intentamos añadir la columna
+            cur.execute(f"ALTER TABLE usuarios ADD COLUMN {nombre_col} {definicion}")
+            conn.commit() # Confirmamos después de cada columna
+            print(f"Columna {nombre_col} añadida con éxito.")
+        except Exception as e:
+            conn.rollback() # Si falla (porque ya existe), limpiamos el error para seguir
+            print(f"La columna {nombre_col} ya existía o saltó este error: {e}")
 
-    # Asegúrate de que las otras tablas tengan las columnas nuevas si las borraste antes
-    cur.execute('CREATE TABLE IF NOT EXISTS comentarios (id SERIAL PRIMARY KEY, post_id INTEGER, usuario TEXT, texto TEXT)')
-    cur.execute('CREATE TABLE IF NOT EXISTS reacciones (id SERIAL PRIMARY KEY, post_id INTEGER, user_id INTEGER, tipo TEXT)')
-    
-    # AUTO-ASIGNARTE ADMIN (Cambia 'TuUsuario' por tu nick real)
+    # 3. Aseguramos el rango de Admin para ti
     cur.execute("UPDATE usuarios SET rol = 'Admin' WHERE username = 'Carth'")
-    
     conn.commit()
+    
     cur.close()
     conn.close()
 
@@ -132,11 +134,12 @@ def home():
     metricas['img_uso'] = total_fotos
     metricas['img_porcentaje'] = min((total_fotos / 1000) * 100, 100)
 
-    return render_template('index.html', 
-                           posts=posts_base, 
-                           comentarios=todos_los_comentarios, 
-                           reacciones=todas_las_reacciones, 
-                           metricas=metricas, usuarios_sidebar=lista_usuarios)
+return render_template('index.html', 
+                       posts=posts_base, 
+                       usuarios_sidebar=lista_usuarios, # <-- Esto es lo que usa la lista de la izquierda
+                       comentarios=todos_los_comentarios, 
+                       reacciones=todas_las_reacciones, 
+                       metricas=metricas)
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
