@@ -45,24 +45,25 @@ def inicializar_base_de_datos():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # TRUCO: Si te da error de "column rol does not exist", 
-    # descomenta la siguiente línea UNA VEZ, haz deploy, y luego vuelve a comentarla.
-    # cur.execute('DROP TABLE IF EXISTS usuarios CASCADE') 
-
-    cur.execute('''
-        CREATE TABLE IF NOT EXISTS usuarios (
-            id SERIAL PRIMARY KEY, 
-            username TEXT UNIQUE, 
-            password TEXT,
-            rol TEXT DEFAULT 'Usuario'
-        )
-    ''')
+    # Creamos las tablas base si no existen (esto no borra nada)
+    cur.execute('CREATE TABLE IF NOT EXISTS usuarios (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT)')
     cur.execute('CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, user_id INTEGER, descripcion TEXT, url_foto TEXT)')
+    
+    # --- EL TRUCO PARA NO BORRAR NADA ---
+    try:
+        # Intentamos añadir la columna 'rol'. Si ya existe, saltará al 'except'
+        cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS rol TEXT DEFAULT 'Usuario'")
+        conn.commit()
+    except Exception as e:
+        print(f"La columna rol ya existe o hubo un error: {e}")
+        conn.rollback() # Si falla, cancelamos esa instrucción para no trabar el resto
+
+    # Asegúrate de que las otras tablas tengan las columnas nuevas si las borraste antes
     cur.execute('CREATE TABLE IF NOT EXISTS comentarios (id SERIAL PRIMARY KEY, post_id INTEGER, usuario TEXT, texto TEXT)')
     cur.execute('CREATE TABLE IF NOT EXISTS reacciones (id SERIAL PRIMARY KEY, post_id INTEGER, user_id INTEGER, tipo TEXT)')
     
-    # AUTO-ASIGNARTE ADMIN: Cambia 'TuUsuario' por tu nombre real en TemuGram
-    cur.execute("UPDATE usuarios SET rol = 'Admin' WHERE username = 'Carth'")
+    # AUTO-ASIGNARTE ADMIN (Cambia 'TuUsuario' por tu nick real)
+    cur.execute("UPDATE usuarios SET rol = 'Admin' WHERE username = 'TuUsuario'")
     
     conn.commit()
     cur.close()
