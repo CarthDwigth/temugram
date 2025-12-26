@@ -46,32 +46,34 @@
     <div class="container">
         <div class="dashboard">
             <h4 style="margin: 0 0 10px 0;">📊 Estado del Servidor</h4>
-            
+    
             <div style="font-size: 0.8em; margin-bottom: 5px; display: flex; justify-content: space-between;">
-                <span>Base de Datos (Postgres)</span>
-                <span>{{ db_uso }}%</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="background: #0095f6; width: {{ db_uso }}%;"></div>
-            </div>
-
-            <div style="font-size: 0.8em; margin-bottom: 5px; display: flex; justify-content: space-between;">
-                <span>Fotos en Nube (64MB límite)</span>
-                <span>{{ img_uso }} fotos</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" style="background: #00f645; width: {{ img_porcentaje }}%;"></div>
-            </div>
+                <span>Base de Datos (Render Postgres)</span>
+                <span>{{ metricas.db_porcentaje }}%</span>
         </div>
+        <div class="progress-bar">
+            <div class="progress-fill" style="background: #0095f6; width: {{ metricas.db_porcentaje }}%;"></div>
+        </div>
+
+        <div style="font-size: 0.8em; margin-bottom: 5px; display: flex; justify-content: space-between;">
+            <span>Fotos en Nube (64MB límite)</span>
+            <span>{{ posts | length }} fotos</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" style="background: #00f645; width: 10%;"></div>
+        </div>
+            </div>
 
         {% for p in posts %}
         <div class="post">
-            <div class="post-header">
-                <span>👤 @{{ p[0] }}</span>
-                {% if session.get('username') == p[0] %}
-                    <a href="{{ url_for('borrar_post', post_id=p[3]) }}" class="btn-borrar">Eliminar</a>
-                {% endif %}
-            </div>
+            <<div class="post-header">
+                <a href="/perfil/{{ p[0] }}" style="text-decoration: none; color: inherit;">
+                    <span>👤 <strong>@{{ p[0] }}</strong></span>
+                </a>
+            {% if session.get('username') == p[0] %}
+            <a href="{{ url_for('borrar_post', post_id=p[3]) }}" class="btn-borrar">Eliminar</a>
+            {% endif %}
+        </div>
             
             <img src="{{ p[2] }}" style="width:100%; display: block; min-height: 200px; background-color: #eee;">
             

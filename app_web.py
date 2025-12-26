@@ -199,6 +199,37 @@ def logout():
     session.clear()
     return redirect(url_for('home'))
 
+@app.route('/perfil/<username>')
+def perfil(username):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # 1. Buscamos al usuario para obtener su ID
+    cur.execute("SELECT id FROM usuarios WHERE username = %s", (username,))
+    user_data = cur.fetchone()
+    
+    if not user_data:
+        cur.close()
+        conn.close()
+        return "Usuario no encontrado", 404
+        
+    user_id = user_data[0]
+    
+    # 2. Traemos solo los posts de este usuario
+    cur.execute('''
+        SELECT username, descripcion, url_foto, posts.id 
+        FROM posts 
+        JOIN usuarios ON posts.user_id = usuarios.id
+        WHERE user_id = %s
+        ORDER BY posts.id DESC
+    ''', (user_id,))
+    user_posts = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
+    return render_template('perfil.html', username=username, posts=user_posts)
+
 inicializar_base_de_datos()
 
 if __name__ == '__main__':
