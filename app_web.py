@@ -29,7 +29,7 @@ def get_db_connection():
 # --- 2. SUBIDA DE FOTOS A LA NUBE (FreeImage) ---
 def subir_foto_nube(archivo):
     # Buscamos la API KEY que configuraste en el panel de Render
-    api_key = os.getenv('6d207e02198a847aa98d0a2a901485a5')
+    api_key = os.getenv('FREEIMAGE_API_KEY')
     if not api_key:
         print("ERROR: No se encontró la API KEY en las variables de entorno")
         return None
