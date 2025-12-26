@@ -44,6 +44,7 @@ def subir_foto_nube(archivo):
 def inicializar_base_de_datos():
     conn = get_db_connection()
     cur = conn.cursor()
+    cur.execute('DROP TABLE IF EXISTS reacciones')
     cur.execute('CREATE TABLE IF NOT EXISTS usuarios (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT)')
     cur.execute('CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, user_id INTEGER, descripcion TEXT, url_foto TEXT)')
     cur.execute('CREATE TABLE IF NOT EXISTS comentarios (id SERIAL PRIMARY KEY, post_id INTEGER, usuario TEXT, texto TEXT)')
