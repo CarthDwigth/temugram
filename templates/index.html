@@ -54,11 +54,15 @@
                 <button onclick="toggleComentarios('coments-{{ p[3] }}')" style="background:none; border:none; color:#8e8e8e; cursor:pointer; font-size:0.9em; padding:5px 0 0 0;">
                     Ver comentarios
                 </button>
-                <div style="padding: 10px; display: flex; gap: 10px;">
-                    <a href="/reaccionar/{{ p[3] }}/Me gusta" style="text-decoration:none;">👍 Me gusta</a>
-                    <a href="/reaccionar/{{ p[3] }}/No me gusta" style="text-decoration:none;">👎 No me gusta</a>
-                    <a href="/reaccionar/{{ p[3] }}/Eso es pa las Loca" style="text-decoration:none;">💅 Eso es pa las Loca</a>
-                </div>
+                <div style="padding: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    {% set me_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Me gusta') | list | length %}
+                    {% set no_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'No me gusta') | list | length %}
+                    {% set loca = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Eso es pa las Loca') | list | length %}
+
+                    <a href="/reaccionar/{{ p[3] }}/Me gusta" style="text-decoration:none;">👍 ({{ me_gusta }})</a>
+                    <a href="/reaccionar/{{ p[3] }}/No me gusta" style="text-decoration:none;">👎 ({{ no_gusta }})</a>
+                    <a href="/reaccionar/{{ p[3] }}/Eso es pa las Loca" style="text-decoration:none;">💅 Eso es pa las Loca ({{ loca }})</a>
+</div>
 
                 <div id="coments-{{ p[3] }}" style="display: none; margin-top: 10px; border-top: 1px solid #eee; padding-top: 5px;">
                     {% for c in comentarios %}

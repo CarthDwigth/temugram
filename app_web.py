@@ -91,14 +91,25 @@ def obtener_posts():
 
 @app.route('/')
 def home():
-    posts = obtener_posts() 
+    posts_base = obtener_posts() 
     conn = get_db_connection()
     cur = conn.cursor()
+    
+    # 1. Traemos los comentarios
     cur.execute('SELECT post_id, usuario, texto FROM comentarios')
     todos_los_comentarios = cur.fetchall()
+    
+    # 2. Traemos TODAS las reacciones para contar en el HTML
+    cur.execute('SELECT post_id, tipo FROM reacciones')
+    todas_las_reacciones = cur.fetchall()
+    
     cur.close()
     conn.close()
-    return render_template('index.html', posts=posts, comentarios=todos_los_comentarios)
+    
+    return render_template('index.html', 
+                           posts=posts_base, 
+                           comentarios=todos_los_comentarios, 
+                           reacciones=todas_las_reacciones)
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
