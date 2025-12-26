@@ -12,7 +12,7 @@ app.secret_key = 'clave_secreta_muy_segura'
 # --- 1. CONEXIÓN INTELIGENTE (Postgres en Render / SQLite en tu PC) ---
 def get_db_connection():
     # Buscamos la variable que configuraste en el panel de Render
-    url = os.getenv('postgresql://temugram_db_user:5gEUWXA2Lv890abWdyrRY6gUZbx01M1V@dpg-d572oe6uk2gs73cpnli0-a.oregon-postgres.render.com/temugram_db') 
+    url = os.getenv('DATABASE_URL') 
     if url: 
         result = urlparse(url)
         return psycopg2.connect(

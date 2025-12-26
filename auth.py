@@ -2,12 +2,11 @@ import psycopg2
 import os
 from urllib.parse import urlparse
 
-def get_connection():
-    # Buscamos la URL en el panel de Render
-    url = os.getenv('postgresql://temugram_db_user:5gEUWXA2Lv890abWdyrRY6gUZbx01M1V@dpg-d572oe6uk2gs73cpnli0-a.oregon-postgres.render.com/temugram_db')
+def get_connection(): # En auth.py se suele llamar get_connection
+    # ESTO ES LO CORRECTO: Solo el nombre de la "caja"
+    url = os.getenv('DATABASE_URL') 
     
     if url:
-        # CONEXIÓN A POSTGRES (Para Render)
         result = urlparse(url)
         return psycopg2.connect(
             database=result.path[1:],
@@ -17,7 +16,6 @@ def get_connection():
             port=result.port
         )
     else:
-        # CONEXIÓN A SQLITE (Solo para tu PC local)
         import sqlite3
         return sqlite3.connect('temugram.db')
 
