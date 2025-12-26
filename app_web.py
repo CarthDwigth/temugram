@@ -20,8 +20,6 @@ def obtener_posts():
         cursor.execute(query)
         return cursor.fetchall()
 
-@app.route('/')
-
 def init_db():
     with sqlite3.connect('temugram.db') as conn:
         cursor = conn.cursor()
