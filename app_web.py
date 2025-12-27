@@ -7,6 +7,7 @@ import requests
 from urllib.parse import urlparse
 
 app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.secret_key = 'clave_secreta_muy_segura'
 
 # --- 1. CONEXIÓN INTELIGENTE ---
