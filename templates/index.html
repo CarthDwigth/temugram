@@ -61,12 +61,27 @@
                 <div style="padding: 12px;">
                     <p><strong>@{{ p[0] }}</strong> {{ p[1] }}</p>
                     
-                    <div style="margin-top: 10px; display: flex; gap: 10px;">
-                        {% set me_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Me gusta') | list | length %}
-                        <a href="/reaccionar/{{ p[3] }}/Me gusta" class="reaction-link">👍 {{ me_gusta }}</a>
+                    <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; gap: 15px; font-size: 0.9em;">
+                            {% set me_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Me gusta') | list | length %}
+                            {% set no_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'No me gusta') | list | length %}
+                            {% set loca = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Eso es pa las Loca') | list | length %}
+
+                            <a href="/reaccionar/{{ p[3] }}/Me gusta" class="reaction-link">👍 {{ me_gusta }}</a>
+                            <a href="/reaccionar/{{ p[3] }}/No me gusta" class="reaction-link">👎 {{ no_gusta }}</a>
+                            <a href="/reaccionar/{{ p[3] }}/Eso es pa las Loca" class="reaction-link">💅 {{ loca }}</a>
                         </div>
 
-                    <button onclick="toggleComentarios('coments-{{ p[3] }}')" class="comment-btn">Ver comentarios...</button>
+                        {% set n_coments = comentarios | selectattr('0', 'equalto', p[3]) | list | length %}
+                        <button onclick="toggleComentarios('coments-{{ p[3] }}')" class="comment-btn">
+                            Ver comentarios... 
+                            {% if n_coments > 0 %}
+                                <strong>({{ n_coments }})</strong>
+                            {% endif %}
+                        </button>
+                    </div>
+
+
                     <div id="coments-{{ p[3] }}" class="comments-section">
                         {% for c in comentarios %}
                             {% if c[0] == p[3] %}

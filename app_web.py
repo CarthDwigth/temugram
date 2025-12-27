@@ -172,11 +172,22 @@ def registro():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        u, p = request.form['username'], request.form['password']
-        user_id = auth.login(u, p)
-        if user_id:
-            session['user_id'], session['username'] = user_id, u
+        u = request.form['username']
+        p = request.form['password']
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        # Buscamos al usuario en la base de datos de la nube
+        cur.execute("SELECT id, username FROM usuarios WHERE username = %s AND password = %s", (u, p))
+        user = cur.fetchone()
+        cur.close(); conn.close()
+
+        if user:
+            session['user_id'] = user[0]
+            session['username'] = user[1]
             return redirect(url_for('home'))
+        else:
+            return "❌ Error: Usuario o contraseña no encontrados en la base de datos."
     return render_template('login.html')
 
 @app.route('/publicar', methods=['GET', 'POST'])
