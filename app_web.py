@@ -51,7 +51,7 @@ def inicializar_base_de_datos():
     columnas_usuarios = [
         ("emoji_perfil", "TEXT DEFAULT '👤'"),
         ("rol", "TEXT DEFAULT 'Usuario'"),
-        ("fecha_registro", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP" ")
+        ("fecha_registro", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     ]
     
     for nombre_col, definicion in columnas_usuarios:
