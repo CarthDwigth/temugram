@@ -44,36 +44,56 @@ def inicializar_base_de_datos():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    try:
-        cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS emoji_perfil TEXT DEFAULT '👤'")
-        conn.commit()
-    except:
-        conn.rollback()
-    
-    # 1. Aseguramos las tablas base
+    # 1. Aseguramos las tablas base y columnas de usuarios
     cur.execute('CREATE TABLE IF NOT EXISTS usuarios (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT)')
-    cur.execute('CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, user_id INTEGER, descripcion TEXT, url_foto TEXT)')
     
-    # 2. Forzamos la creación de columnas nuevas una por una
-    columnas = [
+    # Añadimos columnas dinámicas a la tabla usuarios
+    columnas_usuarios = [
+        ("emoji_perfil", "TEXT DEFAULT '👤'"),
         ("rol", "TEXT DEFAULT 'Usuario'"),
-        ("fecha_registro", "TEXT DEFAULT '26/12/2025'")
+        ("fecha_registro", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP" ")
     ]
     
-    for nombre_col, definicion in columnas:
+    for nombre_col, definicion in columnas_usuarios:
         try:
-            # Intentamos añadir la columna
-            cur.execute(f"ALTER TABLE usuarios ADD COLUMN {nombre_col} {definicion}")
-            conn.commit() # Confirmamos después de cada columna
-            print(f"Columna {nombre_col} añadida con éxito.")
+            cur.execute(f"ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS {nombre_col} {definicion}")
+            conn.commit()
         except Exception as e:
-            conn.rollback() # Si falla (porque ya existe), limpiamos el error para seguir
-            print(f"La columna {nombre_col} ya existía o saltó este error: {e}")
+            conn.rollback()
+            print(f"Error o ya existe columna {nombre_col}: {e}")
 
-    # 3. Aseguramos el rango de Admin para ti
-    cur.execute("UPDATE usuarios SET rol = 'Admin' WHERE username = 'Carth'")
+    # 2. NUEVA TABLA: Gestión de Permisos por Rol
+    cur.execute('''CREATE TABLE IF NOT EXISTS permisos_roles (
+        rol TEXT PRIMARY KEY,
+        puede_borrar_fotos BOOLEAN DEFAULT FALSE,
+        puede_subir_fotos BOOLEAN DEFAULT TRUE,
+        puede_comentar BOOLEAN DEFAULT TRUE,
+        puede_borrar_usuarios BOOLEAN DEFAULT FALSE,
+        puede_gestionar_roles BOOLEAN DEFAULT FALSE
+    )''')
+
+    # Insertamos permisos para los roles predeterminados
+    permisos_base = [
+        ('Admin', True, True, True, True, True),
+        ('Usuario', False, True, True, False, False),
+        ('Verificado', False, True, True, False, False)
+    ]
+
+    for p in permisos_base:
+        cur.execute('''INSERT INTO permisos_roles 
+                       (rol, puede_borrar_fotos, puede_subir_fotos, puede_comentar, puede_borrar_usuarios, puede_gestionar_roles) 
+                       VALUES (%s, %s, %s, %s, %s, %s) 
+                       ON CONFLICT (rol) DO NOTHING''', p)
+
+    # 3. Otras tablas (Posts, Reacciones, etc.)
+    cur.execute('CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, user_id INTEGER, descripcion TEXT, url_foto TEXT)')
+    cur.execute('CREATE TABLE IF NOT EXISTS reacciones (id SERIAL PRIMARY KEY, post_id INTEGER, user_id INTEGER, tipo TEXT)')
+    cur.execute('CREATE TABLE IF NOT EXISTS comentarios (id SERIAL PRIMARY KEY, post_id INTEGER, user_id INTEGER, comentario TEXT)')
+
+    # 4. Aseguramos tu rango Admin
     conn.commit()
     
+    print("✅ Base de datos sincronizada con Sistema de Permisos.")
     cur.close()
     conn.close()
 
