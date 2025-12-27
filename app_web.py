@@ -193,25 +193,31 @@ def comentar(post_id):
         conn.commit(); cur.close(); conn.close()
     return redirect(url_for('home'))
 
-@app.route('/borrar/<int:post_id>')
+@app.route('/borrar_post/<int:post_id>')
 def borrar_post(post_id):
-    if 'username' not in session: return redirect(url_for('login'))
-    
-    conn = get_db_connection(); cur = conn.cursor()
-    # Verificamos si es el dueño O si es Admin
-    cur.execute("SELECT rol FROM usuarios WHERE username = %s", (session['username'],))
-    es_admin = cur.fetchone()[0] == 'Admin'
-    
-    cur.execute("SELECT user_id FROM posts WHERE id = %s", (post_id,))
-    post_owner_id = cur.fetchone()[0]
+    # Seguridad de nivel Admin
+    if session.get('username') != 'Carth':
+        return "No tienes permisos para hacer esto", 403
 
-    if es_admin or post_owner_id == session.get('user_id'):
-        cur.execute("DELETE FROM reacciones WHERE post_id = %s", (post_id,))
-        cur.execute("DELETE FROM comentarios WHERE post_id = %s", (post_id,))
-        cur.execute("DELETE FROM posts WHERE id = %s", (post_id,))
-        conn.commit()
+    conn = get_db_connection()
+    cur = conn.cursor()
     
-    cur.close(); conn.close()
+    try:
+        # 1. Borramos comentarios y reacciones vinculados al post
+        cur.execute("DELETE FROM comentarios WHERE post_id = %s", (post_id,))
+        cur.execute("DELETE FROM reacciones WHERE post_id = %s", (post_id,))
+        
+        # 2. Borramos el post
+        cur.execute("DELETE FROM posts WHERE id = %s", (post_id,))
+        
+        conn.commit()
+    except Exception as e:
+        print(f"Error al borrar: {e}")
+        conn.rollback()
+    finally:
+        cur.close()
+        conn.close()
+        
     return redirect(url_for('home'))
 
 @app.route('/reaccionar/<int:post_id>/<tipo>')
