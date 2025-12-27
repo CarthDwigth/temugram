@@ -67,19 +67,16 @@
             {% for p in posts %}
             <div class="post">
                 <div class="post-header">
-                    <div class="post-header">
-                        <a href="/perfil/{{ p[0] }}" ...>
+                    <div style="display: flex; align-items: center;">
+                        <a href="/perfil/{{ p[0] }}" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
                             <span style="font-size: 1.2em; margin-right: 8px;">{{ p[5] if p[5] else '👤' }}</span>
-                            <span><strong>@{{ p[0] }}</strong></span> <span class="badge rol-{{ p[4]|lower }}">{{ p[4] }}</span>
+                            <span><strong>@{{ p[0] }}</strong></span>
+                            <span class="badge rol-{{ p[4]|lower }}" style="margin-left: 5px;">{{ p[4] }}</span>
                         </a>
-                        
-                        <span><strong>@{{ p[0] }}</strong></span> {% if session.get('username') == 'Carth' %}
-                            <a href="/borrar_post/{{ p[3] }}" class="btn-borrar">Eliminar</a>
-                        {% endif %}
                     </div>
 
                     {% if session.get('username') == 'Carth' %}
-                        <a href="/borrar_post/{{ p[3] }}" class="btn-borrar" onclick="return confirm('¿Seguro que quieres borrar este post?')">Eliminar</a>
+                        <a href="/borrar_post/{{ p[3] }}" class="btn-borrar" onclick="return confirm('¿Borrar este meme?')">Eliminar</a>
                     {% endif %}
                 </div>
                 
