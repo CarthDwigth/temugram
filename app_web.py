@@ -307,26 +307,22 @@ def perfil(username):
 
 @app.route('/admin/panel')
 def admin_panel():
-    # Solo permitimos la entrada si el usuario logueado es Admin
-    if 'username' not in session: return redirect(url_for('login'))
-    
+    if session.get('username') != 'Carth':
+        return redirect(url_for('home'))
+        
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Verificamos el rol del usuario actual
-    cur.execute("SELECT rol FROM usuarios WHERE username = %s", (session['username'],))
-    user_rol = cur.fetchone()[0]
+    # Obtenemos usuarios
+    cur.execute("SELECT username, rol FROM usuarios")
+    usuarios = cur.fetchall()
     
-    if user_rol != 'Admin':
-        cur.close(); conn.close()
-        return "Acceso Denegado: No tienes permisos de Administrador", 403
-
-    # Traemos todos los usuarios para mostrar en la lista
-    cur.execute("SELECT id, username, rol FROM usuarios ORDER BY username ASC")
-    usuarios_lista = cur.fetchall()
+    # Obtenemos los roles y sus permisos actuales
+    cur.execute("SELECT rol, puede_borrar_fotos, puede_borrar_usuarios, puede_gestionar_roles FROM permisos_roles")
+    roles = cur.fetchall()
+    
     cur.close(); conn.close()
-    
-    return render_template('admin_panel.html', usuarios=usuarios_lista)
+    return render_template('admin_panel.html', todos_los_usuarios=usuarios, lista_roles=roles)
 
 @app.route('/admin/cambiar_rol', methods=['POST'])
 def cambiar_rol():
@@ -360,28 +356,24 @@ def cambiar_emoji():
         
     return redirect(url_for('perfil', username=session['username']))
 
-@app.route('/reset_secreto', methods=['GET', 'POST'])
-def reset_secreto():
-    if request.method == 'POST':
-        user = request.form.get('username')
-        nueva_p = request.form.get('password')
-        
-        conn = get_db_connection()
-        cur = conn.cursor()
-        # Actualizamos la clave y nos aseguramos de que seas Admin
-        cur.execute("UPDATE usuarios SET password = %s, rol = 'Admin' WHERE username = %s", (nueva_p, user))
-        conn.commit()
-        cur.close(); conn.close()
-        return f"✅ Contraseña de {user} actualizada. Ya puedes intentar el login normal."
-        
-    return '''
-        <form method="post" style="background:#15191c; color:white; padding:20px; border-radius:10px; font-family:sans-serif;">
-            <h2>🔑 Reset Maestro de TemuGram</h2>
-            <input type="text" name="username" placeholder="Usuario (Carth)" required style="display:block; margin:10px 0; padding:10px;">
-            <input type="password" name="password" placeholder="Nueva Contraseña" required style="display:block; margin:10px 0; padding:10px;">
-            <button type="submit" style="background:#0095f6; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">Actualizar Ahora</button>
-        </form>
-    '''
+@app.route('/admin/actualizar_permisos', methods=['POST'])
+def actualizar_permisos():
+    if session.get('username') != 'Carth':
+        return redirect(url_for('home'))
+
+    rol = request.form.get('rol')
+    borrar_f = 'puede_borrar_fotos' in request.form
+    borrar_u = 'puede_borrar_usuarios' in request.form
+    crear_r = 'puede_gestionar_roles' in request.form
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('''UPDATE permisos_roles 
+                   SET puede_borrar_fotos = %s, puede_borrar_usuarios = %s, puede_gestionar_roles = %s 
+                   WHERE rol = %s''', (borrar_f, borrar_u, crear_r, rol))
+    conn.commit()
+    cur.close(); conn.close()
+    return redirect(url_for('admin_panel'))
 
 inicializar_base_de_datos()
 
