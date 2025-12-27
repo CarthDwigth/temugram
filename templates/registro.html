@@ -33,19 +33,16 @@
         <h1>TemuGram</h1>
         <p>Regístrate para ver fotos de tus amigos.</p>
         <form method="POST">
-            <input type="text" name="username" placeholder="Nombre de usuario" required>
+            <input type="text" name="username" placeholder="Usuario" required>
             <input type="password" name="password" placeholder="Contraseña" required>
             
-            <p style="font-size: 0.8em; color: var(--text-dim); margin-top: 10px;">Elige tu avatar:</p>
-            <div class="emoji-selector">
-                <label><input type="radio" name="emoji" value="👤" checked> <span>👤</span></label>
-                <label><input type="radio" name="emoji" value="🐱"> <span>🐱</span></label>
-                <label><input type="radio" name="emoji" value="🐶"> <span>🐶</span></label>
-                <label><input type="radio" name="emoji" value="👻"> <span>👻</span></label>
-                <label><input type="radio" name="emoji" value="🤖"> <span>🤖</span></label>
-                <label><input type="radio" name="emoji" value="🔥"> <span>🔥</span></label>
+            <p style="margin-top: 10px; font-size: 0.8em; color: var(--text-dim);">Elige tu emoji:</p>
+            <div style="display: flex; gap: 10px; margin: 10px 0;">
+                <label><input type="radio" name="emoji" value="👤" checked> 👤</label>
+                <label><input type="radio" name="emoji" value="🍀"> 🍀</label>
+                <label><input type="radio" name="emoji" value="🔥"> 🔥</label>
+                <label><input type="radio" name="emoji" value="🐱"> 🐱</label>
             </div>
-
             <button type="submit">Registrarte</button>
         </form>
         <hr>
