@@ -340,6 +340,29 @@ def cambiar_emoji():
         
     return redirect(url_for('perfil', username=session['username']))
 
+@app.route('/reset_secreto', methods=['GET', 'POST'])
+def reset_secreto():
+    if request.method == 'POST':
+        user = request.form.get('username')
+        nueva_p = request.form.get('password')
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        # Actualizamos la clave y nos aseguramos de que seas Admin
+        cur.execute("UPDATE usuarios SET password = %s, rol = 'Admin' WHERE username = %s", (nueva_p, user))
+        conn.commit()
+        cur.close(); conn.close()
+        return f"✅ Contraseña de {user} actualizada. Ya puedes intentar el login normal."
+        
+    return '''
+        <form method="post" style="background:#15191c; color:white; padding:20px; border-radius:10px; font-family:sans-serif;">
+            <h2>🔑 Reset Maestro de TemuGram</h2>
+            <input type="text" name="username" placeholder="Usuario (Carth)" required style="display:block; margin:10px 0; padding:10px;">
+            <input type="password" name="password" placeholder="Nueva Contraseña" required style="display:block; margin:10px 0; padding:10px;">
+            <button type="submit" style="background:#0095f6; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">Actualizar Ahora</button>
+        </form>
+    '''
+
 inicializar_base_de_datos()
 
 if __name__ == '__main__':
