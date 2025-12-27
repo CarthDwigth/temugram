@@ -6,7 +6,6 @@ import psycopg2
 import requests
 from urllib.parse import urlparse
 
-app = Flask(__name__)
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.secret_key = 'clave_secreta_muy_segura'
 
@@ -151,12 +150,23 @@ def home():
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     if request.method == 'POST':
-        u, p = request.form['username'], request.form['password']
-        if auth.registrar_usuario(u, p):
-            user_id = auth.login(u, p) 
-            if user_id:
-                session['user_id'], session['username'] = user_id, u
-                return redirect(url_for('home'))
+        username = request.form['username']
+        password = request.form['password']
+        emoji = request.form.get('emoji', '👤') 
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        try:
+            # CAMBIAMOS 'emoji' por 'emoji_perfil' para que coincida con tu ALTER TABLE
+            cur.execute("INSERT INTO usuarios (username, password, rol, emoji_perfil) VALUES (%s, %s, %s, %s)",
+                        (username, password, 'Usuario', emoji))
+            conn.commit()
+            return redirect(url_for('login'))
+        except Exception as e:
+            conn.rollback()
+            return f"Error: {e}"
+        finally:
+            cur.close(); conn.close()
     return render_template('registro.html')
 
 @app.route('/login', methods=['GET', 'POST'])

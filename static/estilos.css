@@ -112,11 +112,15 @@ body {
     overflow: hidden;
 }
 
-.post-header { 
-    padding: 14px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
+.post-header {
+    display: flex;
+    justify-content: space-between; /* Esto empuja el botón al extremo derecho */
+    align-items: center;
+    padding: 12px;
+}
+
+.btn-borrar {
+    margin-left: auto; /* Refuerza que se vaya a la derecha */
 }
 
 /* Badges de Roles */
@@ -189,6 +193,30 @@ body {
 .btn-borrar:hover {
     background: var(--danger);
     color: white;
+}
+
+/* ... continuación de tu estilos.css */
+.reaction-link {
+    text-decoration: none; 
+    color: var(--text-dim);
+    transition: var(--transition-smooth);
+}
+
+.reaction-link:hover {
+    color: var(--text-main);
+}
+
+input[type="text"] {
+    background: #1e2327; 
+    border: 1px solid var(--border-dark); 
+    color: white; 
+    padding: 8px 12px; 
+    border-radius: 8px;
+    outline: none;
+}
+
+input[type="text"]:focus {
+    border-color: var(--accent);
 }
 
 .progress-fill { height: 100%; border-radius: 10px; transition: width 1s ease; }
