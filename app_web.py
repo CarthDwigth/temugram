@@ -377,6 +377,34 @@ def actualizar_permisos():
     cur.close(); conn.close()
     return redirect(url_for('admin_panel'))
 
+# RUTA PARA BORRAR USUARIOS
+@app.route('/admin/borrar_usuario/<username_borrar>')
+def borrar_usuario(username_borrar):
+    if session.get('username') != 'Carth':
+        return redirect(url_for('home'))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM usuarios WHERE username = %s", (username_borrar,))
+    conn.commit()
+    cur.close(); conn.close()
+    return redirect(url_for('admin_panel'))
+
+# RUTA PARA CREAR NUEVOS ROLES
+@app.route('/admin/crear_nuevo_rol', methods=['POST'])
+def crear_nuevo_rol():
+    if session.get('username') != 'Carth':
+        return redirect(url_for('home'))
+    
+    nuevo_rol = request.form.get('nombre_rol')
+    if nuevo_rol:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO permisos_roles (rol) VALUES (%s) ON CONFLICT DO NOTHING", (nuevo_rol,))
+        conn.commit()
+        cur.close(); conn.close()
+    return redirect(url_for('admin_panel'))
+
 inicializar_base_de_datos()
 
 if __name__ == '__main__':
