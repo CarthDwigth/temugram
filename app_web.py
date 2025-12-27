@@ -313,16 +313,18 @@ def admin_panel():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Obtenemos usuarios
-    cur.execute("SELECT username, rol FROM usuarios")
-    usuarios = cur.fetchall()
+    # IMPORTANTE: Seleccionamos ID, USERNAME y ROL en ese orden
+    cur.execute("SELECT id, username, rol FROM usuarios ORDER BY id ASC")
+    usuarios_db = cur.fetchall()
     
-    # Obtenemos los roles y sus permisos actuales
+    # Obtenemos los roles para la sección de permisos
     cur.execute("SELECT rol, puede_borrar_fotos, puede_borrar_usuarios, puede_gestionar_roles FROM permisos_roles")
-    roles = cur.fetchall()
+    roles_db = cur.fetchall()
     
     cur.close(); conn.close()
-    return render_template('admin_panel.html', todos_los_usuarios=usuarios, lista_roles=roles)
+    
+    # Pasamos las variables con los nombres que usa tu HTML (usuarios y lista_roles)
+    return render_template('admin_panel.html', usuarios=usuarios_db, lista_roles=roles_db)
 
 @app.route('/admin/cambiar_rol', methods=['POST'])
 def cambiar_rol():

@@ -71,5 +71,15 @@
         </form>
         {% endfor %}
     </div>
+    <hr style="border: 0; border-top: 1px solid #333; margin: 40px 0;">
+
+        <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px dashed #0095f6; margin-bottom: 40px;">
+            <h3 style="color: #0095f6; margin-top: 0;">➕ Crear Nuevo Rol</h3>
+            <form action="/admin/crear_nuevo_rol" method="POST" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" name="nombre_rol" placeholder="Nombre (ej: Moderador)" required 
+                       style="padding: 10px; border-radius: 5px; border: 1px solid #333; background: #000; color: white; flex-grow: 1;">
+                <button type="submit" class="btn-save" style="background: #0095f6;">Crear Rol</button>
+            </form>
+        </div>
 </body>
 </html>
