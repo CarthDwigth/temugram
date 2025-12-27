@@ -13,7 +13,7 @@
             {% if session.get('username') %}
                 <span>Hola, @{{ session['username'] }}</span>
                 <a href="/publicar">Publicar</a>
-                <a href="/logout" style="color: #999;">Salir</a>
+                <a href="/logout">Salir</a>
             {% else %}
                 <a href="/login">Iniciar Sesión</a>
                 <a href="/registro">Crear Cuenta</a>
@@ -26,22 +26,24 @@
 
     <div class="main-layout">
         <aside class="sidebar">
-    <div class="sidebar-card">
-        <h4 style="margin: 0 0 15px 0; color: #8e8e8e; font-size: 0.9em;">Comunidad Registrada</h4>
-        {% for user in usuarios_sidebar %}
-        <div class="user-item">
-            <div style="width: 32px; height: 32px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8em;">👤</div>
-            <div style="flex-grow: 1;">
-                <div style="display: flex; align-items: center;">
-                    <a href="/perfil/{{ user[0] }}" style="text-decoration:none; color:#262626; font-weight: 600; font-size: 0.9em;">{{ user[0] }}</a>
-                    <span class="badge rol-{{ user[1]|lower }}">{{ user[1] }}</span>
+            <div class="sidebar-card">
+                <h4 class="sidebar-title">Comunidad Registrada</h4>
+                {% for user in usuarios_sidebar %}
+                <div class="user-item">
+                    <div class="avatar-circle">
+                        {{ user[3] if user[3] else '👤' }}
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <div style="display: flex; align-items: center;">
+                            <a href="/perfil/{{ user[0] }}" class="username-link">{{ user[0] }}</a>
+                            <span class="badge rol-{{ user[1]|lower }}">{{ user[1] }}</span>
+                        </div>
+                        <div class="user-date">Unido el {{ user[2] }}</div>
+                    </div>
                 </div>
-                <div style="color: #8e8e8e; font-size: 0.75em;">Unido el {{ user[2] }}</div>
+                {% endfor %}
             </div>
-        </div>
-        {% endfor %}
-    </div>
-    </aside>
+        </aside>
 
         <main class="feed">
             <div class="dashboard">
@@ -51,7 +53,7 @@
                     <span>{{ metricas.db_porcentaje }}%</span>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="background: #0095f6; width: {{ metricas.db_porcentaje }}%;"></div>
+                    <div class="progress-fill" style="background: var(--accent); width: {{ metricas.db_porcentaje }}%;"></div>
                 </div>
                 <div style="font-size: 0.8em; margin-bottom: 5px; display: flex; justify-content: space-between;">
                     <span>Fotos en Nube</span>
@@ -70,47 +72,43 @@
                         <span><strong>@{{ p[0] }}</strong></span>
                         <span class="badge rol-{{ p[4]|lower }}">{{ p[4] }}</span>
                     </a>
-                    ...
                 </div>
                 
-                <img src="{{ p[2] }}" style="width:100%; display: block; min-height: 200px; background-color: #eee;">
+                <img src="{{ p[2] }}" style="width:100%; display: block; min-height: 200px;">
                 
                 <div style="padding: 10px;">
                     <strong>@{{ p[0] }}</strong> {{ p[1] }}
                     
-                 <div style="margin-top: 10px; display: flex; gap: 10px; font-size: 0.9em;">
-                   {% set me_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Me gusta') | list | length %}
-                     {% set no_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'No me gusta') | list | length %}
-                     {% set loca = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Eso es pa las Loca') | list | length %}
+                    <div style="margin-top: 10px; display: flex; gap: 10px;">
+                        {% set me_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Me gusta') | list | length %}
+                        {% set no_gusta = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'No me gusta') | list | length %}
+                        {% set loca = reacciones | selectattr('0', 'equalto', p[3]) | selectattr('1', 'equalto', 'Eso es pa las Loca') | list | length %}
 
-                     <a href="/reaccionar/{{ p[3] }}/Me gusta" class="reaction-link">👍 {{ me_gusta }}</a>
+                        <a href="/reaccionar/{{ p[3] }}/Me gusta" class="reaction-link">👍 {{ me_gusta }}</a>
                         <a href="/reaccionar/{{ p[3] }}/No me gusta" class="reaction-link">👎 {{ no_gusta }}</a>
                         <a href="/reaccionar/{{ p[3] }}/Eso es pa las Loca" class="reaction-link">💅 {{ loca }}</a>
-                        </div>
+                    </div>
 
                     {% set n_comentarios = comentarios | selectattr('0', 'equalto', p[3]) | list | length %}
-                        <button onclick="toggleComentarios('coments-{{ p[3] }}')" 
-                                class="reaction-link" 
-                                style="background:none; border:none; cursor:pointer; font-size:0.85em; padding:10px 0 0 0; display:block; width:100%; text-align:left;">
-                            Ver comentarios... 
-                            {% if n_comentarios > 0 %}
-                                <strong>({{ n_comentarios }})</strong>
-                            {% endif %}
-                        </button>
+                    <button onclick="toggleComentarios('coments-{{ p[3] }}')" class="comment-btn">
+                        Ver comentarios... 
+                        {% if n_comentarios > 0 %}<strong>({{ n_comentarios }})</strong>{% endif %}
+                    </button>
 
-                    <div id="coments-{{ p[3] }}" style="display: none; margin-top: 10px; border-top: 1px solid #eee;">
+                    <div id="coments-{{ p[3] }}" class="comments-section">
                         {% for c in comentarios %}
                             {% if c[0] == p[3] %}
                                 <p style="margin: 5px 0; font-size: 0.9em;">
-                                    <span style="margin-right: 5px;">{{ c[3] }}</span> <strong>@{{ c[1] }}</strong> {{ c[2] }}
+                                    <span style="margin-right: 5px;">{{ c[3] if c[3] else '👤' }}</span> 
+                                    <strong>@{{ c[1] }}</strong> {{ c[2] }}
                                 </p>
                             {% endif %}
                         {% endfor %}
 
                         {% if session.get('username') %}
-                        <form action="/comentar/{{ p[3] }}" method="POST" style="display:flex; margin-top:10px;">
-                            <input type="text" name="texto" placeholder="Escribe un comentario..." required style="flex-grow:1; border:1px solid #dbdbdb; padding:5px; border-radius:3px;">
-                            <button type="submit" style="color:#0095f6; background:none; border:none; font-weight:bold; cursor:pointer;">Post</button>
+                        <form action="/comentar/{{ p[3] }}" method="POST" style="display:flex; margin-top:10px; gap: 5px;">
+                            <input type="text" name="texto" placeholder="Escribe un comentario..." required style="flex-grow:1;">
+                            <button type="submit" class="post-comment-btn">Post</button>
                         </form>
                         {% endif %}
                     </div>
