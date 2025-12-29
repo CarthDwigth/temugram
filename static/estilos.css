@@ -102,7 +102,13 @@ body {
 }
 
 /* Posts */
-.feed { flex-grow: 1; max-width: 470px; }
+.feed {
+    max-width: 600px; /* Ancho estándar de Instagram/TemuGram */
+    margin: 0 auto;   /* Centra todo el feed en la pantalla */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
 .post { 
     background: var(--card-dark); 
@@ -110,6 +116,11 @@ body {
     border-radius: 12px; 
     margin-bottom: 24px; 
     overflow: hidden;
+}
+
+.post img {
+    width: 100%;
+    border-radius: 4px; /* Un poco de redondeado para que no se vea tan tosco */
 }
 
 .post-header {

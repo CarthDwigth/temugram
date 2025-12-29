@@ -48,7 +48,9 @@
                 <div class="post-header">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 1.2em;">{{ p[5] if p[5] else '👤' }}</span>
+                        <a href="/perfil/{{ p[0] }}" style="text-decoration: none; color: inherit;">
                         <strong>@{{ p[0] }}</strong>
+                        </a>
                         <span class="badge rol-{{ p[4]|lower }}">{{ p[4] }}</span>
                     </div>
                     {% if session.get('username') == 'Carth' %}
@@ -56,7 +58,12 @@
                     {% endif %}
                 </div>
                 
-                <img src="{{ p[2] }}" style="width:100%; display: block;">
+                <div class="post-content" style="width: 100%; overflow: hidden; background-color: #000;">
+                    <img src="{{ p[2] }}" style="width: 100%; height: auto; display: block; max-height: 80vh; object-fit: contain;">
+                </div>
+                
+                <div style="padding: 12px;">
+                    <p><strong>@{{ p[0] }}</strong> {{ p[1] }}</p>
                 
                     <div style="margin-top: 10px;">
                         {% set n_coments = comentarios | selectattr('0', 'equalto', p[3]) | list | length %}
