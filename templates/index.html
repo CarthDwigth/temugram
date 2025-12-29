@@ -35,6 +35,7 @@
                             <a href="/perfil/{{ user[0] }}">{{ user[0] }}</a>
                             <span class="badge rol-{{ user[1]|lower }}">{{ user[1] }}</span>
                         </div>
+                        <div style="font-size: 0.75em; color: #888;">Unido el {{ user[2] }}</div>
                     </div>
                 </div>
                 {% endfor %}
@@ -46,54 +47,16 @@
             <div class="post">
                 <div class="post-header">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <span>{{ p[5] if p[5] else '👤' }}</span>
+                        <span style="font-size: 1.2em;">{{ p[5] if p[5] else '👤' }}</span>
                         <strong>@{{ p[0] }}</strong>
                         <span class="badge rol-{{ p[4]|lower }}">{{ p[4] }}</span>
                     </div>
                     {% if session.get('rol') == 'Admin' or session.get('username') == 'Carth' %}
-                        <a href="/borrar_post/{{ p[3] }}" class="btn-borrar" onclick="return confirm('¿Borrar?')">Eliminar</a>
+                        <a href="/borrar_post/{{ p[3] }}" class="btn-borrar" onclick="return confirm('¿Borrar post?')">Eliminar</a>
                     {% endif %}
                 </div>
                 
                 <img src="{{ p[2] }}" style="width:100%; display: block;">
                 
                 <div style="padding: 12px;">
-                    <p><strong>@{{ p[0] }}</strong> {{ p[1] }}</p>
-                    
-                    <div style="margin-top: 10px;">
-                        <button onclick="toggleComentarios('coments-{{ p[3] }}')" class="comment-btn">
-                            Ver comentarios...
-                        </button>
-                    </div>
-
-                    <div id="coments-{{ p[3] }}" class="comments-section" style="display:none; margin-top:10px;">
-                        {% for c in comentarios %}
-                            {% if c[0] == p[3] %}
-                                <p style="font-size: 0.9em; margin: 4px 0;">
-                                    <strong>@{{ c[1] }}</strong> {{ c[2] }}
-                                </p>
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if session.get('username') %}
-                        <form action="/comentar/{{ p[3] }}" method="POST" style="display: flex; gap: 5px; margin-top:10px;">
-                            <input type="text" name="comentario" placeholder="Escribe un comentario..." required 
-                                   style="flex-grow: 1; padding: 5px; border-radius: 5px; background: #111; color: white; border: 1px solid #333;">
-                            <button type="submit" style="background: #0095f6; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Enviar</button>
-                        </form>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </main>
-    </div>
-
-    <script>
-        function toggleComentarios(id) {
-            var x = document.getElementById(id);
-            x.style.display = (x.style.display === "none") ? "block" : "none";
-        }
-    </script>
-</body>
-</html>
+                    <p><strong>@{{ p
