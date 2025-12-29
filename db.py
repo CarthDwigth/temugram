@@ -1,5 +1,5 @@
 import psycopg2
-from config import DATABASE_URL
+import os
 
-def get_db_connection():
-    return psycopg2.connect(DATABASE_URL)
+def get_db():
+    return psycopg2.connect(os.environ["DATABASE_URL"])
