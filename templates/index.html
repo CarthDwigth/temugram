@@ -25,6 +25,24 @@
 
     <div class="main-layout">
         <aside class="sidebar">
+            <div class="sidebar-card" style="border-bottom: 2px solid #222; margin-bottom: 10px;">
+                <h4 class="sidebar-title" style="color: #2ecc71;">🟢 En línea ahora</h4>
+                <div class="online-list" style="margin-bottom: 15px;">
+                    {% for u_on in usuarios_online %}
+                        <div class="user-item" style="padding: 5px 0;">
+                            <div class="avatar-circle" style="width: 25px; height: 25px; font-size: 0.9em;">{{ u_on[1] }}</div>
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <a href="/perfil/{{ u_on[0] }}" style="font-size: 0.9em; font-weight: bold;">{{ u_on[0] }}</a>
+                                <span style="height: 6px; width: 6px; background: #2ecc71; border-radius: 50%;"></span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% if not usuarios_online %}
+                        <p style="font-size: 0.75em; color: #666;">Nadie conectado.</p>
+                    {% endif %}
+                </div>
+            </div>
+
             <div class="sidebar-card">
                 <h4 class="sidebar-title">Comunidad</h4>
                 {% for user in usuarios_sidebar %}

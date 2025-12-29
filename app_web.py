@@ -44,58 +44,74 @@ def inicializar_base_de_datos():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # 1. Aseguramos las tablas base y columnas de usuarios
-    cur.execute('CREATE TABLE IF NOT EXISTS usuarios (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT)')
-    
-    # Añadimos columnas dinámicas a la tabla usuarios
-    columnas_usuarios = [
-        ("emoji_perfil", "TEXT DEFAULT '👤'"),
-        ("rol", "TEXT DEFAULT 'Usuario'"),
-        ("fecha_registro", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    ]
-    
-    for nombre_col, definicion in columnas_usuarios:
-        try:
-            cur.execute(f"ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS {nombre_col} {definicion}")
-            conn.commit()
-        except Exception as e:
-            conn.rollback()
-            print(f"Error o ya existe columna {nombre_col}: {e}")
+    # Agrupamos TODAS las tablas y columnas en un solo bloque SQL
+    # Esto crea la estructura completa si no existe
+    script_tablas = """
+    CREATE TABLE IF NOT EXISTS usuarios (
+        id SERIAL PRIMARY KEY, 
+        username TEXT UNIQUE, 
+        password TEXT, 
+        emoji_perfil TEXT DEFAULT '👤', 
+        rol TEXT DEFAULT 'Usuario', 
+        fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        ultima_conexion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
-    # 2. NUEVA TABLA: Gestión de Permisos por Rol
-    cur.execute('''CREATE TABLE IF NOT EXISTS permisos_roles (
+    CREATE TABLE IF NOT EXISTS permisos_roles (
         rol TEXT PRIMARY KEY,
         puede_borrar_fotos BOOLEAN DEFAULT FALSE,
         puede_subir_fotos BOOLEAN DEFAULT TRUE,
         puede_comentar BOOLEAN DEFAULT TRUE,
         puede_borrar_usuarios BOOLEAN DEFAULT FALSE,
         puede_gestionar_roles BOOLEAN DEFAULT FALSE
-    )''')
+    );
 
-    # Insertamos permisos para los roles predeterminados
-    permisos_base = [
-        ('Admin', True, True, True, True, True),
-        ('Usuario', False, True, True, False, False),
-        ('Verificado', False, True, True, False, False)
-    ]
+    CREATE TABLE IF NOT EXISTS posts (
+        id SERIAL PRIMARY KEY, 
+        user_id INTEGER, 
+        descripcion TEXT, 
+        url_foto TEXT
+    );
 
-    for p in permisos_base:
-        cur.execute('''INSERT INTO permisos_roles 
-                       (rol, puede_borrar_fotos, puede_subir_fotos, puede_comentar, puede_borrar_usuarios, puede_gestionar_roles) 
-                       VALUES (%s, %s, %s, %s, %s, %s) 
-                       ON CONFLICT (rol) DO NOTHING''', p)
+    CREATE TABLE IF NOT EXISTS reacciones (
+        id SERIAL PRIMARY KEY, 
+        post_id INTEGER, 
+        user_id INTEGER, 
+        tipo TEXT
+    );
 
-    # 3. Otras tablas (Posts, Reacciones, etc.)
-    cur.execute('CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, user_id INTEGER, descripcion TEXT, url_foto TEXT)')
-    cur.execute('CREATE TABLE IF NOT EXISTS reacciones (id SERIAL PRIMARY KEY, post_id INTEGER, user_id INTEGER, tipo TEXT)')
-    cur.execute('CREATE TABLE IF NOT EXISTS comentarios (id SERIAL PRIMARY KEY, post_id INTEGER, user_id INTEGER, comentario TEXT)')
-
-    # 4. Aseguramos tu rango Admin
-    conn.commit()
+    CREATE TABLE IF NOT EXISTS comentarios (
+        id SERIAL PRIMARY KEY, 
+        post_id INTEGER, 
+        usuario TEXT, 
+        texto TEXT
+    );
+    """
     
-    print("✅ Base de datos sincronizada con Sistema de Permisos.")
-    cur.close()
-    conn.close()
+    try:
+        cur.execute(script_tablas)
+        
+        # Insertamos los roles base (solo si no existen)
+        permisos_base = [
+            ('Admin', True, True, True, True, True),
+            ('Usuario', False, True, True, False, False),
+            ('Verificado', False, True, True, False, False)
+        ]
+
+        for p in permisos_base:
+            cur.execute('''INSERT INTO permisos_roles 
+                           (rol, puede_borrar_fotos, puede_subir_fotos, puede_comentar, puede_borrar_usuarios, puede_gestionar_roles) 
+                           VALUES (%s, %s, %s, %s, %s, %s) 
+                           ON CONFLICT (rol) DO NOTHING''', p)
+        
+        conn.commit()
+        print("✅ Estructura de Base de Datos sincronizada correctamente.")
+    except Exception as e:
+        conn.rollback()
+        print(f"❌ Error al inicializar: {e}")
+    finally:
+        cur.close()
+        conn.close()
 
 def obtener_posts():
     conn = get_db_connection(); cur = conn.cursor()
@@ -142,30 +158,50 @@ def home():
     metricas = obtener_metricas()
     posts_base = obtener_posts()
     
-    conn = get_db_connection(); cur = conn.cursor()
+    # --- NUEVO: LÓGICA DE USUARIOS ONLINE ---
+    usuarios_online = obtener_usuarios_online() # Llamamos a la función que creamos antes
     
-    # 1. Traemos usuarios para la sidebar incluyendo su emoji (u[3])
+    # --- NUEVO: LÓGICA DE PERMISOS ---
+    # Por defecto, nadie tiene permisos hasta que demostremos lo contrario
+    permisos = {'puede_borrar_fotos': False, 'puede_borrar_usuarios': False}
+    
+    if 'rol' in session:
+        conn = get_db_connection(); cur = conn.cursor()
+        # Buscamos qué puede hacer el ROL del usuario actual
+        cur.execute("SELECT puede_borrar_fotos, puede_borrar_usuarios FROM permisos_roles WHERE rol = %s", (session['rol'],))
+        p_db = cur.fetchone()
+        if p_db:
+            permisos = {
+                'puede_borrar_fotos': p_db[0], 
+                'puede_borrar_usuarios': p_db[1]
+            }
+        cur.close(); conn.close()
+
+    # --- TU LÓGICA ORIGINAL ---
+    conn = get_db_connection(); cur = conn.cursor()
     cur.execute("SELECT username, rol, fecha_registro, emoji_perfil FROM usuarios ORDER BY rol DESC")
     lista_usuarios = cur.fetchall()
     
-    # 2. Traemos comentarios UNIDOS con la tabla usuarios para sacar el emoji del comentador
     cur.execute('''
         SELECT comentarios.post_id, comentarios.usuario, comentarios.texto, usuarios.emoji_perfil
         FROM comentarios
         JOIN usuarios ON comentarios.usuario = usuarios.username
     ''')
-    todos_los_comentarios = cur.fetchall() # El emoji será c[3]
+    todos_los_comentarios = cur.fetchall()
     
     cur.execute('SELECT post_id, tipo FROM reacciones')
     todas_las_reacciones = cur.fetchall()
     cur.close(); conn.close()
 
+    # IMPORTANTE: Pasamos 'usuarios_online' y 'permisos' al HTML
     return render_template('index.html', 
                            posts=posts_base, 
                            usuarios_sidebar=lista_usuarios, 
                            comentarios=todos_los_comentarios, 
                            reacciones=todas_las_reacciones, 
-                           metricas=metricas)
+                           metricas=metricas,
+                           usuarios_online=usuarios_online, # <--- Referencia nueva
+                           permisos=permisos)               # <--- Referencia nueva
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
@@ -176,6 +212,10 @@ def registro():
 
         conn = get_db_connection()
         cur = conn.cursor()
+        if user:
+            session['user_id'] = user[0]
+            session['username'] = user[1]
+            session['rol'] = user[2]
         try:
             # CAMBIAMOS 'emoji' por 'emoji_perfil' para que coincida con tu ALTER TABLE
             cur.execute("INSERT INTO usuarios (username, password, rol, emoji_perfil) VALUES (%s, %s, %s, %s)",
