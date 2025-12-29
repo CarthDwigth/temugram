@@ -41,4 +41,7 @@
             <div class="emoji-panel">
                 {% for e in ['👤','🔥','🕶️','🐱','👾','👑','🍀','💎','🌟','🎯','🎵','🎮','🍔','🚀'] %}
                     <input type="radio" name="emoji" value="{{ e }}" id="emoji-{{ loop.index0 }}" {% if loop.first %}checked{% endif %}>
-                    <label for="emoji-
+                    <label for="emoji-{{ loop.index0 }}">{{ e }}</label>
+                {% endfor %}
+            </div>
+
