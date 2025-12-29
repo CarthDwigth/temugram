@@ -51,7 +51,7 @@
                     <div class="avatar-circle">{{ user[3] or '👤' }}</div>
                     <div style="flex-grow: 1;">
                         <div style="display: flex; align-items: center; gap: 5px;">
-                            <a href="{{ url_for('main_routes.perfil', username=user[0]) }}">{{ user[1] }}</a>
+                            <a href="{{ url_for('main_routes.perfil', username=user[1]) }}">{{ user[1] }}</a>
                             <span class="badge rol-{{ user[1]|lower }}">{{ user[2] }}</span>
                         </div>
                         <div style="font-size: 0.75em; color: #888;">Unido el {{ user[4] }}</div>
