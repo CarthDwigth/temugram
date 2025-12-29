@@ -171,8 +171,22 @@ body {
 }
 
 .comment-btn {
-    background: none; border: none; cursor: pointer; color: var(--text-dim);
-    font-size: 0.85em; padding: 10px 0 0 0; text-align: left; width: 100%;
+    background: none;
+    border: none;
+    color: #8e8e8e;
+    cursor: pointer;
+    font-size: 0.9em;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.comment-btn:hover {
+    color: #ffffff;
+}
+
+.comment-btn strong {
+    color: #0095f6; /* El número resaltado en azul */
+    margin-left: 3px;
 }
 
 .post-comment-btn {

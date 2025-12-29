@@ -58,12 +58,14 @@
                 
                 <img src="{{ p[2] }}" style="width:100%; display: block;">
                 
-                <div style="padding: 12px;">
-                    <p><strong>@{{ p[0] }}</strong> {{ p[1] }}</p>
-                    
                     <div style="margin-top: 10px;">
+                        {% set n_coments = comentarios | selectattr('0', 'equalto', p[3]) | list | length %}
+                        
                         <button onclick="toggleComentarios('coments-{{ p[3] }}')" class="comment-btn">
-                            Ver comentarios...
+                            Ver comentarios 
+                            {% if n_coments > 0 %}
+                                <strong>({{ n_coments }})</strong>
+                            {% endif %}
                         </button>
                     </div>
 
