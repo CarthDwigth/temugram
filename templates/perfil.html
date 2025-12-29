@@ -2,41 +2,44 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil de @{{ username }}</title>
-    <link rel="stylesheet" href="/static/estilos.css">
+    <title>Perfil de @{{ username }} - TemuGram</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
-<body>
-    <div class="header-perfil">
-        <h1>👤 @{{ username }}</h1>
-        <p><strong>{{ posts | length }}</strong> publicaciones</p>
-        <a href="/" class="back-link">← Volver al Inicio</a>
-    </div>
+<body style="background: #121212; color: white; font-family: 'Arial', sans-serif; margin: 0; padding: 20px;">
 
-        <div class="sidebar-card" style="text-align: center; margin-bottom: 20px;">
-            <div style="font-size: 4rem; margin-bottom: 10px;">{{ emoji }}</div>
-            <h2 style="margin: 0;">@{{ username }}</h2>
+    <a href="{{ url_for('main_routes.home') }}" style="color: #0095f6; text-decoration: none; font-size: 0.9em;">← Volver al Inicio</a>
+
+    <div class="perfil-header" style="display: flex; align-items: center; gap: 20px; margin-top: 20px;">
+        <div style="font-size: 5rem;">{{ emoji }}</div>
+        <div>
+            <h1>@{{ username }}</h1>
             <span class="badge rol-{{ rol|lower }}">{{ rol }}</span>
+            <p>{{ posts | length }} publicaciones</p>
 
             {% if session.get('username') == username %}
-            <form action="/cambiar_emoji" method="POST" style="margin-top: 15px;">
-                <p style="font-size: 0.8em; color: var(--text-dim);">Elige tu avatar:</p>
-                <select name="emoji" onchange="this.form.submit()" style="background: #1e2327; color: white; border: 1px solid var(--border-dark); padding: 5px; border-radius: 5px;">
-                    <option value="👤" {% if emoji == '👤' %}selected{% endif %}>👤 Silueta</option>
-                    <option value="🔥" {% if emoji == '🔥' %}selected{% endif %}>🔥 Fuego</option>
-                    <option value="🕶️" {% if emoji == '🕶️' %}selected{% endif %}>🕶️ Pro</option>
-                    <option value="🐱" {% if emoji == '🐱' %}selected{% endif %}>🐱 Gato</option>
-                    <option value="👾" {% if emoji == '👾' %}selected{% endif %}>👾 Gamer</option>
-                    <option value="👑" {% if emoji == '👑' %}selected{% endif %}>👑 Rey</option>
-                    <option value="🍀" {% if emoji == '🍀' %}selected{% endif %}>🍀 Suerte</option>
+            <form action="{{ url_for('main_routes.cambiar_emoji') }}" method="POST" style="margin-top: 10px;">
+                <label for="emoji" style="font-size: 0.85em; color: #aaa;">Selecciona tu avatar:</label>
+                <select name="emoji" onchange="this.form.submit()" style="margin-top: 5px; padding: 5px; border-radius: 5px; background: #1e1e1e; color: white; border: 1px solid #333;">
+                    {% for e in ['👤','🔥','🕶️','🐱','👾','👑','🍀'] %}
+                        <option value="{{ e }}" {% if emoji == e %}selected{% endif %}>{{ e }}</option>
+                    {% endfor %}
                 </select>
             </form>
             {% endif %}
         </div>
+    </div>
 
-    <div class="grid-fotos">
+    <hr style="border: 0; border-top: 1px solid #333; margin: 30px 0;">
+
+    <div class="grid-fotos" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
         {% for p in posts %}
-            <img src="{{ p[2] }}" alt="Post de {{ username }}">
+            <div class="foto-card" style="background: #1e1e1e; border-radius: 10px; overflow: hidden; cursor: pointer;">
+                <img src="{{ p[2] }}" alt="Post de {{ username }}" style="width: 100%; height: auto; display: block;">
+            </div>
         {% endfor %}
+        {% if posts|length == 0 %}
+            <p style="color: #aaa; text-align: center; grid-column: 1 / -1;">Este usuario aún no ha publicado nada.</p>
+        {% endif %}
     </div>
 
 </body>

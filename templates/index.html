@@ -11,14 +11,14 @@
         <div class="nav-links">
             {% if session.get('username') %}
                 <span>Hola, @{{ session['username'] }}</span>
-                <a href="/publicar">Publicar</a>
-                <a href="/logout">Salir</a>
-                {% if session.get('username') == 'Carth' %}
-                    <a href="/admin/panel" style="color: gold; font-weight: bold;">⚙️ Admin</a>
+                <a href="{{ url_for('post_routes.publicar') }}">Publicar</a>
+                <a href="{{ url_for('auth_routes.logout') }}">Salir</a>
+                {% if session.get('rol') == 'Admin' %}
+                    <a href="{{ url_for('admin_routes.panel') }}" style="color: gold; font-weight: bold;">⚙️ Admin</a>
                 {% endif %}
             {% else %}
-                <a href="/login">Iniciar Sesión</a>
-                <a href="/registro">Crear Cuenta</a>
+                <a href="{{ url_for('auth_routes.login') }}">Iniciar Sesión</a>
+                <a href="{{ url_for('auth_routes.registro') }}">Crear Cuenta</a>
             {% endif %}
         </div>
     </nav>
@@ -28,16 +28,17 @@
             <div class="sidebar-card" style="border-bottom: 2px solid #222; margin-bottom: 10px;">
                 <h4 class="sidebar-title" style="color: #2ecc71;">🟢 En línea ahora</h4>
                 <div class="online-list" style="margin-bottom: 15px;">
-                    {% for u_on in usuarios_online %}
+                    {% if usuarios_online %}
+                        {% for u in usuarios_online %}
                         <div class="user-item" style="padding: 5px 0;">
-                            <div class="avatar-circle" style="width: 25px; height: 25px; font-size: 0.9em;">{{ u_on[1] }}</div>
+                            <div class="avatar-circle">{{ u[1] or '👤' }}</div>
                             <div style="display: flex; align-items: center; gap: 5px;">
-                                <a href="/perfil/{{ u_on[0] }}" style="font-size: 0.9em; font-weight: bold;">{{ u_on[0] }}</a>
+                                <a href="{{ url_for('main_routes.perfil', username=u[0]) }}" style="font-size: 0.9em; font-weight: bold;">{{ u[0] }}</a>
                                 <span style="height: 6px; width: 6px; background: #2ecc71; border-radius: 50%;"></span>
                             </div>
                         </div>
-                    {% endfor %}
-                    {% if not usuarios_online %}
+                        {% endfor %}
+                    {% else %}
                         <p style="font-size: 0.75em; color: #666;">Nadie conectado.</p>
                     {% endif %}
                 </div>
@@ -47,10 +48,10 @@
                 <h4 class="sidebar-title">Comunidad</h4>
                 {% for user in usuarios_sidebar %}
                 <div class="user-item">
-                    <div class="avatar-circle">{{ user[3] if user[3] else '👤' }}</div>
+                    <div class="avatar-circle">{{ user[3] or '👤' }}</div>
                     <div style="flex-grow: 1;">
                         <div style="display: flex; align-items: center; gap: 5px;">
-                            <a href="/perfil/{{ user[0] }}">{{ user[0] }}</a>
+                            <a href="{{ url_for('main_routes.perfil', username=user[0]) }}">{{ user[0] }}</a>
                             <span class="badge rol-{{ user[1]|lower }}">{{ user[1] }}</span>
                         </div>
                         <div style="font-size: 0.75em; color: #888;">Unido el {{ user[2] }}</div>
@@ -65,49 +66,41 @@
             <div class="post">
                 <div class="post-header">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1.2em;">{{ p[5] if p[5] else '👤' }}</span>
-                        <a href="/perfil/{{ p[0] }}" style="text-decoration: none; color: inherit;">
-                        <strong>@{{ p[0] }}</strong>
+                        <span style="font-size: 1.2em;">{{ p[5] or '👤' }}</span>
+                        <a href="{{ url_for('main_routes.perfil', username=p[0]) }}" style="text-decoration: none; color: inherit;">
+                            <strong>@{{ p[0] }}</strong>
                         </a>
                         <span class="badge rol-{{ p[4]|lower }}">{{ p[4] }}</span>
                     </div>
-                    {% if session.get('username') == 'Carth' %}
-                        <a href="/borrar_post/{{ p[3] }}" class="btn-borrar" onclick="return confirm('¿Borrar?')">Eliminar</a>
+                    {% if session.get('rol') == 'Admin' %}
+                        <a href="{{ url_for('post_routes.borrar_post', post_id=p[3]) }}" class="btn-borrar" onclick="return confirm('¿Borrar?')">Eliminar</a>
                     {% endif %}
                 </div>
-                
+
                 <div class="post-content" style="width: 100%; overflow: hidden; background-color: #000;">
-                    <img src="{{ p[2] }}" style="width: 100%; height: auto; display: block; max-height: 80vh; object-fit: contain;">
+                    <img src="{{ p[2] }}" style="width: 100%; max-height: 80vh; object-fit: contain;">
                 </div>
-                
+
                 <div style="padding: 12px;">
                     <p><strong>@{{ p[0] }}</strong> {{ p[1] }}</p>
-                
-                    <div style="margin-top: 10px;">
-                        {% set n_coments = comentarios | selectattr('0', 'equalto', p[3]) | list | length %}
-                        
-                        <button onclick="toggleComentarios('coments-{{ p[3] }}')" class="comment-btn">
-                            Ver comentarios 
-                            {% if n_coments > 0 %}
-                                <strong>({{ n_coments }})</strong>
-                            {% endif %}
-                        </button>
-                    </div>
+
+                    {% set n_coments = comentarios | selectattr('0', 'equalto', p[3]) | list | length %}
+                    <button onclick="toggleComentarios('coments-{{ p[3] }}')" class="comment-btn">
+                        Ver comentarios {% if n_coments > 0 %}(<strong>{{ n_coments }}</strong>){% endif %}
+                    </button>
 
                     <div id="coments-{{ p[3] }}" class="comments-section" style="display:none; margin-top:10px;">
-                        <div class="lista-comentarios">
-                            {% for c in comentarios %}
-                                {% if c[0] == p[3] %}
-                                    <p style="font-size: 0.9em; margin: 4px 0;">
-                                        <span>{{ c[3] if c[3] else '👤' }}</span> <strong>@{{ c[1] }}</strong> {{ c[2] }}
-                                    </p>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
+                        {% for c in comentarios %}
+                            {% if c[0] == p[3] %}
+                                <p style="font-size: 0.9em; margin: 4px 0;">
+                                    <span>{{ c[3] or '👤' }}</span> <strong>@{{ c[1] }}</strong> {{ c[2] }}
+                                </p>
+                            {% endif %}
+                        {% endfor %}
 
                         {% if session.get('username') %}
-                        <form action="/comentar/{{ p[3] }}" method="POST" style="display: flex; gap: 5px; margin-top:10px;">
-                            <input type="text" name="texto" placeholder="Escribe un comentario..." required 
+                        <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" style="display: flex; gap: 5px; margin-top:10px;">
+                            <input type="text" name="texto" placeholder="Escribe un comentario..." required
                                    style="flex-grow: 1; padding: 8px; border-radius: 5px; background: #111; color: white; border: 1px solid #333;">
                             <button type="submit" style="background: #0095f6; color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer;">
                                 Enviar

@@ -7,7 +7,7 @@
 </head>
 <body>
     <div class="panel">
-        <a href="/" class="btn-back">← Volver al Inicio</a>
+        <a href="{{ url_for('main_routes.home') }}" class="btn-back">← Volver al Inicio</a>
         
         <h2>⚙️ Gestión de Usuarios</h2>
         <table>
@@ -25,18 +25,18 @@
                     <td>{{ u[2] }}</td>
                     <td>
                         <div style="display:flex; gap:10px; align-items: center;">
-                            <form action="/admin/cambiar_rol" method="POST" style="display:flex; gap:5px;">
+                            <form action="{{ url_for('admin_routes.cambiar_rol') }}" method="POST" style="display:flex; gap:5px;">
                                 <input type="hidden" name="usuario_id" value="{{ u[0] }}">
                                 <select name="rol" class="select-rol">
-                                    <option value="Usuario" {% if u[2] == 'Usuario' %}selected{% endif %}>Usuario</option>
-                                    <option value="Verificado" {% if u[2] == 'Verificado' %}selected{% endif %}>Verificado</option>
-                                    <option value="Admin" {% if u[2] == 'Admin' %}selected{% endif %}>Admin</option>
+                                    {% for rol in lista_roles %}
+                                    <option value="{{ rol[0] }}" {% if u[2] == rol[0] %}selected{% endif %}>{{ rol[0] }}</option>
+                                    {% endfor %}
                                 </select>
                                 <button type="submit" class="btn-save">OK</button>
                             </form>
 
                             {% if u[1] != 'Carth' %}
-                            <a href="/admin/borrar_usuario/{{ u[1] }}" 
+                            <a href="{{ url_for('admin_routes.borrar_usuario', username_borrar=u[1]) }}" 
                                style="color: #ff4d4d; text-decoration: none; font-size: 0.9em; margin-left: 10px;"
                                onclick="return confirm('¿Seguro que quieres eliminar a @{{ u[1] }}?')">
                                 🗑️ Eliminar
@@ -55,31 +55,30 @@
         <p style="font-size: 0.8em; color: #888; margin-bottom: 20px;">Controla qué puede hacer cada rango en la web.</p>
         
         {% for r in lista_roles %}
-        <form action="/admin/actualizar_permisos" method="POST" style="background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #333;">
+        <form action="{{ url_for('admin_routes.actualizar_permisos') }}" method="POST" style="background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #333;">
             <input type="hidden" name="rol" value="{{ r[0] }}">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <strong style="color: #0095f6; min-width: 100px;">{{ r[0] }}</strong>
                 
                 <div style="display: flex; gap: 20px; font-size: 0.9em;">
-                    <label style="cursor:pointer"><input type="checkbox" name="puede_borrar_fotos" {{ 'checked' if r[1] }}> Borrar Fotos</label>
-                    <label style="cursor:pointer"><input type="checkbox" name="puede_borrar_usuarios" {{ 'checked' if r[2] }}> Borrar Users</label>
-                    <label style="cursor:pointer"><input type="checkbox" name="puede_gestionar_roles" {{ 'checked' if r[3] }}> Crear Roles</label>
+                    <label style="cursor:pointer"><input type="checkbox" name="puede_borrar_fotos" {% if r[1] %}checked{% endif %}> Borrar Fotos</label>
+                    <label style="cursor:pointer"><input type="checkbox" name="puede_borrar_usuarios" {% if r[2] %}checked{% endif %}> Borrar Users</label>
+                    <label style="cursor:pointer"><input type="checkbox" name="puede_gestionar_roles" {% if r[3] %}checked{% endif %}> Crear Roles</label>
                 </div>
                 
                 <button type="submit" class="btn-save" style="background: #28a745;">Guardar Permisos</button>
             </div>
         </form>
         {% endfor %}
-    </div>
-    <hr style="border: 0; border-top: 1px solid #333; margin: 40px 0;">
 
-        <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px dashed #0095f6; margin-bottom: 40px;">
+        <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px dashed #0095f6; margin-top: 40px;">
             <h3 style="color: #0095f6; margin-top: 0;">➕ Crear Nuevo Rol</h3>
-            <form action="/admin/crear_nuevo_rol" method="POST" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <form action="{{ url_for('admin_routes.crear_nuevo_rol') }}" method="POST" style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <input type="text" name="nombre_rol" placeholder="Nombre (ej: Moderador)" required 
                        style="padding: 10px; border-radius: 5px; border: 1px solid #333; background: #000; color: white; flex-grow: 1;">
                 <button type="submit" class="btn-save" style="background: #0095f6;">Crear Rol</button>
             </form>
         </div>
+    </div>
 </body>
 </html>

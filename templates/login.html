@@ -1,18 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Login - TemuGram</title>
-    <link rel="stylesheet" href="/static/estilos.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
-<body>
-    <div class="card">
-        <h1>📸 TemuGram</h1>
-        <form method="POST">
-            <input type="text" name="username" placeholder="Usuario" required>
-            <input type="password" name="password" placeholder="Contraseña" required>
-            <button type="submit">Entrar</button>
+<body style="background: #121212; color: white; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+
+    <div class="card" style="background: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.7); width: 350px; text-align: center;">
+        <h1 style="margin-bottom: 20px; color: #0095f6;">📸 TemuGram</h1>
+        {% if error %}
+            <p style="color: #ff4d4d; font-size: 0.9em;">{{ error }}</p>
+        {% endif %}
+        <form method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+            <input type="text" name="username" placeholder="Usuario" required
+                   style="padding: 12px; border-radius: 6px; border: none; background: #2c2c2c; color: white;">
+            <input type="password" name="password" placeholder="Contraseña" required
+                   style="padding: 12px; border-radius: 6px; border: none; background: #2c2c2c; color: white;">
+            <button type="submit" style="padding: 12px; border-radius: 6px; border: none; background: #0095f6; color: white; font-weight: bold; cursor: pointer;">
+                Entrar
+            </button>
         </form>
-        <p>¿No tienes cuenta? <a href="/registro">Regístrate</a></p>
+        <p style="margin-top: 15px; font-size: 0.85em; color: #aaa;">
+            ¿No tienes cuenta? <a href="{{ url_for('auth_routes.registro') }}" style="color: #0095f6;">Regístrate</a>
+        </p>
     </div>
+
 </body>
 </html>
