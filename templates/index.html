@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>📸 TemuGram</title>
-    <link rel="stylesheet" href="/static/estilos.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
 <body>
     <nav class="navbar">
@@ -13,12 +13,12 @@
                 <span>Hola, @{{ session['username'] }}</span>
                 <a href="/publicar">Publicar</a>
                 <a href="/logout">Salir</a>
+                {% if session.get('rol') == 'Admin' %}
+                    <a href="/admin/panel" style="color: gold;">⚙️ Admin</a>
+                {% endif %}
             {% else %}
                 <a href="/login">Iniciar Sesión</a>
                 <a href="/registro">Crear Cuenta</a>
-            {% endif %}
-            {% if session.get('username') == 'Carth' %}
-                <a href="/admin/panel" style="color: gold;">⚙️ Admin</a>
             {% endif %}
         </div>
     </nav>
@@ -51,7 +51,7 @@
                         <strong>@{{ p[0] }}</strong>
                         <span class="badge rol-{{ p[4]|lower }}">{{ p[4] }}</span>
                     </div>
-                    {% if session.get('username') == 'Carth' %}
+                    {% if session.get('rol') == 'Admin' %}
                         <a href="/borrar_post/{{ p[3] }}" class="btn-borrar" onclick="return confirm('¿Borrar post?')">Eliminar</a>
                     {% endif %}
                 </div>
@@ -81,8 +81,7 @@
                         </button>
                     </div>
 
-
-        <div id="coments-{{ p[3] }}" class="comments-section">
+                    <div id="coments-{{ p[3] }}" class="comments-section" style="display:none;">
                         {% for c in comentarios %}
                             {% if c[0] == p[3] %}
                                 <p style="font-size: 0.9em; margin: 4px 0;">
@@ -99,12 +98,5 @@
                         </form>
                         {% endif %}
                     </div>
-
-    <script>
-        function toggleComentarios(id) {
-            var x = document.getElementById(id);
-            x.style.display = (x.style.display === "none") ? "block" : "none";
-        }
-    </script>
-</body>
-</html>
+                </div>
+            </div>
