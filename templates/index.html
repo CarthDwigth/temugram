@@ -82,7 +82,7 @@
                     </div>
 
 
-                    <div id="coments-{{ p[3] }}" class="comments-section">
+        <div id="coments-{{ p[3] }}" class="comments-section">
                         {% for c in comentarios %}
                             {% if c[0] == p[3] %}
                                 <p style="font-size: 0.9em; margin: 4px 0;">
@@ -90,12 +90,15 @@
                                 </p>
                             {% endif %}
                         {% endfor %}
+
+                        {% if session.get('username') %}
+                        <form action="/comentar/{{ p[3] }}" method="POST" style="margin-top: 10px; display: flex; gap: 5px;">
+                            <input type="text" name="comentario" placeholder="Escribe un comentario..." required 
+                                   style="flex-grow: 1; padding: 5px; border-radius: 5px; border: 1px solid #333; background: #1a1a1a; color: white;">
+                            <button type="submit" style="background: none; border: none; cursor: pointer;">✈️</button>
+                        </form>
+                        {% endif %}
                     </div>
-                </div>
-            </div>
-            {% endfor %}
-        </main>
-    </div>
 
     <script>
         function toggleComentarios(id) {
