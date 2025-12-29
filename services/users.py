@@ -1,6 +1,13 @@
 from db import get_db_connection
+from flask import session
+from services.users import actualizar_ultima_conexion
 from werkzeug.security import generate_password_hash, check_password_hash
 
+@app.before_request
+def actualizar_conexion_usuario():
+    if 'username' in session:
+        actualizar_ultima_conexion(session['username'])
+        
 def registrar_usuario(username, password, emoji='👤'):
     conn = get_db_connection()
     cur = conn.cursor()
@@ -57,8 +64,15 @@ def obtener_usuarios_sidebar():
     return result
 
 def actualizar_ultima_conexion(username):
-    username = str(session['username'])
+    """Actualiza la última conexión de un usuario dado."""
+    if not username:
+        return
+    conn = get_db_connection()
+    cur = conn.cursor()
     cur.execute(
-        "UPDATE usuarios SET ultima_conexion=CURRENT_TIMESTAMP WHERE username=%s",
+        "UPDATE usuarios SET ultima_conexion = CURRENT_TIMESTAMP WHERE username = %s",
         (username,)
     )
+    conn.commit()
+    cur.close()
+    conn.close()
