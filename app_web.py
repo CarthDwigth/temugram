@@ -4,10 +4,12 @@ import auth
 import os
 import psycopg2
 import requests
+from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.secret_key = 'clave_secreta_muy_segura'
+
 
 # --- 1. CONEXIÓN INTELIGENTE ---
 def get_db_connection():
@@ -21,13 +23,10 @@ def get_db_connection():
             host=result.hostname,
             port=result.port
         )
-    else: 
-        import sqlite3
-        return sqlite3.connect('temugram.db')
 
 # --- 2. SUBIDA DE FOTOS A LA NUBE ---
 def subir_foto_nube(archivo):
-    api_key = "6d207e02198a847aa98d0a2a901485a5" 
+    api_key = os.getenv("FREEIMAGE_API_KEY")
     url = "https://freeimage.host/api/1/upload"
     payload = {"key": api_key, "action": "upload", "format": "json"}
     archivo.seek(0)
@@ -113,6 +112,29 @@ def inicializar_base_de_datos():
         cur.close()
         conn.close()
 
+def obtener_usuarios_online():
+    """
+    Devuelve usuarios activos en los últimos 5 minutos
+    """
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            SELECT username, emoji_perfil
+            FROM usuarios
+            WHERE ultima_conexion >= NOW() - INTERVAL '5 minutes'
+            ORDER BY ultima_conexion DESC
+        """)
+        usuarios = cur.fetchall()
+        return usuarios
+    except Exception as e:
+        print("Error en obtener_usuarios_online:", e)
+        return []
+    finally:
+        cur.close()
+        conn.close()
+        
 def obtener_posts():
     conn = get_db_connection(); cur = conn.cursor()
     # Añadimos usuarios.emoji_perfil a la consulta (será el p[5])
@@ -212,10 +234,6 @@ def registro():
 
         conn = get_db_connection()
         cur = conn.cursor()
-        if user:
-            session['user_id'] = user[0]
-            session['username'] = user[1]
-            session['rol'] = user[2]
         try:
             # CAMBIAMOS 'emoji' por 'emoji_perfil' para que coincida con tu ALTER TABLE
             cur.execute("INSERT INTO usuarios (username, password, rol, emoji_perfil) VALUES (%s, %s, %s, %s)",
@@ -238,13 +256,17 @@ def login():
         conn = get_db_connection()
         cur = conn.cursor()
         # Buscamos al usuario en la base de datos de la nube
-        cur.execute("SELECT id, username FROM usuarios WHERE username = %s AND password = %s", (u, p))
+        cur.execute(
+            "SELECT id, username, rol FROM usuarios WHERE username = %s AND password = %s",
+            (u, p)
+        )
         user = cur.fetchone()
         cur.close(); conn.close()
 
         if user:
             session['user_id'] = user[0]
             session['username'] = user[1]
+            session['rol'] = user[2]
             return redirect(url_for('home'))
         else:
             return "❌ Error: Usuario o contraseña no encontrados en la base de datos."
@@ -446,6 +468,22 @@ def crear_nuevo_rol():
     return redirect(url_for('admin_panel'))
 
 inicializar_base_de_datos()
+
+@app.before_request
+def actualizar_ultima_conexion():
+    if 'username' in session:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute(
+                "UPDATE usuarios SET ultima_conexion = CURRENT_TIMESTAMP WHERE username = %s",
+                (session['username'],)
+            )
+            conn.commit()
+            cur.close()
+            conn.close()
+        except:
+            pass
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
