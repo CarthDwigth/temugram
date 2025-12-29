@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from services.users auth import registrar_usuario, login_usuario
+from services.users import registrar_usuario, login_usuario
 
 auth_routes = Blueprint('auth_routes', __name__)
 
