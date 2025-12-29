@@ -68,3 +68,4 @@ def actualizar_ultima_conexion(session):
     conn.commit()
     cur.close()
     conn.close()
+
