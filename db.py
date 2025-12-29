@@ -45,3 +45,15 @@ def init_db():
     conn.commit()
     cur.close()
     conn.close()
+
+def reset_db():
+    conn = get_db()
+    cur = conn.cursor()
+
+    cur.execute("DROP TABLE IF EXISTS comentarios CASCADE;")
+    cur.execute("DROP TABLE IF EXISTS posts CASCADE;")
+    cur.execute("DROP TABLE IF EXISTS usuarios CASCADE;")
+
+    conn.commit()
+    cur.close()
+    conn.close()
