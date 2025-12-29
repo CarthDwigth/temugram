@@ -21,7 +21,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = login_usuario(username, password)
+        user = login_usuario(username, password)  # << aquí llama al service
         if user:
             session['user_id'] = user['id']
             session['username'] = username

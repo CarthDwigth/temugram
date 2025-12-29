@@ -43,5 +43,16 @@
                     <input type="radio" name="emoji" value="{{ e }}" id="emoji-{{ loop.index0 }}" {% if loop.first %}checked{% endif %}>
                     <label for="emoji-{{ loop.index0 }}">{{ e }}</label>
                 {% endfor %}
+
+            <form method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+                <input type="text" name="username" placeholder="Usuario" required>
+                <input type="password" name="password" placeholder="Contraseña" required>
+
+                <!-- selector de emoji aquí -->
+
+                <button type="submit" style="background:#0095f6; color:white; padding:10px; border:none; border-radius:6px;">
+                    Registrarse
+                </button>
+            </form>
             </div>
 

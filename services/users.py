@@ -69,3 +69,13 @@ def actualizar_ultima_conexion(session):
     cur.close()
     conn.close()
 
+def obtener_usuarios_sidebar():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, username, rol, emoji, fecha_union FROM usuarios ORDER BY fecha_union DESC;")
+    usuarios = cur.fetchall()
+    cur.close()
+    conn.close()
+    return usuarios
+
+
