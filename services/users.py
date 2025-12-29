@@ -57,9 +57,8 @@ def obtener_usuarios_sidebar():
     return result
 
 def actualizar_ultima_conexion(username):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("UPDATE usuarios SET ultima_conexion=CURRENT_TIMESTAMP WHERE username=%s", (username,))
-    conn.commit()
-    cur.close()
-    conn.close()
+    username = str(session['username'])
+    cur.execute(
+        "UPDATE usuarios SET ultima_conexion=CURRENT_TIMESTAMP WHERE username=%s",
+        (username,)
+    )
