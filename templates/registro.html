@@ -1,16 +1,52 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Registro</title>
+    <title>Registro - TemuGram</title>
+    <link rel="stylesheet" href="/static/estilos.css">
+    <style>
+        /* Estilo rápido para el selector de emojis */
+        .emoji-selector {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+        .emoji-selector label {
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: 0.2s;
+        }
+        .emoji-selector input[type="radio"] { display: none; }
+        .emoji-selector input[type="radio"]:checked + span {
+            background: var(--accent);
+            border-radius: 50%;
+            padding: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Registro de Usuario</h1>
-    <form method="POST">
-        <input type="text" name="username" placeholder="Usuario" required><br>
-        <input type="password" name="password" placeholder="Contraseña" required><br>
-        <input type="text" name="emoji" placeholder="Emoji (opcional)"><br>
-        <button type="submit">Registrarse</button>
-    </form>
+    <div class="card">
+        <h1>TemuGram</h1>
+        <p>Regístrate para ver fotos de tus amigos.</p>
+        <form method="POST">
+            <input type="text" name="username" placeholder="Usuario" required>
+            <input type="password" name="password" placeholder="Contraseña" required>
+            
+            <p style="margin-top: 10px; font-size: 0.8em; color: var(--text-dim);">Elige tu emoji:</p>
+            <div style="display: flex; gap: 10px; margin: 10px 0;">
+                <label><input type="radio" name="emoji" value="👤" checked> 👤</label>
+                <label><input type="radio" name="emoji" value="🍀"> 🍀</label>
+                <label><input type="radio" name="emoji" value="🔥"> 🔥</label>
+                <label><input type="radio" name="emoji" value="🐱"> 🐱</label>
+            </div>
+            <button type="submit">Registrarte</button>
+        </form>
+        <hr>
+        <a href="/">Volver al inicio</a>
+    </div>
 </body>
 </html>

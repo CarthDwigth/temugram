@@ -6,119 +6,33 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo"><strong>📸 TemuGram</strong></div>
-        <div class="nav-links">
-            {% if session.get('username') %}
-                <span>Hola, @{{ session['username'] }}</span>
-                <a href="{{ url_for('post_routes.publicar') }}">Publicar</a>
-                <a href="{{ url_for('auth_routes.logout') }}">Salir</a>
-                {% if session.get('rol') == 'Admin' %}
-                    <a href="{{ url_for('admin_routes.panel') }}" style="color: gold; font-weight: bold;">⚙️ Admin</a>
-                {% endif %}
-            {% else %}
-                <a href="{{ url_for('auth_routes.login') }}">Iniciar Sesión</a>
-                <a href="{{ url_for('auth_routes.registro') }}">Crear Cuenta</a>
-            {% endif %}
-        </div>
-    </nav>
 
-    <div class="main-layout">
-        <aside class="sidebar">
-            <div class="sidebar-card" style="border-bottom: 2px solid #222; margin-bottom: 10px;">
-                <h4 class="sidebar-title" style="color: #2ecc71;">🟢 En línea ahora</h4>
-                <div class="online-list" style="margin-bottom: 15px;">
-                    {% if usuarios_online %}
-                        {% for u in usuarios_online %}
-                        <div class="user-item" style="padding: 5px 0;">
-                            <div class="avatar-circle">{{ u[1] or '👤' }}</div>
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <a href="{{ url_for('main_routes.perfil', username=u[0]) }}" style="font-size: 0.9em; font-weight: bold;">{{ u[0] }}</a>
-                                <span style="height: 6px; width: 6px; background: #2ecc71; border-radius: 50%;"></span>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <p style="font-size: 0.75em; color: #666;">Nadie conectado.</p>
-                    {% endif %}
-                </div>
-            </div>
+<nav class="navbar">
+    <strong>📸 TemuGram</strong>
 
-            <div class="sidebar-card">
-                <h4 class="sidebar-title">Comunidad</h4>
-                {% for user in usuarios %}
-                <div class="user-item">
-                    <div class="avatar-circle">{{ user[3] or '👤' }}</div>
-                    <div style="flex-grow: 1;">
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <a href="{{ url_for('main_routes.perfil', username=user[1]) }}">{{ user[1] }}</a>
-                            <span class="badge rol-{{ user[1]|lower }}">{{ user[2] }}</span>
-                        </div>
-                        <div style="font-size: 0.75em; color: #888;">Unido el {{ user[4] }}</div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </aside>
-
-        <main class="feed">
-            {% for p in posts %}
-            <div class="post">
-                <div class="post-header">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1.2em;">{{ p[5] or '👤' }}</span>
-                        <a href="{{ url_for('main_routes.perfil', username=p[0]) }}" style="text-decoration: none; color: inherit;">
-                            <strong>@{{ p[0] }}</strong>
-                        </a>
-                        <span class="badge rol-{{ p[4]|lower }}">{{ p[4] }}</span>
-                    </div>
-                    {% if session.get('rol') == 'Admin' %}
-                        <a href="{{ url_for('post_routes.borrar_post', post_id=p[3]) }}" class="btn-borrar" onclick="return confirm('¿Borrar?')">Eliminar</a>
-                    {% endif %}
-                </div>
-
-                <div class="post-content" style="width: 100%; overflow: hidden; background-color: #000;">
-                    <img src="{{ p[2] }}" style="width: 100%; max-height: 80vh; object-fit: contain;">
-                </div>
-
-                <div style="padding: 12px;">
-                    <p><strong>@{{ p[0] }}</strong> {{ p[1] }}</p>
-
-                    {% set n_coments = comentarios | selectattr('0', 'equalto', p[3]) | list | length %}
-                    <button onclick="toggleComentarios('coments-{{ p[3] }}')" class="comment-btn">
-                        Ver comentarios {% if n_coments > 0 %}(<strong>{{ n_coments }}</strong>){% endif %}
-                    </button>
-
-                    <div id="coments-{{ p[3] }}" class="comments-section" style="display:none; margin-top:10px;">
-                        {% for c in comentarios %}
-                            {% if c[0] == p[3] %}
-                                <p style="font-size: 0.9em; margin: 4px 0;">
-                                    <span>{{ c[3] or '👤' }}</span> <strong>@{{ c[1] }}</strong> {{ c[2] }}
-                                </p>
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if session.get('username') %}
-                        <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" style="display: flex; gap: 5px; margin-top:10px;">
-                            <input type="text" name="texto" placeholder="Escribe un comentario..." required
-                                   style="flex-grow: 1; padding: 8px; border-radius: 5px; background: #111; color: white; border: 1px solid #333;">
-                            <button type="submit" style="background: #0095f6; color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer;">
-                                Enviar
-                            </button>
-                        </form>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </main>
+    <div>
+        {% if session.get('username') %}
+            Hola, @{{ session['username'] }}
+            <a href="{{ url_for('post_routes.publicar') }}">Publicar</a>
+            <a href="{{ url_for('auth_routes.logout') }}">Salir</a>
+        {% else %}
+            <a href="{{ url_for('auth_routes.login') }}">Login</a>
+            <a href="{{ url_for('auth_routes.registro') }}">Registro</a>
+        {% endif %}
     </div>
+</nav>
 
-    <script>
-        function toggleComentarios(id) {
-            var x = document.getElementById(id);
-            x.style.display = (x.style.display === "none") ? "block" : "none";
-        }
-    </script>
-</body>
-</html>
+<main class="feed">
+
+{% if posts %}
+    {% for p in posts %}
+    <div class="post">
+
+        <div class="post-header">
+            <span>{{ p.emoji or '👤' }}</span>
+            <strong>@{{ p.username }}</strong>
+        </div>
+
+        <img src="{{ p.url_foto }}" class="post-img">
+
+        <p>{{ p.d
