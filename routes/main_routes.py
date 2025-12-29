@@ -1,14 +1,20 @@
 from flask import Blueprint, render_template, session
-from services.users import obtener_usuarios_online, obtener_usuarios_sidebar, actualizar_ultima_conexion
+from services.posts import obtener_posts
+from services.users import obtener_usuarios_online
 
 main_routes = Blueprint('main_routes', __name__)
 
 @main_routes.route('/')
 def home():
-    if 'username' in session:
-        actualizar_ultima_conexion(session['username'])
+    posts = obtener_posts()
     usuarios_online = obtener_usuarios_online()
-    usuarios_sidebar = obtener_usuarios_sidebar()
-    return render_template('index.html',
-                           usuarios_online=usuarios_online,
-                           usuarios_sidebar=usuarios_sidebar)
+    return render_template('index.html', posts=posts, usuarios_online=usuarios_online)
+
+@main_routes.route('/perfil/<username>')
+def perfil(username):
+    from services.users import obtener_datos_usuario, obtener_posts_usuario
+    user_data = obtener_datos_usuario(username)
+    if not user_data:
+        return "Usuario no encontrado", 404
+    posts = obtener_posts_usuario(user_data['id'])
+    return render_template('perfil.html', username=username, emoji=user_data['emoji'], rol=user_data['rol'], posts=posts)
