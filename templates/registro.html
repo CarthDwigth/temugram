@@ -2,51 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro - TemuGram</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
-    <style>
-        .emoji-panel {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .emoji-panel input[type="radio"] { display: none; }
-        .emoji-panel label {
-            font-size: 1.5em;
-            cursor: pointer;
-            text-align: center;
-            padding: 5px;
-            border-radius: 50%;
-            transition: 0.2s;
-        }
-        .emoji-panel input[type="radio"]:checked + label {
-            background: #0095f6;
-        }
-    </style>
+    <title>Registro</title>
 </head>
-<body style="background: #121212; color: white; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;">
-
-    <div class="card" style="background: #1e1e1e; padding: 30px; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.7); width: 400px; text-align: center;">
-        <h1 style="color: #0095f6; margin-bottom: 10px;">📸 TemuGram</h1>
-        <p style="margin-bottom: 20px; color: #aaa;">Regístrate para ver y compartir fotos</p>
-
-        <form method="POST" style="display: flex; flex-direction: column; gap: 15px;">
-            <input type="text" name="username" placeholder="Usuario" required
-                   style="padding: 10px; border-radius: 6px; background: #2c2c2c; color: white; border: none;">
-            <input type="password" name="password" placeholder="Contraseña" required
-                   style="padding: 10px; border-radius: 6px; background: #2c2c2c; color: white; border: none;">
-
-            <p style="text-align: left; font-size: 0.85em; color: #aaa; margin-bottom: 5px;">Elige tu emoji:</p>
-            <div class="emoji-panel">
-                {% for e in ['👤','🔥','🕶️','🐱','👾','👑','🍀','💎','🌟','🎯','🎵','🎮','🍔','🚀'] %}
-                    <input type="radio" name="emoji" value="{{ e }}" id="emoji-{{ loop.index0 }}" {% if loop.first %}checked{% endif %}>
-                    <label for="emoji-{{ loop.index0 }}">{{ e }}</label>
-                {% endfor %}
-
-                <button type="submit" style="background:#0095f6; color:white; padding:10px; border:none; border-radius:6px;">
-                    Registrarse
-                </button>
-            </form>
-            </div>
-
+<body>
+    <h1>Registro de Usuario</h1>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Usuario" required><br>
+        <input type="password" name="password" placeholder="Contraseña" required><br>
+        <input type="text" name="emoji" placeholder="Emoji (opcional)"><br>
+        <button type="submit">Registrarse</button>
+    </form>
+</body>
+</html>
