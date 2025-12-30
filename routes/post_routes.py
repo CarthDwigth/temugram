@@ -110,3 +110,32 @@ def reaccionar(post_id):
     
     # Al terminar, recargamos la página para que vea el cambio en el contador
     return redirect(url_for('main_routes.index'))
+
+@post_routes.route('/reaccionar_comentario/<int:comentario_id>', methods=['POST'])
+def reaccionar_comentario(comentario_id):
+    if 'user_id' not in session:
+        return redirect(url_for('auth_routes.login'))
+    
+    usuario_id = session['user_id']
+    db = get_db()
+    cur = db.cursor()
+
+    # 1. Verificamos si el usuario ya le dio like a ese comentario
+    cur.execute("SELECT id FROM likes_comentarios WHERE usuario_id = %s AND comentario_id = %s", 
+                (usuario_id, comentario_id))
+    like_existente = cur.fetchone()
+
+    if like_existente:
+        # Si ya existe, lo quitamos (Dislike)
+        cur.execute("DELETE FROM likes_comentarios WHERE usuario_id = %s AND comentario_id = %s", 
+                    (usuario_id, comentario_id))
+    else:
+        # Si no existe, lo agregamos (Like)
+        cur.execute("INSERT INTO likes_comentarios (usuario_id, comentario_id) VALUES (%s, %s)", 
+                    (usuario_id, comentario_id))
+
+    db.commit()
+    cur.close()
+    
+    # Regresamos a la página donde estábamos
+    return redirect(url_for('main_routes.index'))

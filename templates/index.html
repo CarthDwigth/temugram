@@ -57,9 +57,10 @@
                                     <p class="comentario-texto">
                                         <strong>@{{ c.username }}:</strong> {{ c.texto }}
                                     </p>
-                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                                        <button class="btn-like-mini" style="font-size: 0.8rem;">🤍</button>
-                                        <span style="font-size: 0.65rem; color: #888;">0</span> </div>
+                                    <div class="comentario-stats">
+                                        <button class="btn-like-mini">🤍</button>
+                                        <span class="comentario-likes-count">{{ c.likes_count or 0 }}</span>
+                                    </div>
                                 </div>
                             {% endfor %}
                         {% else %}

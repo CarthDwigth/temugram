@@ -183,3 +183,37 @@ form { max-width: 100%; margin: 0; }
 .btn-comentar-estetico:active {
     transform: translateY(0);
 }
+
+/* Contenedor de la reacción del comentario */
+.comentario-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 30px; /* Evita que se mueva el texto del comentario */
+}
+
+/* El número debajo del corazón */
+.comentario-likes-count {
+    font-size: 0.7rem;
+    color: #8e8e8e;
+    font-weight: 600;
+    margin-top: -2px; /* Lo pega un poquito más al corazón */
+}
+
+/* El botón de publicar (Comentar) en rojo */
+.btn-comentar-estetico {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.btn-comentar-estetico:hover {
+    background-color: #e63939;
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
+}
