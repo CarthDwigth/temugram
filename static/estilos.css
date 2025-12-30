@@ -217,3 +217,45 @@ form { max-width: 100%; margin: 0; }
     background-color: #e63939;
     box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
 }
+
+/* Contenedor principal de la tarjeta */
+.comunidad-card {
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+/* Título centrado */
+.comunidad-card h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    color: #fff;
+    border-bottom: 1px solid #333; /* Una línea sutil para separar el título */
+    padding-bottom: 10px;
+}
+
+/* Lista de usuarios con margen a la izquierda */
+.usuarios-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-left: 10px; /* Aquí controlas qué tan pegados están a la izquierda */
+}
+
+/* Alineación de cada línea de usuario */
+.usuario-linea {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.info-mini a {
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.info-mini a:hover {
+    color: #ff4d4d; /* Combinando con tu nuevo estilo rojo */
+}

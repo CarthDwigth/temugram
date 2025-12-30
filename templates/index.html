@@ -87,22 +87,21 @@
     </main>
 
     <aside class="sidebar-column">
-        <div class="comunidad-card">
-            <h3 style="margin-top: 0;">👥 Comunidad</h3>
-            <div class="usuarios-lista">
-                {% for u in usuarios %}
-                    <div class="usuario-linea" style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                        <span class="emoji-mini" style="font-size: 1.2em;">{{ u[3] or '👤' }}</span>
-                        <div class="info-mini">
-                            <a href="{{ url_for('main_routes.perfil', username=u[1]) }}" style="color: white; text-decoration: none; font-weight: bold; font-size: 0.9em;">@{{ u[1] }}</a>
-                            <br>
-                            <small style="color: #888; font-size: 0.8em;">{{ u[2] }}</small>
-                        </div>
+    <div class="comunidad-card">
+        <h3>👥 Comunidad</h3> <div class="usuarios-lista">
+            {% for u in usuarios %}
+                <div class="usuario-linea">
+                    <span class="emoji-mini" style="font-size: 1.4rem;">{{ u[3] or '👤' }}</span>
+                    <div class="info-mini">
+                        <a href="{{ url_for('main_routes.perfil', username=u[1]) }}">@{{ u[1] }}</a>
+                        <br>
+                        <small style="color: #888;">{{ u[2] }}</small>
                     </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
         </div>
-    </aside>
+    </div>
+</aside>
 
 </div> </body>
 </html>

@@ -22,7 +22,8 @@ def index():
 
     # 2. Obtener Comentarios
     cur.execute("""
-        SELECT post_id, username, texto, emoji
+        SELECT comentarios.id, username, texto, emoji, post_id,
+        (SELECT COUNT(*) FROM likes_comentarios WHERE comentario_id = comentarios.id) AS likes_count
         FROM comentarios
         JOIN usuarios ON comentarios.user_id = usuarios.id
     """)
@@ -30,13 +31,17 @@ def index():
 
     comentarios_por_post = {}
     for c in comentarios_raw:
-        pid = c[0]
+        pid = c[4] # El post_id ahora es el índice 4
         if pid not in comentarios_por_post:
             comentarios_por_post[pid] = []
+        
+        # AQUÍ ESTÁ LA SOLUCIÓN: Añadimos 'id' y 'likes_count'
         comentarios_por_post[pid].append({
+            'id': c[0],           # <--- El c.id que buscaba el HTML
             'username': c[1],
             'texto': c[2],
-            'emoji': c[3]
+            'emoji': c[3],
+            'likes_count': c[5]   # <--- El numerito de likes
         })
 
     # 3. Obtener Usuarios para la barra lateral
