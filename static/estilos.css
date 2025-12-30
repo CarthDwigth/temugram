@@ -280,4 +280,32 @@ input[type="text"] {
     background-color: #ff4d4d !important;
 }
 
+/* Contenedor de comentarios con límite de altura */
+.lista-comentarios {
+    max-height: 160px; /* Altura ideal para 3-4 comentarios */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    scrollbar-width: thin; /* Para Firefox */
+    scrollbar-color: #444 #1e1e1e; /* Para Firefox */
+}
+
+/* Personalización del scroll para Chrome, Edge y Safari */
+.lista-comentarios::-webkit-scrollbar {
+    width: 5px; /* Barra muy delgada */
+}
+
+.lista-comentarios::-webkit-scrollbar-track {
+    background: transparent; /* Fondo transparente para que no se vea el carril */
+}
+
+.lista-comentarios::-webkit-scrollbar-thumb {
+    background: #444; /* Color de la barrita */
+    border-radius: 10px;
+}
+
+.lista-comentarios::-webkit-scrollbar-thumb:hover {
+    background: #ff4d4d; /* Se pone roja cuando pasas el mouse, combinando con tu estilo */
+}
+
 .info-mini a:hover { color: #ff4d4d; }
