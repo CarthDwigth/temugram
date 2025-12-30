@@ -77,3 +77,24 @@ def comentar(post_id):
     
     # 3. Volvemos al inicio para ver el comentario publicado
     return redirect(url_for('main_routes.index'))
+
+@post_routes.route('/reaccionar/<int:post_id>', methods=['POST'])
+def reaccionar(post_id):
+    if 'user_id' not in session:
+        return redirect(url_for('auth_routes.login'))
+
+    uid = session['user_id']
+    db = obtener_db() # Tu función para conectar a la DB
+    
+    # 1. Miramos si ya existe el like
+    reaccion = db.execute('SELECT id FROM reacciones WHERE post_id=? AND usuario_id=?', (post_id, uid)).fetchone()
+
+    if reaccion:
+        # 2. Si existe, lo quitamos (Dislike)
+        db.execute('DELETE FROM reacciones WHERE post_id=? AND usuario_id=?', (post_id, uid))
+    else:
+        # 3. Si no existe, lo ponemos (Like)
+        db.execute('INSERT INTO reacciones (post_id, usuario_id) VALUES (?, ?)', (post_id, uid))
+    
+    db.commit()
+    return redirect(url_for('main_routes.index'))
