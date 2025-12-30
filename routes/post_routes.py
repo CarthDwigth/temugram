@@ -54,23 +54,26 @@ def comentar(post_id):
     if 'username' not in session:
         return redirect(url_for('auth_routes.login'))
     
-    # Debe decir "texto" para coincidir con el HTML de arriba
-    comentario_texto = request.form.get("texto") 
+    # IMPORTANTE: name="texto" debe ser igual en tu HTML
+    texto = request.form.get("texto")
     
-    if comentario_texto:
+    if texto:
         conn = get_db()
         cur = conn.cursor()
         
+        # 1. Buscamos el ID del que está comentando
         cur.execute("SELECT id FROM usuarios WHERE username = %s", (session['username'],))
         user_id = cur.fetchone()[0]
         
-        # Guardamos en la base de datos
-        cur.execute("INSERT INTO comentarios (post_id, user_id, texto) VALUES (%s, %s, %s)",
-                    (post_id, user_id, comentario_texto))
+        # 2. Insertamos el comentario en la tabla
+        cur.execute("""
+            INSERT INTO comentarios (post_id, user_id, texto) 
+            VALUES (%s, %s, %s)
+        """, (post_id, user_id, texto))
         
         conn.commit()
         cur.close()
         conn.close()
     
-    # ESTO EVITA QUE TE QUEDES EN LA PÁGINA /comentar/1
+    # 3. Volvemos al inicio para ver el comentario publicado
     return redirect(url_for('main_routes.index'))
