@@ -80,3 +80,42 @@ def perfil(username):
     conn.close()
 
     return render_template("perfil.html", user=user, posts=posts)
+
+@main_routes.route("/perfil/<username>")
+def perfil(username):
+    conn = get_db()
+    cur = conn.cursor()
+
+    # 1. Obtener datos del usuario del perfil
+    cur.execute("SELECT * FROM usuarios WHERE username=%s", (username,))
+    user = cur.fetchone()
+
+    if not user:
+        cur.close()
+        conn.close()
+        return "Usuario no encontrado", 404
+
+    # 2. Obtener los posts de ese usuario
+    cur.execute("""
+        SELECT descripcion, url_foto, id
+        FROM posts
+        WHERE user_id = %s
+        ORDER BY id DESC
+    """, (user[0],))
+    posts = cur.fetchall()
+
+    # 3. ¡ESTO ES LO QUE FALTA! Obtener usuarios para el sidebar de Comunidad
+    # Si el HTML del perfil tiene la sección de comunidad, necesita esta variable
+    cur.execute("SELECT id, username, rol, emoji FROM usuarios LIMIT 10")
+    lista_comunidad = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    # 4. Pasar todo al template (fíjate en 'usuarios=lista_comunidad')
+    return render_template(
+        "perfil.html", 
+        user=user, 
+        posts=posts, 
+        usuarios=lista_comunidad
+    )
