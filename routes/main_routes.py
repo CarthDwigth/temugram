@@ -8,14 +8,17 @@ def index():
     conn = get_db()
     cur = conn.cursor()
 
-    # 1. Obtener Posts
+    # 1. Obtener Posts (CON CONTEO DE LIKES)
+    # Añadimos la subconsulta al final para obtener el total de reacciones
     cur.execute("""
-        SELECT username, descripcion, url_foto, posts.id, rol, emoji
+        SELECT username, descripcion, url_foto, posts.id, rol, emoji,
+        (SELECT COUNT(*) FROM reacciones WHERE post_id = posts.id) AS total_likes
         FROM posts
         JOIN usuarios ON posts.user_id = usuarios.id
         ORDER BY posts.id DESC
     """)
-    posts = cur.fetchall()
+    posts = cur.fetchall() 
+    # Ahora: p[0]=user, p[1]=desc, p[2]=url, p[3]=id, p[4]=rol, p[5]=emoji, p[6]=likes
 
     # 2. Obtener Comentarios
     cur.execute("""
@@ -25,11 +28,9 @@ def index():
     """)
     comentarios_raw = cur.fetchall()
 
-    # --- AQUÍ ESTÁ EL ENCAJE ---
-    # Creamos un diccionario: { post_id: [lista_de_comentarios] }
     comentarios_por_post = {}
     for c in comentarios_raw:
-        pid = c[0] # post_id
+        pid = c[0]
         if pid not in comentarios_por_post:
             comentarios_por_post[pid] = []
         comentarios_por_post[pid].append({
@@ -37,8 +38,8 @@ def index():
             'texto': c[2],
             'emoji': c[3]
         })
-    # ---------------------------
 
+    # 3. Obtener Usuarios para la barra lateral
     cur.execute("SELECT id, username, rol, emoji, fecha_registro FROM usuarios")
     usuarios = cur.fetchall()
 
@@ -48,7 +49,7 @@ def index():
     return render_template(
         "index.html",
         posts=posts,
-        comentarios_dic=comentarios_por_post, # Enviamos el diccionario organizado
+        comentarios_dic=comentarios_por_post,
         usuarios=usuarios,
         usuarios_online=[]
     )

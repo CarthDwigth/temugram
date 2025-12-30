@@ -34,14 +34,16 @@
 
                 <img src="{{ p[2] }}" class="post-img">
 
-                <div class="post-acciones" style="padding: 10px 16px; display: flex; align-items: center; gap: 15px;">
-                    <form action="{{ url_for('post_routes.reaccionar', post_id=p[3]) }}" method="POST">
-                        <button type="submit" style="background: none; border: none; cursor: pointer; font-size: 1.4rem;">
-                            {# Aquí podrías poner una lógica para ver si el usuario ya dio like y poner ❤️ o 🤍 #}
+                <div class="post-acciones" style="padding: 10px 16px; display: flex; align-items: center; gap: 10px;">
+                    <form action="{{ url_for('post_routes.reaccionar', post_id=p['id']) }}" method="POST" style="margin: 0;">
+                        <button type="submit" class="btn-like-mini" style="font-size: 1.5rem; color: #fff; background: none; border: none; cursor: pointer;">
+                            {# Podrías poner una lógica aquí para cambiar el corazón a rojo si el usuario ya dio like #}
                             ❤️
                         </button>
                     </form>
-                    <span style="font-weight: bold; font-size: 0.9rem;">{{ p.total_likes or 0 }} Me gusta</span>
+                    <span style="font-weight: 600; font-size: 0.9rem; color: #fff;">
+                        {{ p['total_likes'] }} me gusta
+                    </span>
                 </div>
 
                 <div class="post-info" style="margin-top: 10px;">
@@ -55,6 +57,12 @@
                         {% if lista %}
                             {% for c in lista %}
                                 <p style="margin: 5px 0;"><strong>@{{ c.username }}:</strong> {{ c.texto }}</p>
+                                <div class="comentario-item" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <p class="comentario-texto">
+                                        <strong>@{{ c['username'] }}:</strong> {{ c['contenido'] }}
+                                    </p>
+                                    <button class="btn-like-mini" style="font-size: 0.7rem; color: #8e8e8e;">🤍</button>
+                                </div>
                             {% endfor %}
                         {% else %}
                             <p style="color: grey;">Sin comentarios.</p>
