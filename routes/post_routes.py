@@ -80,40 +80,42 @@ def comentar(post_id):
 
 @post_routes.route("/reaccionar/<int:post_id>", methods=["POST"])
 def reaccionar(post_id):
+    # 1. Verificamos que el ID esté en la sesión con el nombre correcto
     if 'user_id' not in session:
         return {"error": "no_auth"}, 401
     
-    user_id = session['usuario_id']
+    # Aquí usamos 'user_id' porque así se llama en tu sesión de Flask
+    mi_id = session['user_id'] 
+    
     conn = get_db()
     cur = conn.cursor()
 
-    # 1. Verificar si ya existe el like
-    cur.execute("SELECT id FROM reacciones WHERE user_id = %s AND post_id = %s", (user_id, post_id))
+    # 2. En el SQL usamos 'usuario_id' porque así se llama la COLUMNA en la TABLA
+    cur.execute("SELECT id FROM reacciones WHERE usuario_id = %s AND post_id = %s", (mi_id, post_id))
     existe = cur.fetchone()
 
     if existe:
-        # Si existe, lo quitamos (Dislike)
         cur.execute("DELETE FROM reacciones WHERE id = %s", (existe[0],))
         accion = "removed"
     else:
-        # Si no existe, lo ponemos
-        cur.execute("INSERT INTO reacciones (user_id, post_id) VALUES (%s, %s)", (user_id, post_id))
+        cur.execute("INSERT INTO reacciones (usuario_id, post_id) VALUES (%s, %s)", (mi_id, post_id))
         accion = "added"
 
     conn.commit()
     
-    # 2. Obtener el conteo actualizado
     cur.execute("SELECT COUNT(*) FROM reacciones WHERE post_id = %s", (post_id,))
     nuevo_total = cur.fetchone()[0]
     
     cur.close()
     conn.close()
 
-    # 3. RESPUESTA INTELIGENTE: Si es AJAX, mandamos JSON. Si no, redirigimos.
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return {"status": "success", "accion": accion, "total": nuevo_total}
     
     return redirect(request.referrer or url_for('main_routes.index'))
+
+
+# --- BUSCA LA FUNCIÓN reaccionar_comentario Y REEMPLÁZALA CON ESTA ---
 
 @post_routes.route('/reaccionar_comentario/<int:comentario_id>', methods=['POST'])
 def reaccionar_comentario(comentario_id):
@@ -124,22 +126,18 @@ def reaccionar_comentario(comentario_id):
     db = get_db()
     cur = db.cursor()
 
-    # 1. Verificamos si el usuario ya le dio like a ese comentario
     cur.execute("SELECT id FROM likes_comentarios WHERE usuario_id = %s AND comentario_id = %s", 
                 (usuario_id, comentario_id))
     like_existente = cur.fetchone()
 
     if like_existente:
-        # Si ya existe, lo quitamos (Dislike)
-        cur.execute("DELETE FROM likes_comentarios WHERE usuario_id = %s AND comentario_id = %s", 
-                    (usuario_id, comentario_id))
+        cur.execute("DELETE FROM likes_comentarios WHERE id = %s", (like_existente[0],))
     else:
-        # Si no existe, lo agregamos (Like)
         cur.execute("INSERT INTO likes_comentarios (usuario_id, comentario_id) VALUES (%s, %s)", 
                     (usuario_id, comentario_id))
 
     db.commit()
     cur.close()
     
-    # Regresamos a la página donde estábamos
-    return redirect(url_for('main_routes.index'))
+    # CAMBIO AQUÍ: request.referrer para que no te mande al inicio del index
+    return redirect(request.referrer or url_for('main_routes.index'))
