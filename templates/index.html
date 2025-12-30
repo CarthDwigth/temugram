@@ -24,62 +24,56 @@
 <div class="main-layout">
     
     <main class="feed-column">
-        {% if posts %}
-            {% for p in posts %}
-  <div class="post">
-    <div class="post-header">
-        <span>{{ p[5] or '👤' }}</span>
-        <strong>@{{ p[0] }}</strong>
-    </div>
-
-    <img src="{{ p[2] }}" class="post-img">
-
-    <div class="post-content-area">
-        <div class="post-acciones" style="display: flex; align-items: center; gap: 5px;">
-            <form action="{{ url_for('post_routes.reaccionar', post_id=p[3]) }}" method="POST" style="margin: 0;">
-                <button type="submit" class="btn-like-mini" style="background: none; border: none; cursor: pointer; padding: 0;">
-                    ❤️
-                </button>
-            </form>
-            <span style="font-weight: 600; font-size: 0.95rem; color: #fff;">
-                {{ p[6] or 0 }}
-            </span>
-        </div>
-
-        <div class="post-info">
-            <strong>@{{ p[0] }}</strong> 
-            <span>{{ p[1] }}</span> 
-        </div>
-
-        <div class="comentarios-seccion" style="border-top: 1px solid #333; padding-top: 10px;">
-            <div class="lista-comentarios">
-                {% set lista = comentarios_dic.get(p[3]) %}
-                {% if lista %}
-                    {% for c in lista %}
-                        <div class="comentario-item">
-                            <p class="comentario-texto">
-                                <strong>@{{ c.username }}:</strong> {{ c.texto }}
-                            </p>
-                            <button class="btn-like-mini">🤍</button>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p style="color: grey; font-size: 0.8rem;">Sin comentarios.</p>
-                {% endif %}
-            </div>
+    {% if posts %}
+        {% for p in posts %}
+        <div class="post">
             
-            <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" style="display: flex; gap: 5px; margin-top: 10px;">
-                <input type="text" name="texto" placeholder="Añadir comentario..." required 
-                    style="flex-grow: 1; background: #2c2c2c; border: none; color: white; border-radius: 4px; padding: 5px;">
-                <button type="submit" style="background: none; border: none; color: #0095f6; font-weight: bold; cursor: pointer;">Publicar</button>
-            </form>
-        </div>
-    </div> 
-            <hr style="border: 0.5px solid #333; margin: 20px 0;">
-            {% endfor %}
-        {% else %}
-            <p style="text-align: center;">Aún no hay publicaciones. ¡Sé el primero!</p>
-        {% endif %}
+            <div class="post-header">
+                <span>{{ p[5] or '👤' }}</span>
+                <strong>@{{ p[0] }}</strong>
+            </div>
+
+            <img src="{{ p[2] }}" class="post-img">
+
+            <div class="post-content-area">
+                
+                <div class="post-acciones">
+                    <form action="{{ url_for('post_routes.reaccionar', post_id=p[3]) }}" method="POST">
+                        <button type="submit" class="btn-like-mini">❤️</button>
+                    </form>
+                    <span>{{ p[6] or 0 }}</span>
+                </div>
+
+                <div class="post-info">
+                    <strong>@{{ p[0] }}</strong> <span>{{ p[1] }}</span>
+                </div>
+
+                <div class="comentarios-seccion">
+                    <div class="lista-comentarios">
+                        {% set lista = comentarios_dic.get(p[3]) %}
+                        {% if lista %}
+                            {% for c in lista %}
+                                <div class="comentario-item">
+                                    <p class="comentario-texto"><strong>@{{ c.username }}:</strong> {{ c.texto }}</p>
+                                    <button class="btn-like-mini">🤍</button>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p style="color: grey; font-size: 0.8rem;">Sin comentarios.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" class="form-comentario">
+                        <input type="text" name="texto" placeholder="Añadir comentario..." required>
+                        <button type="submit">Publicar</button>
+                    </form>
+                </div>
+
+            </div> </div> {% endfor %}
+    {% else %}
+        <p style="text-align: center;">Aún no hay publicaciones.</p>
+    {% endif %}
+</main>
     </main>
 
     <aside class="sidebar-column">
