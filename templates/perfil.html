@@ -52,32 +52,23 @@
             {% endif %}
         </div>
 
-        <aside class="sidebar-column">
-            <div class="comunidad-card">
-                <h3>👥 Comunidad</h3>
-                <div class="usuarios-lista">
-                    {% for u in usuarios %}
-                    <a href="{{ url_for('main_routes.perfil', username=u[1]) }}" class="usuario-item">
-                        <span class="usuario-emoji">{{ u[3] or '👤' }}</span>
-                        <div class="usuario-info">
-                            <span class="usuario-nombre">@{{ u[1] }}</span>
-                            <small class="usuario-fecha">
-                                Miembro desde: 
-                                {# CAMBIO AQUÍ: Usamos 'u' en lugar de 'user' #}
-                                {% if u[4] is string %}
-                                    {{ u[4] }}
-                                {% elif u[4] %}
-                                    {{ u[4].strftime('%d/%m/%Y') }}
-                                {% else %}
-                                    Diciembre 2025
-                                {% endif %}
-                            </small>
-                        </div>
-                    </a>
-                    {% endfor %}
+    <aside class="sidebar-column">
+    <div class="comunidad-card">
+        <h3>👥 Comunidad</h3> 
+        <div class="usuarios-lista">
+            {% for u in usuarios %}
+            <a href="{{ url_for('main_routes.perfil', username=u[1]) }}" class="usuario-item">
+                <span class="usuario-emoji">{{ u[3] or '👤' }}</span>
+                
+                <div class="usuario-info">
+                    <span class="usuario-nombre">@{{ u[1] }}</span>
+                    <small class="usuario-fecha">Miembro desde: {{ u[4].strftime('%d/%m/%Y') if u[4] else 'Reciente' }}</small>
                 </div>
-            </div>
-        </aside>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</aside>
     </div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session, redirect, url_for, request
 from db import get_db
 
 main_routes = Blueprint("main_routes", __name__)
@@ -100,6 +100,7 @@ def perfil(username):
 
 @main_routes.route("/cambiar_emoji", methods=["POST"])
 def cambiar_emoji():
+    # ... tu código ...
     if 'user_id' not in session:
         return redirect(url_for('main_routes.index'))
     
