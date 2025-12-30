@@ -116,3 +116,45 @@ input[type="text"] {
 }
 
 .btn-like-mini:hover { transform: scale(1.2); }
+
+/* Eliminamos el espacio entre piezas del post */
+.post-header, .post-acciones, .post-info, .comentarios-seccion {
+    padding: 8px 16px !important; 
+    margin: 0 !important;
+}
+
+/* La imagen debe ser el bloque central sin márgenes */
+.post-img {
+    width: 100%;
+    display: block;
+    border-top: 1px solid #262626;
+    border-bottom: 1px solid #262626;
+}
+
+/* Los likes van justo debajo de la foto */
+.post-acciones {
+    padding-top: 12px !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* La descripción pegada a los likes */
+.post-info {
+    padding-top: 0 !important; 
+    margin-bottom: 5px !important;
+}
+
+/* Arreglo para comentarios sin scroll horizontal */
+.comentario-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+}
+
+.comentario-texto {
+    flex: 1; /* El texto ocupa el espacio y el corazón se queda al final */
+    word-break: break-word; /* Evita que el texto largo empuje el borde */
+}
