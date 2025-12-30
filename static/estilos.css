@@ -39,3 +39,65 @@
         position: static;
     }
 }
+
+/* Contenedor que abraza a ambos */
+.main-container {
+    display: flex;
+    justify-content: center; /* Centra el conjunto en la pantalla */
+    gap: 30px;              /* Espacio entre feed y comunidad */
+    max-width: 1000px;
+    margin: 20px auto;      /* Centra el contenedor */
+    padding: 0 15px;
+}
+
+/* Columna del Feed */
+.feed-column {
+    flex: 0 1 600px;        /* No crece más de 600px */
+    width: 100%;
+}
+
+/* Columna de Comunidad */
+.sidebar-column {
+    flex: 0 0 280px;        /* Ancho fijo de 280px */
+    position: sticky;       /* Se queda quieta al bajar */
+    top: 80px;              /* Distancia desde el techo al bajar */
+    height: fit-content;
+}
+
+/* Estilo de la tarjeta de comunidad */
+.comunidad-card {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.usuario-linea {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.info-mini a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    display: block;
+}
+
+.info-mini small {
+    color: #888;
+}
+
+/* RESPONSIVE: Si el celular es pequeño, la comunidad se oculta o se va abajo */
+@media (max-width: 850px) {
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .sidebar-column {
+        display: none; /* Opcional: oculta comunidad en celulares para priorizar fotos */
+        width: 100%;
+    }
+}
