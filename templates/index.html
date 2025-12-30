@@ -22,6 +22,7 @@
     </div>
 </nav>
 
+<div class="main-layout">
 <main class="feed">
     {% if posts %}
         {% for p in posts %}
@@ -64,14 +65,49 @@
         <p style="text-align: center;">Aún no hay publicaciones. ¡Sé el primero!</p>
     {% endif %}
 </main>
-    <div class="main-container">
-    
-        <section class="feed-column">
-            {% for p in posts %}
-                <div class="post">
+
+<div class="main-container">
+    <section class="feed-column">
+        {% if posts %}
+        {% for p in posts %}
+            <div class="post">
+                <div class="post-header">
+                    <span>{{ p[5] or '👤' }}</span>
+                    <strong>@{{ p[0] }}</strong>
+                </div>
+
+                <img src="{{ p[2] }}" class="post-img">
+
+                <div class="post-info" style="margin-top: 10px;">
+                    <strong>@{{ p[0] }}</strong> 
+                    <span>{{ p[1] }}</span> 
+                </div>
+
+                <div class="comentarios-seccion" style="padding: 10px; font-size: 0.9em; border-top: 1px solid #333; margin-top: 10px;">
+                    <div class="lista-comentarios">
+                        {% set lista = comentarios_dic.get(p[3]) %}
+                            {% if lista %}
+                                {% for c in lista %}
+                                    <p><strong>@{{ c.username }}:</strong> {{ c.texto }}</p>
+                                {% endfor %}
+                            {% else %}
+                                <p style="color: grey;">Sin comentarios.</p>
+                        {% endif %}
                     </div>
-            {% endfor %}
-        </section>
+
+                    <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" style="display: flex; gap: 5px; margin-top: 10px;">
+                        <input type="text" name="texto" placeholder="Añadir comentario..." required 
+                        style="flex-grow: 1; background: #2c2c2c; border: none; color: white; border-radius: 4px; padding: 5px;">
+                        <button type="submit" style="background: none; border: none; color: #0095f6; font-weight: bold; cursor: pointer;">Publicar</button>
+                        </form>
+                    </div>
+                </div>
+                <hr style="border: 0.5px solid #333; margin: 20px 0;">
+                    {% endfor %}
+                        {% else %}
+                            <p style="text-align: center;">Aún no hay publicaciones. ¡Sé el primero!</p>
+                        {% endif %}
+    </section>
 
         <aside class="sidebar-column">
             <div class="comunidad-card">
@@ -89,6 +125,8 @@
                 </div>
             </div>
         </aside>
-    </div>
+
+</div>
+</div> 
 </body>
 </html>

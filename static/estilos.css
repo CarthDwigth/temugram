@@ -101,3 +101,36 @@
         width: 100%;
     }
 }
+
+/* Esto crea las dos columnas */
+.main-layout {
+    display: flex;
+    justify-content: center; /* Centra todo el contenido */
+    align-items: flex-start; /* Alinea al techo */
+    gap: 30px;              /* Espacio entre el post y la comunidad */
+    padding: 20px;
+    max-width: 1100px;
+    margin: 0 auto;         /* Centra el bloque en la pantalla */
+}
+
+/* Ajustamos el ancho del feed para que no ocupe todo */
+.feed {
+    flex: 0 1 600px; /* El post no medirá más de 600px */
+    width: 100%;
+}
+
+/* Ajustamos la comunidad */
+.comunidad-sidebar {
+    flex: 0 0 300px; /* Ancho fijo para la comunidad */
+    position: sticky;
+    top: 20px;      /* Se queda pegada al bajar el scroll */
+}
+
+/* Mejora el diseño de la tarjeta de comunidad para que combine con el post */
+.comunidad-card {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+}
