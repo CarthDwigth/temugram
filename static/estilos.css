@@ -1,136 +1,94 @@
-/* static/estilos.css */
-
-.post-img {
-    width: 100%;
-    height: 400px; /* Altura fija para uniformidad */
-    object-fit: cover; /* Clave: evita que la foto se vea estirada o aplastada */
-    border-radius: 8px;
-    display: block;
+/* Configuración General y Fondo */
+body {
+    background-color: #121212; /* Gris casi negro */
+    color: #e1e1e1; /* Texto blanco suave */
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.post {
-    background: #1e1e1e;
-    border: 1px solid #333;
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 30px;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-    color: white; /* Para que el texto se vea bien sobre el fondo oscuro */
-}
-
-/* Un pequeño extra para que el nombre de usuario resalte */
-.post-header {
-    margin-bottom: 10px;
-    font-size: 1.1em;
-}
-
-/* Contenedor del area de comunidad */
-
-@media (max-width: 800px) {
-    .contenedor-principal {
-        flex-direction: column;
-        align-items: center;
-    }
-    .comunidad {
-        width: 100%;
-        max-width: 500px;
-        position: static;
-    }
-}
-
-/* Contenedor que abraza a ambos */
-.main-container {
+/* Barra de Navegación (Navbar) */
+.navbar {
+    background-color: #000000; /* Negro total */
+    padding: 15px 30px;
     display: flex;
-    justify-content: center; /* Centra el conjunto en la pantalla */
-    gap: 30px;              /* Espacio entre feed y comunidad */
-    max-width: 1000px;
-    margin: 20px auto;      /* Centra el contenedor */
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar strong {
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+/* Botones del Navbar con colores pijos */
+.nav-links a {
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 6px;
+    transition: 0.3s;
+    margin-left: 10px;
+}
+
+.link-publicar {
+    background-color: #28a745; /* Verde éxito */
+    color: white !important;
+}
+
+.link-publicar:hover { background-color: #218838; }
+
+.link-login {
+    background-color: #0095f6; /* Azul Instagram */
+    color: white !important;
+}
+
+.link-registro {
+    border: 1px solid #0095f6;
+    color: #0095f6 !important;
+}
+
+.link-salir {
+    color: #ff4d4d !important;
+}
+
+/* Contenedor Maestro */
+.main-layout {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    max-width: 1100px;
+    margin: 20px auto;
     padding: 0 15px;
 }
 
-/* Columna del Feed */
-.feed-column {
-    flex: 0 1 600px;        /* No crece más de 600px */
-    width: 100%;
-}
-
-/* Columna de Comunidad */
-.sidebar-column {
-    flex: 0 0 280px;        /* Ancho fijo de 280px */
-    position: sticky;       /* Se queda quieta al bajar */
-    top: 80px;              /* Distancia desde el techo al bajar */
-    height: fit-content;
-}
-
-/* Estilo de la tarjeta de comunidad */
-.comunidad-card {
-    background: #1e1e1e;
+/* Tarjetas de Posts y Comunidad */
+.post, .comunidad-card {
+    background-color: #1e1e1e; /* Gris oscuro para las tarjetas */
     border: 1px solid #333;
     border-radius: 12px;
-    padding: 20px;
+    overflow: hidden;
+    margin-bottom: 20px;
 }
 
-.usuario-linea {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.info-mini a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
+.post-img {
+    width: 100%;
     display: block;
 }
 
-.info-mini small {
-    color: #888;
-}
-
-/* RESPONSIVE: Si el celular es pequeño, la comunidad se oculta o se va abajo */
-@media (max-width: 850px) {
-    .main-container {
-        flex-direction: column;
-        align-items: center;
-    }
-    .sidebar-column {
-        display: none; /* Opcional: oculta comunidad en celulares para priorizar fotos */
-        width: 100%;
-    }
-}
-
-/* Esto crea las dos columnas */
-.main-layout {
-    display: flex;
-    justify-content: center; /* Centra todo el contenido */
-    align-items: flex-start; /* Alinea al techo */
-    gap: 30px;              /* Espacio entre el post y la comunidad */
-    padding: 20px;
-    max-width: 1100px;
-    margin: 0 auto;         /* Centra el bloque en la pantalla */
-}
-
-/* Ajustamos el ancho del feed para que no ocupe todo */
-.feed {
-    flex: 0 1 600px; /* El post no medirá más de 600px */
-    width: 100%;
-}
-
-/* Ajustamos la comunidad */
-.comunidad-sidebar {
-    flex: 0 0 300px; /* Ancho fijo para la comunidad */
-    position: sticky;
-    top: 20px;      /* Se queda pegada al bajar el scroll */
-}
-
-/* Mejora el diseño de la tarjeta de comunidad para que combine con el post */
-.comunidad-card {
-    background: #1e1e1e;
-    border: 1px solid #333;
-    border-radius: 12px;
-    padding: 20px;
+/* Inputs de comentarios */
+input[type="text"] {
+    background: #2c2c2c;
+    border: 1px solid #444;
     color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #0095f6;
 }

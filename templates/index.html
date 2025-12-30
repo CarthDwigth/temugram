@@ -9,14 +9,14 @@
 
 <nav class="navbar">
     <strong>📸 TemuGram</strong>
-    <div>
+    <div class="nav-links">
         {% if session.get('username') %}
-            Hola, @{{ session['username'] }}
-            <a href="{{ url_for('post_routes.crear_post') }}">Publicar</a>
-            <a href="{{ url_for('auth_routes.logout') }}">Salir</a>
+            <span style="margin-right: 15px;">Hola, <b>@{{ session['username'] }}</b></span>
+            <a href="{{ url_for('post_routes.crear_post') }}" class="link-publicar">Publicar</a>
+            <a href="{{ url_for('auth_routes.logout') }}" class="link-salir">Salir</a>
         {% else %}
-            <a href="{{ url_for('auth_routes.login') }}">Login</a>
-            <a href="{{ url_for('auth_routes.registro') }}">Registro</a>
+            <a href="{{ url_for('auth_routes.login') }}" class="link-login">Login</a>
+            <a href="{{ url_for('auth_routes.registro') }}" class="link-registro">Registro</a>
         {% endif %}
     </div>
 </nav>
