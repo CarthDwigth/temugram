@@ -8,6 +8,7 @@ def index():
     conn = get_db()
     cur = conn.cursor()
 
+    # 1. Obtener Posts
     cur.execute("""
         SELECT username, descripcion, url_foto, posts.id, rol, emoji
         FROM posts
@@ -16,17 +17,29 @@ def index():
     """)
     posts = cur.fetchall()
 
+    # 2. Obtener Comentarios
     cur.execute("""
         SELECT post_id, username, texto, emoji
         FROM comentarios
         JOIN usuarios ON comentarios.user_id = usuarios.id
     """)
-    comentarios = cur.fetchall()
+    comentarios_raw = cur.fetchall()
 
-    cur.execute("""
-        SELECT id, username, rol, emoji, fecha_registro
-        FROM usuarios
-    """)
+    # --- AQUÍ ESTÁ EL ENCAJE ---
+    # Creamos un diccionario: { post_id: [lista_de_comentarios] }
+    comentarios_por_post = {}
+    for c in comentarios_raw:
+        pid = c[0] # post_id
+        if pid not in comentarios_por_post:
+            comentarios_por_post[pid] = []
+        comentarios_por_post[pid].append({
+            'username': c[1],
+            'texto': c[2],
+            'emoji': c[3]
+        })
+    # ---------------------------
+
+    cur.execute("SELECT id, username, rol, emoji, fecha_registro FROM usuarios")
     usuarios = cur.fetchall()
 
     cur.close()
@@ -35,7 +48,7 @@ def index():
     return render_template(
         "index.html",
         posts=posts,
-        comentarios=comentarios,
+        comentarios_dic=comentarios_por_post, # Enviamos el diccionario organizado
         usuarios=usuarios,
         usuarios_online=[]
     )

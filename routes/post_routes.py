@@ -48,3 +48,27 @@ def crear_post():
                 return redirect(url_for('main_routes.index'))
 
     return render_template("publicar.html")
+
+@post_routes.route("/comentar/<int:post_id>", methods=["POST"])
+def comentar(post_id):
+    if 'username' not in session:
+        return redirect(url_for('auth_routes.login'))
+    
+    contenido = request.form.get("contenido")
+    if contenido:
+        conn = get_db()
+        cur = conn.cursor()
+        
+        # Obtenemos el ID del usuario actual
+        cur.execute("SELECT id FROM usuarios WHERE username = %s", (session['username'],))
+        user_id = cur.fetchone()[0]
+        
+        # Insertamos el comentario
+        cur.execute("INSERT INTO comentarios (post_id, user_id, contenido) VALUES (%s, %s, %s)",
+                    (post_id, user_id, contenido))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+    
+    return redirect(url_for('main_routes.index'))
