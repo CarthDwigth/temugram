@@ -49,7 +49,7 @@ body {
 .feed-column { flex: 0 1 600px; width: 100%; }
 .sidebar-column { flex: 0 0 290px; position: sticky; top: 100px; }
 
-/* 4. EL POST Y TARJETAS */
+/* 4. EL POST (CONTENEDOR) */
 .post, .comunidad-card {
     background-color: #1e1e1e;
     border: 1px solid #333;
@@ -66,7 +66,7 @@ body {
     border-bottom: 1px solid #262626;
 }
 
-/* 5. ÁREAS DE CONTENIDO */
+/* 5. ÁREAS DE CONTENIDO Y TEXTO */
 .post-header, .post-content-area {
     padding: 12px 16px !important;
 }
@@ -80,7 +80,20 @@ body {
 .post-content-area {
     display: flex;
     flex-direction: column;
+    gap: 8px; /* Controla el espacio entre Likes, Info y Comentarios */
+}
+
+.post-acciones {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.post-info {
+    display: flex;
+    align-items: baseline;
     gap: 8px;
+    margin-bottom: 5px;
 }
 
 .post-header strong, .post-info strong, .comentario-item strong {
@@ -98,7 +111,7 @@ body {
 .lista-comentarios {
     max-height: 200px; 
     overflow-y: auto;  
-    overflow-x: hidden;
+    overflow-x: hidden; /* Evita scroll lateral */
 }
 
 .comentario-item {
@@ -107,40 +120,87 @@ body {
     align-items: center;
     width: 100%;
     margin-bottom: 8px;
+    box-sizing: border-box;
 }
 
 .comentario-texto {
     flex: 1;
     font-size: 0.9rem;
     margin: 0;
-    word-break: break-word;
+    word-break: break-word; /* Rompe el texto para que no empuje el borde */
 }
 
-/* 7. REACCIONES Y BOTONES */
-.comentario-stats {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 35px;
-}
-
+/* 7. BOTONES E INPUTS */
 .btn-like-mini {
     background: none;
     border: none;
     cursor: pointer;
     transition: 0.2s;
-    font-size: 1rem;
+    padding: 0;
 }
 
 .btn-like-mini:hover { transform: scale(1.2); }
 
+input[type="text"] {
+    background: #262626;
+    border: 1px solid #363636;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+form { max-width: 100%; margin: 0; }
+
+.form-comentario {
+    display: flex; 
+    gap: 5px; 
+    margin-top: 10px;
+    border-top: 1px solid #333;
+    padding-top: 10px;
+}
+
+/* El botón de enviar comentario mejorado */
+.btn-comentar-estetico {
+    background-color: #ff4d4d; /* Rojo vibrante */
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-comentar-estetico:hover {
+    background-color: #ff3333; /* Un rojo un pelo más oscuro al pasar el ratón */
+    transform: translateY(-1px); /* Efecto de levante */
+    box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4);
+}
+
+.btn-comentar-estetico:active {
+    transform: translateY(0);
+}
+
+/* Contenedor de la reacción del comentario */
+.comentario-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 30px; /* Evita que se mueva el texto del comentario */
+}
+
+/* El número debajo del corazón */
 .comentario-likes-count {
     font-size: 0.7rem;
     color: #8e8e8e;
     font-weight: 600;
-    margin-top: -2px;
+    margin-top: -2px; /* Lo pega un poquito más al corazón */
 }
 
+/* El botón de publicar (Comentar) en rojo */
 .btn-comentar-estetico {
     background-color: #ff4d4d;
     color: white;
@@ -148,4 +208,130 @@ body {
     padding: 6px 15px;
     border-radius: 20px;
     font-weight: bold;
-    font-size: 0
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.btn-comentar-estetico:hover {
+    background-color: #e63939;
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
+}
+
+/* Contenedor principal de la tarjeta */
+.comunidad-card {
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+/* Título centrado */
+.comunidad-card h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    color: #fff;
+    border-bottom: 1px solid #333; /* Una línea sutil para separar el título */
+    padding-bottom: 10px;
+}
+
+/* Lista de usuarios con margen a la izquierda */
+.usuarios-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-left: 10px; /* Aquí controlas qué tan pegados están a la izquierda */
+}
+
+/* Alineación de cada línea de usuario */
+.usuario-linea {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.info-mini a {
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.info-mini a:hover {
+    color: #ff4d4d; /* Combinando con tu nuevo estilo rojo */
+}
+
+/* Lista de usuarios en el sidebar */
+.usuarios-lista {
+    padding-left: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.usuario-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none; /* Quita el subrayado feo */
+}
+
+.usuario-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.usuario-nombre {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.usuario-item:hover .usuario-nombre {
+    color: #ff4d4d; /* Se pone rojo al pasar el mouse */
+}
+
+.usuario-rol {
+    color: #888;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.usuario-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.usuario-item:hover {
+    background: rgba(255, 255, 255, 0.05); /* Un toque de luz al pasar el mouse */
+}
+
+.usuario-emoji {
+    font-size: 1.5rem;
+}
+
+.usuario-info {
+    display: flex;
+    flex-direction: column; /* Esto pone la fecha debajo del nombre */
+}
+
+.usuario-nombre {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.usuario-item:hover .usuario-nombre {
+    color: #ff4d4d; /* Tu rojo característico */
+}
+
+.usuario-fecha {
+    color: #888;
+    font-size: 0.75rem;
+}
