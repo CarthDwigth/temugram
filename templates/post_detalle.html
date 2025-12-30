@@ -91,36 +91,29 @@
             const btn = document.getElementById(`btn-like-${postId}`);
             const countSpan = document.getElementById(`like-count-${postId}`);
 
-            // Añadimos una clase de "cargando" para evitar clicks dobles
-            btn.style.pointerEvents = 'none';
-            btn.style.opacity = '0.7';
-
+            // Nota la "/" al principio de la ruta: es vital
             fetch(`/reaccionar/${postId}`, { 
                 method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                headers: { 
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    // Actualizamos el número REAL que viene de la base de datos
+                    // Actualiza el número con el total real de la base de datos
                     countSpan.innerText = data.total;
                     
-                    // Si se añadió, ponemos el corazón rojo, si se quitó, blanco
+                    // Cambia el color según la acción
                     if (data.accion === 'added') {
                         btn.style.color = '#ff4d4d';
-                        btn.classList.add('active');
                     } else {
                         btn.style.color = '#fff';
-                        btn.classList.remove('active');
                     }
                 }
             })
-            .catch(err => console.error("Error en like:", err))
-            .finally(() => {
-                // Restauramos el botón para que sea clickable de nuevo
-                btn.style.pointerEvents = 'auto';
-                btn.style.opacity = '1';
-            });
+            .catch(err => console.error("Error:", err));
         }
     </script>
 </body>

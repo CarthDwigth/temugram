@@ -40,9 +40,11 @@
             <div class="post-content-area">
                 
                 <div class="post-acciones">
-                    <form action="{{ url_for('post_routes.reaccionar', post_id=p[3]) }}" method="POST">
-                        <button type="submit" class="btn-like-mini">❤️</button>
-                    </form>
+
+                    <button onclick="darLike('{{ p[3] }}')" id="btn-like-{{ p[3] }}" class="btn-like-clean">
+                        ❤️ <span id="like-count-{{ p[3] }}">{{ p[6] or 0 }}</span>
+                    </button>
+
                     <span>{{ p[6] or 0 }}</span>
                 </div>
 
