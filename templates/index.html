@@ -23,28 +23,25 @@
 </nav>
 
 <main class="feed">
+    {% if posts %}
+        {% for p in posts %}
+        <div class="post">
+            <div class="post-header">
+                <span>{{ p[5] or '👤' }}</span>
+                <strong>@{{ p[0] }}</strong>
+            </div>
 
-{% if posts %}
-    {% for p in posts %}
-    <div class="post">
+            <img src="{{ p[2] }}" class="post-img" style="max-width: 100%; border-radius: 8px;">
 
-        <div class="post-header">
-            <span>{{ p.emoji or '👤' }}</span>
-            <strong>@{{ p.username }}</strong>
+            <div class="post-info" style="margin-top: 10px;">
+                <strong>@{{ p[0] }}</strong> 
+                <span>{{ p[1] }}</span> </div>
         </div>
-
-        <img src="{{ p[2] }}" class="post-img" style="max-width: 100%; border-radius: 8px;">
-
-        <div class="post-info" style="margin-top: 10px;">
-            <strong>@{{ p[0] }}</strong> 
-            <span>{{ p[1] }}</span> </div>
-    </div>
-    <hr style="border: 0.5px solid #333; margin: 20px 0;">
-    {% endfor %}
-{% else %}
-    <p style="text-align: center;">Aún no hay publicaciones. ¡Sé el primero!</p>
-{% endif %}
-
+        <hr style="border: 0.5px solid #333; margin: 20px 0;">
+        {% endfor %}
+    {% else %}
+        <p style="text-align: center;">Aún no hay publicaciones. ¡Sé el primero!</p>
+    {% endif %}
 </main>
 </body>
 </html>

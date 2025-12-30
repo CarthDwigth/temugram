@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash
 from db import get_db
+
+auth_routes = Blueprint("auth_routes", __name__)
 
 @auth_routes.route("/registro", methods=["GET", "POST"])
 def registro():
