@@ -33,6 +33,18 @@
             <strong>@{{ p.username }}</strong>
         </div>
 
-        <img src="{{ p.url_foto }}" class="post-img">
+        <img src="{{ p[2] }}" class="post-img" style="max-width: 100%; border-radius: 8px;">
 
-        <p>{{ p.d
+        <div class="post-info" style="margin-top: 10px;">
+            <strong>@{{ p[0] }}</strong> 
+            <span>{{ p[1] }}</span> </div>
+    </div>
+    <hr style="border: 0.5px solid #333; margin: 20px 0;">
+    {% endfor %}
+{% else %}
+    <p style="text-align: center;">Aún no hay publicaciones. ¡Sé el primero!</p>
+{% endif %}
+
+</main>
+</body>
+</html>

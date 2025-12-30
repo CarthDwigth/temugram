@@ -1,52 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Registro - TemuGram</title>
-    <link rel="stylesheet" href="/static/estilos.css">
-    <style>
-        /* Estilo rápido para el selector de emojis */
-        .emoji-selector {
-            display: flex;
-            justify-content: space-around;
-            margin: 15px 0;
-            padding: 10px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-        }
-        .emoji-selector label {
-            font-size: 1.5em;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 5px;
-            transition: 0.2s;
-        }
-        .emoji-selector input[type="radio"] { display: none; }
-        .emoji-selector input[type="radio"]:checked + span {
-            background: var(--accent);
-            border-radius: 50%;
-            padding: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
-<body>
-    <div class="card">
-        <h1>TemuGram</h1>
-        <p>Regístrate para ver fotos de tus amigos.</p>
-        <form method="POST">
-            <input type="text" name="username" placeholder="Usuario" required>
-            <input type="password" name="password" placeholder="Contraseña" required>
+<body style="background: #121212; color: white; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+
+    <div class="card" style="background: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.7); width: 350px; text-align: center;">
+        <h1 style="margin-bottom: 20px; color: #0095f6;">📸 Únete a TemuGram</h1>
+        
+        <form action="{{ url_for('auth_routes.registro') }}" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+            <input type="text" name="username" placeholder="Nombre de usuario" required
+                   style="padding: 12px; border-radius: 6px; border: none; background: #2c2c2c; color: white;">
             
-            <p style="margin-top: 10px; font-size: 0.8em; color: var(--text-dim);">Elige tu emoji:</p>
-            <div style="display: flex; gap: 10px; margin: 10px 0;">
-                <label><input type="radio" name="emoji" value="👤" checked> 👤</label>
-                <label><input type="radio" name="emoji" value="🍀"> 🍀</label>
-                <label><input type="radio" name="emoji" value="🔥"> 🔥</label>
-                <label><input type="radio" name="emoji" value="🐱"> 🐱</label>
-            </div>
-            <button type="submit">Registrarte</button>
+            <input type="password" name="password" placeholder="Contraseña" required
+                   style="padding: 12px; border-radius: 6px; border: none; background: #2c2c2c; color: white;">
+            
+            <button type="submit" style="padding: 12px; border-radius: 6px; border: none; background: #0095f6; color: white; font-weight: bold; cursor: pointer;">
+                Registrarse
+            </button>
         </form>
-        <hr>
-        <a href="/">Volver al inicio</a>
+
+        <p style="margin-top: 15px; font-size: 0.85em; color: #aaa;">
+            ¿Ya tienes cuenta? <a href="{{ url_for('auth_routes.login') }}" style="color: #0095f6;">Inicia sesión</a>
+        </p>
     </div>
+
 </body>
 </html>

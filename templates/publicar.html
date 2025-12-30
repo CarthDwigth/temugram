@@ -9,7 +9,7 @@
 
     <div class="card" style="background: #1e1e1e; padding: 30px; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.7); width: 400px; text-align: center;">
         <h1 style="color: #0095f6; margin-bottom: 20px;">📸 Nueva Publicación</h1>
-        <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
+        <form action="{{ url_for('post_routes.crear_post') }}" method="POST" enctype="multipart/form-data" style="...">
             <input type="file" name="foto" required
                    style="padding: 10px; border-radius: 6px; background: #2c2c2c; color: white; border: none;">
             <input type="text" name="descripcion" placeholder="¿Qué vas a compartir hoy?" 
