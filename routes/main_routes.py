@@ -65,7 +65,8 @@ def perfil(username):
     cur = conn.cursor()
 
     # 1. Obtener datos del usuario del perfil
-    cur.execute("SELECT * FROM usuarios WHERE username=%s", (username,))
+    # Cambia el SELECT * por columnas específicas
+    cur.execute("SELECT id, username, rol, emoji, fecha_registro FROM usuarios WHERE username=%s", (username,))
     user = cur.fetchone()
 
     if not user:

@@ -18,8 +18,13 @@
     <div class="main-layout">
         <div class="feed-column">
             <div class="perfil-header" style="display: flex; align-items: center; gap: 30px; margin-bottom: 30px; padding: 20px; background: #1e1e1e; border-radius: 12px; border: 1px solid #333;">
-                <div style="font-size: 5rem;">{{ user[3] or '👤' }}</div>
-                <div>
+                <div style="display: flex; flex-direction: column;">
+                    <h1 style="margin: 0; font-size: 2rem;">@{{ user[1] }}</h1>
+                    <span style="background: #ff4d4d; color: white; padding: 2px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; width: fit-content; margin-top: 5px;">
+                        {{ user[2] }}
+                    </span>
+                    <p style="margin-top: 10px; color: #aaa;">{{ posts | length }} publicaciones</p>
+                </div>
                     <h1 style="margin: 0; font-size: 2rem;">@{{ user[1] }}</h1>
                     <span class="usuario-rol" style="background: #333; padding: 2px 8px; border-radius: 4px;">{{ user[2] or 'Usuario' }}</span>
                     <p style="margin-top: 10px; color: #aaa;">{{ posts | length }} publicaciones</p>
