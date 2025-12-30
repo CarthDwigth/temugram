@@ -1,29 +1,54 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from db import get_db
 
 auth_routes = Blueprint("auth_routes", __name__)
 
-@auth_routes.route("/registro", methods=["GET", "POST"])
-def registro():
+@auth_routes.route("/login", methods=["GET", "POST"])
+def login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
         
-        # Encriptamos la contraseña por seguridad
-        hashed_password = generate_password_hash(password)
-        
         conn = get_db()
         cur = conn.cursor()
-        try:
-            cur.execute("INSERT INTO usuarios (username, password) VALUES (%s, %s)", (username, hashed_password))
-            conn.commit()
-            return redirect(url_for('auth_routes.login'))
-        except Exception as e:
-            conn.rollback()
-            return f"Error: El usuario ya existe o hubo un fallo en la DB: {e}"
-        finally:
-            cur.close()
-            conn.close()
+        # Buscamos el id, el password hash y el username
+        cur.execute("SELECT id, password, username FROM usuarios WHERE username = %s", (username,))
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        if user and check_password_hash(user[1], password):
+            session["user_id"] = user[0]
+            session["username"] = user[2]  # <--- ESTO es lo que hace que el Navbar diga "Hola, @user"
+            return redirect(url_for("main_routes.index"))
+        else:
+            return render_template("login.html", error="Usuario o contraseña incorrectos")
             
+    return render_template("login.html")
+
+@auth_routes.route("/registro", methods=["GET", "POST"])
+def registro():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = generate_password_hash(request.form["password"])
+
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO usuarios (username, password) VALUES (%s, %s)",
+            (username, password)
+        )
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return redirect(url_for("auth_routes.login"))
+
     return render_template("registro.html")
+
+
+@auth_routes.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("main_routes.index"))
