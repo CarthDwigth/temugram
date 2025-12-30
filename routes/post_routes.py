@@ -17,10 +17,10 @@ def crear_post():
 
         if foto:
             # 1. Subir a Freeimage.host
-            api_key = "TU_API_KEY_AQUI" # O mejor usar os.environ.get("FREEIMAGE_API_KEY")
+            api_key = os.environ.get("FREEIMAGE_API_KEY")
             url_api = "https://freeimage.host/api/1/upload"
             
-            files = {"source": foto.read()}
+            files = {"source": (foto.filename, foto.read())}
             data = {"key": api_key, "action": "upload", "format": "json"}
             
             response = requests.post(url_api, data=data, files=files)
