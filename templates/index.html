@@ -52,7 +52,8 @@
                     <div class="lista-comentarios">
                         {% set lista = comentarios_dic.get(p[3]) %}
                         {% if lista %}
-                            {% for c in lista %}
+                            {# Aplicamos el slice para mostrar solo los últimos o primeros 3 #}
+                            {% for c in lista[:3] %}
                                 <div class="comentario-item">
                                     <p class="comentario-texto">
                                         <strong>@{{ c.username }}:</strong> {{ c.texto }}
@@ -67,6 +68,15 @@
                                     </div>
                                 </div>
                             {% endfor %}
+
+                            {# Si hay más de 3, avisamos al usuario #}
+                            {% if lista|length > 3 %}
+                                <a href="{{ url_for('main_routes.perfil', username=p[0]) }}" 
+                                style="color: #8e8e8e; font-size: 0.8rem; text-decoration: none; padding-left: 5px; display: block; margin-top: 5px;">
+                                Ver los {{ lista|length }} comentarios...
+                                </a>
+                            {% endif %}
+
                         {% else %}
                             <p style="color: grey; font-size: 0.8rem;">Sin comentarios.</p>
                         {% endif %}
