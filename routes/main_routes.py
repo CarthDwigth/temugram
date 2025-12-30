@@ -59,28 +59,6 @@ def index():
         usuarios_online=[]
     )
 
-
-@main_routes.route("/perfil/<username>")
-def perfil(username):
-    conn = get_db()
-    cur = conn.cursor()
-
-    cur.execute("SELECT * FROM usuarios WHERE username=%s", (username,))
-    user = cur.fetchone()
-
-    cur.execute("""
-        SELECT descripcion, url_foto, id
-        FROM posts
-        WHERE user_id = %s
-        ORDER BY id DESC
-    """, (user[0],))
-    posts = cur.fetchall()
-
-    cur.close()
-    conn.close()
-
-    return render_template("perfil.html", user=user, posts=posts)
-
 @main_routes.route("/perfil/<username>")
 def perfil(username):
     conn = get_db()
