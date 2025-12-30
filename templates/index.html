@@ -23,53 +23,9 @@
 </nav>
 
 <div class="main-layout">
-<main class="feed">
-    {% if posts %}
-        {% for p in posts %}
-        <div class="post">
-            <div class="post-header">
-                <span>{{ p[5] or '👤' }}</span>
-                <strong>@{{ p[0] }}</strong>
-            </div>
-
-            <img src="{{ p[2] }}" class="post-img">
-
-            <div class="post-info" style="margin-top: 10px;">
-                <strong>@{{ p[0] }}</strong> 
-                <span>{{ p[1] }}</span> 
-            </div>
-
-            <div class="comentarios-seccion" style="padding: 10px; font-size: 0.9em; border-top: 1px solid #333; margin-top: 10px;">
-                <div class="lista-comentarios">
-                    {# Intentamos obtener la lista de comentarios para el ID del post actual (p[3]) #}
-                    {% set lista = comentarios_dic.get(p[3]) %}
-                    
-                    {% if lista %}
-                        {% for c in lista %}
-                            <p><strong>@{{ c.username }}:</strong> {{ c.texto }}</p>
-                        {% endfor %}
-                    {% else %}
-                        <p style="color: grey;">Sin comentarios.</p>
-                    {% endif %}
-                </div>
-
-                <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" style="display: flex; gap: 5px; margin-top: 10px;">
-                    <input type="text" name="texto" placeholder="Añadir comentario..." required 
-                        style="flex-grow: 1; background: #2c2c2c; border: none; color: white; border-radius: 4px; padding: 5px;">
-                    <button type="submit" style="background: none; border: none; color: #0095f6; font-weight: bold; cursor: pointer;">Publicar</button>
-                </form>
-            </div>
-        </div> <hr style="border: 0.5px solid #333; margin: 20px 0;">
-        {% endfor %}
-    {% else %}
-        <p style="text-align: center;">Aún no hay publicaciones. ¡Sé el primero!</p>
-    {% endif %}
-</main>
-
-<div class="main-container">
-    <section class="feed-column">
+    <main class="feed">
         {% if posts %}
-        {% for p in posts %}
+            {% for p in posts %}
             <div class="post">
                 <div class="post-header">
                     <span>{{ p[5] or '👤' }}</span>
@@ -85,48 +41,90 @@
 
                 <div class="comentarios-seccion" style="padding: 10px; font-size: 0.9em; border-top: 1px solid #333; margin-top: 10px;">
                     <div class="lista-comentarios">
+                        {# Intentamos obtener la lista de comentarios para el ID del post actual (p[3]) #}
                         {% set lista = comentarios_dic.get(p[3]) %}
-                            {% if lista %}
-                                {% for c in lista %}
-                                    <p><strong>@{{ c.username }}:</strong> {{ c.texto }}</p>
-                                {% endfor %}
-                            {% else %}
-                                <p style="color: grey;">Sin comentarios.</p>
+                        
+                        {% if lista %}
+                            {% for c in lista %}
+                                <p><strong>@{{ c.username }}:</strong> {{ c.texto }}</p>
+                            {% endfor %}
+                        {% else %}
+                            <p style="color: grey;">Sin comentarios.</p>
                         {% endif %}
                     </div>
 
                     <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" style="display: flex; gap: 5px; margin-top: 10px;">
                         <input type="text" name="texto" placeholder="Añadir comentario..." required 
-                        style="flex-grow: 1; background: #2c2c2c; border: none; color: white; border-radius: 4px; padding: 5px;">
+                            style="flex-grow: 1; background: #2c2c2c; border: none; color: white; border-radius: 4px; padding: 5px;">
                         <button type="submit" style="background: none; border: none; color: #0095f6; font-weight: bold; cursor: pointer;">Publicar</button>
-                        </form>
+                    </form>
+                </div>
+            </div> <hr style="border: 0.5px solid #333; margin: 20px 0;">
+            {% endfor %}
+        {% else %}
+            <p style="text-align: center;">Aún no hay publicaciones. ¡Sé el primero!</p>
+        {% endif %}
+    </main>
+
+        <div class="main-container">
+            <section class="feed-column">
+                {% if posts %}
+                    {% for p in posts %}
+                        <div class="post">
+                            <div class="post-header">
+                                <span>{{ p[5] or '👤' }}</span>
+                                <strong>@{{ p[0] }}</strong>
+                            </div>
+
+                            <img src="{{ p[2] }}" class="post-img">
+
+                            <div class="post-info" style="margin-top: 10px;">
+                                <strong>@{{ p[0] }}</strong> 
+                                <span>{{ p[1] }}</span> 
+                            </div>
+
+                            <div class="comentarios-seccion" style="padding: 10px; font-size: 0.9em; border-top: 1px solid #333; margin-top: 10px;">
+                                <div class="lista-comentarios">
+                                    {% set lista = comentarios_dic.get(p[3]) %}
+                                    {% if lista %}
+                                        {% for c in lista %}
+                                            <p><strong>@{{ c.username }}:</strong> {{ c.texto }}</p>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p style="color: grey;">Sin comentarios.</p>
+                                {% endif %}
+                            </div>
+
+                            <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" style="display: flex; gap: 5px; margin-top: 10px;">
+                                <input type="text" name="texto" placeholder="Añadir comentario..." required 
+                                    style="flex-grow: 1; background: #2c2c2c; border: none; color: white; border-radius: 4px; padding: 5px;">
+                                <button type="submit" style="background: none; border: none; color: #0095f6; font-weight: bold; cursor: pointer;">Publicar</button>
+                            </form>
+                        </div>
+                    </div> <hr style="border: 0.5px solid #333; margin: 20px 0;">
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center;">Aún no hay publicaciones. ¡Sé el primero!</p>
+            {% endif %}
+            </section>
+
+            <aside class="sidebar-column">
+                <div class="comunidad-card">
+                    <h3>👥 Comunidad</h3>
+                    <div class="usuarios-lista">
+                        {% for u in usuarios %}
+                            <div class="usuario-linea">
+                                <span class="emoji-mini">{{ u[3] or '👤' }}</span>
+                                <div class="info-mini">
+                                    <a href="{{ url_for('main_routes.perfil', username=u[1]) }}">@{{ u[1] }}</a>
+                                    <small>{{ u[2] }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
-                <hr style="border: 0.5px solid #333; margin: 20px 0;">
-                    {% endfor %}
-                        {% else %}
-                            <p style="text-align: center;">Aún no hay publicaciones. ¡Sé el primero!</p>
-                        {% endif %}
-    </section>
-
-        <aside class="sidebar-column">
-            <div class="comunidad-card">
-                <h3>👥 Comunidad</h3>
-                <div class="usuarios-lista">
-                    {% for u in usuarios %}
-                        <div class="usuario-linea">
-                            <span class="emoji-mini">{{ u[3] or '👤' }}</span>
-                            <div class="info-mini">
-                                <a href="{{ url_for('main_routes.perfil', username=u[1]) }}">@{{ u[1] }}</a>
-                                <small>{{ u[2] }}</small>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </aside>
-
-</div>
-</div> 
+            </aside>
+        </div>
+    </div> 
 </body>
 </html>
