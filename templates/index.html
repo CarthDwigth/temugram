@@ -104,31 +104,37 @@
 </aside>
 
 </div> 
-
 <script>
 function darLike(postId) {
-    // Usamos fetch para enviar el like en segundo plano
-    fetch(`/like_post/${postId}`, { 
+    // Usamos /reaccionar/ que es la ruta que configuramos en Python
+    fetch(`/reaccionar/${postId}`, { 
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+            'X-Requested-With': 'XMLHttpRequest', // Esto es vital para que Flask sepa que es AJAX
+            'Content-Type': 'application/json' 
+        }
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success || data.new_likes !== undefined) {
-            // Actualizamos el número de likes en el botón específico
-            const likeSpan = document.getElementById(`like-count-${postId}`);
-            if (likeSpan) {
-                likeSpan.innerText = data.new_likes;
-            }
+        const likeSpan = document.getElementById(`like-count-${postId}`);
+        const btn = document.getElementById(`btn-like-${postId}`);
+        
+        if (data.status === 'success') {
+            // Usamos .total porque así lo manda tu Python
+            likeSpan.innerText = data.total; 
             
-            // Opcional: Podrías hacer que el corazón se vea más brillante
-            const btn = document.getElementById(`btn-like-${postId}`);
-            btn.style.transform = "scale(1.2)";
-            setTimeout(() => btn.style.transform = "scale(1)", 200);
+            // Efecto visual: Rojo si dio like, Blanco si lo quitó
+            if (data.accion === 'added') {
+                btn.style.color = '#ff4d4d';
+            } else {
+                btn.style.color = '#fff';
+            }
         }
     })
     .catch(error => console.error('Error:', error));
 }
+</script>
+</script>
 </script>
 </body>
 </html>

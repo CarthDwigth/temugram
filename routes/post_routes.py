@@ -80,42 +80,36 @@ def comentar(post_id):
 
 @post_routes.route("/reaccionar/<int:post_id>", methods=["POST"])
 def reaccionar(post_id):
-    # 1. Verificamos que el ID esté en la sesión con el nombre correcto
     if 'user_id' not in session:
-        return {"error": "no_auth"}, 401
+        return {"status": "error", "message": "No login"}, 401
     
-    # Aquí usamos 'user_id' porque así se llama en tu sesión de Flask
-    mi_id = session['user_id'] 
-    
+    user_id = session['user_id']
     conn = get_db()
     cur = conn.cursor()
 
-    # 2. En el SQL usamos 'usuario_id' porque así se llama la COLUMNA en la TABLA
-    cur.execute("SELECT id FROM reacciones WHERE usuario_id = %s AND post_id = %s", (mi_id, post_id))
+    # Buscamos usando 'usuario_id' que es como se llama en tu tabla
+    cur.execute("SELECT id FROM reacciones WHERE usuario_id = %s AND post_id = %s", (user_id, post_id))
     existe = cur.fetchone()
 
     if existe:
         cur.execute("DELETE FROM reacciones WHERE id = %s", (existe[0],))
         accion = "removed"
     else:
-        cur.execute("INSERT INTO reacciones (usuario_id, post_id) VALUES (%s, %s)", (mi_id, post_id))
+        cur.execute("INSERT INTO reacciones (usuario_id, post_id) VALUES (%s, %s)", (user_id, post_id))
         accion = "added"
 
     conn.commit()
-    
     cur.execute("SELECT COUNT(*) FROM reacciones WHERE post_id = %s", (post_id,))
-    nuevo_total = cur.fetchone()[0]
-    
+    total = cur.fetchone()[0]
     cur.close()
     conn.close()
 
+    # AQUÍ ESTÁ EL TRUCO:
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return {"status": "success", "accion": accion, "total": nuevo_total}
+        return {"status": "success", "accion": accion, "total": total}
     
     return redirect(request.referrer or url_for('main_routes.index'))
 
-
-# --- BUSCA LA FUNCIÓN reaccionar_comentario Y REEMPLÁZALA CON ESTA ---
 
 @post_routes.route('/reaccionar_comentario/<int:comentario_id>', methods=['POST'])
 def reaccionar_comentario(comentario_id):
@@ -126,18 +120,16 @@ def reaccionar_comentario(comentario_id):
     db = get_db()
     cur = db.cursor()
 
-    cur.execute("SELECT id FROM likes_comentarios WHERE usuario_id = %s AND comentario_id = %s", 
-                (usuario_id, comentario_id))
+    cur.execute("SELECT id FROM likes_comentarios WHERE usuario_id = %s AND comentario_id = %s", (usuario_id, comentario_id))
     like_existente = cur.fetchone()
 
     if like_existente:
         cur.execute("DELETE FROM likes_comentarios WHERE id = %s", (like_existente[0],))
     else:
-        cur.execute("INSERT INTO likes_comentarios (usuario_id, comentario_id) VALUES (%s, %s)", 
-                    (usuario_id, comentario_id))
+        cur.execute("INSERT INTO likes_comentarios (usuario_id, comentario_id) VALUES (%s, %s)", (usuario_id, comentario_id))
 
     db.commit()
     cur.close()
     
-    # CAMBIO AQUÍ: request.referrer para que no te mande al inicio del index
+    # IMPORTANTE: request.referrer hace que vuelvas a la misma página donde estabas
     return redirect(request.referrer or url_for('main_routes.index'))
