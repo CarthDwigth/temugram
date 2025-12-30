@@ -25,3 +25,17 @@
     margin-bottom: 10px;
     font-size: 1.1em;
 }
+
+/* Contenedor del area de comunidad */
+
+@media (max-width: 800px) {
+    .contenedor-principal {
+        flex-direction: column;
+        align-items: center;
+    }
+    .comunidad {
+        width: 100%;
+        max-width: 500px;
+        position: static;
+    }
+}

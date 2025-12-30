@@ -64,5 +64,22 @@
         <p style="text-align: center;">Aún no hay publicaciones. ¡Sé el primero!</p>
     {% endif %}
 </main>
+    <aside class="comunidad" style="flex: 1; position: sticky; top: 20px; height: fit-content;">
+        <div class="card" style="background: #1e1e1e; padding: 20px; border-radius: 12px; border: 1px solid #333;">
+            <h3 style="color: #0095f6; margin-top: 0;">👥 Comunidad</h3>
+            <div class="lista-usuarios" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                {% for u in usuarios %}
+                    <div class="usuario-item" style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.5em;">{{ u[3] or '👤' }}</span> <div style="display: flex; flex-direction: column;">
+                            <a href="{{ url_for('main_routes.perfil', username=u[1]) }}" 
+                               style="color: white; text-decoration: none; font-weight: bold; font-size: 0.9em;">
+                               @{{ u[1] }}
+                            </a>
+                            <span style="color: #888; font-size: 0.75em;">{{ u[2] }}</span> </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </aside>
 </body>
 </html>
