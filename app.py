@@ -10,7 +10,7 @@ def create_app():
     app.secret_key = os.environ.get("SECRET_KEY")
 
     # Crear tablas si no existen
-    init_db()
+    get_db()
 
     app.register_blueprint(auth_routes)
     app.register_blueprint(main_routes)
