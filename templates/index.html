@@ -54,8 +54,12 @@
                         {% if lista %}
                             {% for c in lista %}
                                 <div class="comentario-item">
-                                    <p class="comentario-texto"><strong>@{{ c.username }}:</strong> {{ c.texto }}</p>
-                                    <button class="btn-like-mini">🤍</button>
+                                    <p class="comentario-texto">
+                                        <strong>@{{ c.username }}:</strong> {{ c.texto }}
+                                    </p>
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                                        <button class="btn-like-mini" style="font-size: 0.8rem;">🤍</button>
+                                        <span style="font-size: 0.65rem; color: #888;">0</span> </div>
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -63,9 +67,10 @@
                         {% endif %}
                     </div>
                     
-                    <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" class="form-comentario">
-                        <input type="text" name="texto" placeholder="Añadir comentario..." required>
-                        <button type="submit">Publicar</button>
+                    <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" style="display: flex; gap: 8px; margin-top: 10px; align-items: center;">
+                        <input type="text" name="texto" placeholder="Añadir comentario..." required 
+                            style="flex-grow: 1; background: #2c2c2c; border: 1px solid #444; color: white; border-radius: 20px; padding: 8px 15px; font-size: 0.9rem;">
+                        <button type="submit" class="btn-comentar-estetico">Comentar</button>
                     </form>
                 </div>
 
@@ -73,7 +78,7 @@
     {% else %}
         <p style="text-align: center;">Aún no hay publicaciones.</p>
     {% endif %}
-</main>
+
     </main>
 
     <aside class="sidebar-column">

@@ -160,3 +160,26 @@ form { max-width: 100%; margin: 0; }
     border-top: 1px solid #333;
     padding-top: 10px;
 }
+
+/* El botón de enviar comentario mejorado */
+.btn-comentar-estetico {
+    background-color: #ff4d4d; /* Rojo vibrante */
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-comentar-estetico:hover {
+    background-color: #ff3333; /* Un rojo un pelo más oscuro al pasar el ratón */
+    transform: translateY(-1px); /* Efecto de levante */
+    box-shadow: 0 2px 8px rgba(255, 77, 77, 0.4);
+}
+
+.btn-comentar-estetico:active {
+    transform: translateY(0);
+}
