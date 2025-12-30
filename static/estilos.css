@@ -387,3 +387,62 @@ input[type="text"] {
 }
 
 .info-mini a:hover { color: #ff4d4d; }
+
+/* --- COMPLEMENTOS PARA EL MODO DETALLE --- */
+
+/* La imagen dentro del contenedor lateral */
+.post-image-side img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: zoom-in;
+    transition: transform 0.3s ease;
+}
+
+/* Efecto cuando la imagen está en pantalla completa */
+.img-fullscreen img {
+    max-width: 95vw;
+    max-height: 95vh;
+    cursor: zoom-out;
+    transform: scale(1.05); /* Un pequeño empujón visual */
+}
+
+/* El panel derecho de información en el post detallado */
+.post-info-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #121212;
+    border-left: 1px solid #333;
+}
+
+/* Scroll de comentarios en el detalle (más largo que en el index) */
+.scroll-comentarios {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    background: #0a0a0a; /* Un tono un pelín más oscuro para contrastar */
+}
+
+/* Estilo para el botón de publicar dentro del detalle */
+.btn-publicar-rojo {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-publicar-rojo:hover {
+    background: #ff1a1a;
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
+}
+
+/* Estilo para los Me Gusta en el detalle */
+.post-stats-detalle {
+    padding: 10px 0;
+    font-size: 1rem;
+}
