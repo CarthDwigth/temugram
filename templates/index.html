@@ -36,9 +36,8 @@
             <div class="post-info" style="margin-top: 10px;">
                 <strong>@{{ p[0] }}</strong> 
                 <span>{{ p[1] }}</span> </div>
-        </div>
 
-        <div class="comentarios-seccion" style="padding: 10px; font-size: 0.9em;">
+            <div class="comentarios-seccion" style="padding: 10px; font-size: 0.9em;">
             <div class="lista-comentarios">
                 {# Buscamos en el diccionario usando el ID del post actual p[3] #}
                 {% if comentarios_dic.get(p[3]) %}
@@ -58,6 +57,9 @@
                     style="flex-grow: 1; background: #2c2c2c; border: none; color: white; border-radius: 4px; padding: 5px;">
                 <button type="submit" style="background: none; border: none; color: #0095f6; font-weight: bold; cursor: pointer;">Publicar</button>
             </form>
+        </div>
+
+        
         </div>
         <hr style="border: 0.5px solid #333; margin: 20px 0;">
         {% endfor %}

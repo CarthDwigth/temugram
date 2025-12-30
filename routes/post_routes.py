@@ -54,21 +54,23 @@ def comentar(post_id):
     if 'username' not in session:
         return redirect(url_for('auth_routes.login'))
     
-    contenido = request.form.get("contenido")
-    if contenido:
+    # Debe decir "texto" para coincidir con el HTML de arriba
+    comentario_texto = request.form.get("texto") 
+    
+    if comentario_texto:
         conn = get_db()
         cur = conn.cursor()
         
-        # Obtenemos el ID del usuario actual
         cur.execute("SELECT id FROM usuarios WHERE username = %s", (session['username'],))
         user_id = cur.fetchone()[0]
         
-        # Insertamos el comentario
-        cur.execute("INSERT INTO comentarios (post_id, user_id, contenido) VALUES (%s, %s, %s)",
-                    (post_id, user_id, contenido))
+        # Guardamos en la base de datos
+        cur.execute("INSERT INTO comentarios (post_id, user_id, texto) VALUES (%s, %s, %s)",
+                    (post_id, user_id, comentario_texto))
         
         conn.commit()
         cur.close()
         conn.close()
     
+    # ESTO EVITA QUE TE QUEDES EN LA PÁGINA /comentar/1
     return redirect(url_for('main_routes.index'))
