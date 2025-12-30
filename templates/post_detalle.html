@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Post de @{{ post[0] }} - TemuGram</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <style>
+        .post-container-full {
+            display: flex;
+            max-width: 1100px;
+            margin: 20px auto;
+            background: #000;
+            border: 1px solid #333;
+            height: 80vh;
+        }
+        .post-image-side {
+            flex: 1.5;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-in;
+        }
+        .post-image-side img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .post-info-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #121212;
+            border-left: 1px solid #333;
+        }
+    </style>
+</head>
+<body style="background: #000; color: white;">
+    <nav class="navbar">
+        <a href="{{ url_for('main_routes.index') }}"><strong>TemuGram</strong></a>
+    </nav>
+
+    <div class="post-container-full">
+        <div class="post-image-side" onclick="this.requestFullscreen()">
+            <img src="{{ post[2] }}" alt="Post">
+        </div>
+
+        <div class="post-info-side">
+            <div style="padding: 15px; border-bottom: 1px solid #333;">
+                <strong>@{{ post[0] }}</strong>
+                <p>{{ post[1] }}</p>
+            </div>
+            
+            <div style="flex: 1; overflow-y: auto; padding: 15px;">
+                {% for c in comentarios %}
+                    <div style="margin-bottom: 15px;">
+                        <strong>@{{ c[1] }}</strong>: {{ c[2] }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div style="padding: 15px; border-top: 1px solid #333;">
+                <form action="{{ url_for('post_routes.comentar', post_id=post[3]) }}" method="POST">
+                    <input type="text" name="texto" placeholder="Añadir comentario..." style="width: 80%; background: #222; color: white; border: none; padding: 8px;">
+                    <button type="submit" style="background: #ff4d4d; border: none; color: white; padding: 8px;">Enviar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -33,7 +33,9 @@
                 <strong>@{{ p[0] }}</strong>
             </div>
 
-            <img src="{{ p[2] }}" class="post-img">
+            <a href="{{ url_for('main_routes.ver_post', post_id=p[3]) }}">
+                <img src="{{ p[2] }}" class="post-img" alt="Foto">
+            </a>
 
             <div class="post-content-area">
                 

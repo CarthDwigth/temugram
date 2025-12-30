@@ -118,3 +118,38 @@ def cambiar_emoji():
     # Obtenemos el username para redirigir de vuelta al perfil
     username = session.get('username')
     return redirect(url_for('main_routes.perfil', username=username))
+
+@main_routes.route("/post/<int:post_id>")
+def ver_post(post_id):
+    conn = get_db()
+    cur = conn.cursor()
+
+    # 1. Obtener el post con los datos del autor
+    cur.execute("""
+        SELECT username, descripcion, url_foto, posts.id, rol, emoji, posts.user_id
+        FROM posts
+        JOIN usuarios ON posts.user_id = usuarios.id
+        WHERE posts.id = %s
+    """, (post_id,))
+    post = cur.fetchone()
+
+    if not post:
+        cur.close()
+        conn.close()
+        return "Post no encontrado", 404
+
+    # 2. Obtener TODOS los comentarios de este post
+    cur.execute("""
+        SELECT comentarios.id, username, texto, emoji,
+        (SELECT COUNT(*) FROM likes_comentarios WHERE comentario_id = comentarios.id) AS likes_count
+        FROM comentarios
+        JOIN usuarios ON comentarios.user_id = usuarios.id
+        WHERE post_id = %s
+        ORDER BY comentarios.id ASC
+    """, (post_id,))
+    comentarios = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template("post_detalle.html", post=post, comentarios=comentarios)
