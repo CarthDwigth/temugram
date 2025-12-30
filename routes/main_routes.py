@@ -97,3 +97,22 @@ def perfil(username):
         posts=posts, 
         usuarios=lista_comunidad
     )
+
+@main_routes.route("/cambiar_emoji", methods=["POST"])
+def cambiar_emoji():
+    if 'user_id' not in session:
+        return redirect(url_for('main_routes.index'))
+    
+    nuevo_emoji = request.form.get("emoji")
+    user_id = session.get('user_id')
+    
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("UPDATE usuarios SET emoji = %s WHERE id = %s", (nuevo_emoji, user_id))
+    conn.commit()
+    cur.close()
+    conn.close()
+    
+    # Obtenemos el username para redirigir de vuelta al perfil
+    username = session.get('username')
+    return redirect(url_for('main_routes.perfil', username=username))
