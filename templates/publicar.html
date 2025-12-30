@@ -5,20 +5,28 @@
     <title>Publicar - TemuGram</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
 </head>
-<body style="background: #121212; color: white; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0;">
+<body style="background: #121212; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
 
-    <div class="card" style="background: #1e1e1e; padding: 30px; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.7); width: 400px; text-align: center;">
-        <h1 style="color: #0095f6; margin-bottom: 20px;">📸 Nueva Publicación</h1>
-        <form action="{{ url_for('post_routes.crear_post') }}" method="POST" enctype="multipart/form-data" style="...">
-            <input type="file" name="foto" required
-                   style="padding: 10px; border-radius: 6px; background: #2c2c2c; color: white; border: none;">
-            <input type="text" name="descripcion" placeholder="¿Qué vas a compartir hoy?" 
-                   style="padding: 10px; border-radius: 6px; background: #2c2c2c; color: white; border: none;">
-            <button type="submit" style="padding: 12px; border-radius: 6px; border: none; background: #0095f6; color: white; font-weight: bold; cursor: pointer;">
-                Subir a TemuGram
+    <div class="card" style="background: #1e1e1e; padding: 30px; border-radius: 12px; width: 400px; text-align: center; border: 1px solid #333;">
+        <h2 style="color: #0095f6;">📸 Nueva Publicación</h2>
+        
+        <form action="{{ url_for('post_routes.crear_post') }}" method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <div style="text-align: left;">
+                <label style="font-size: 0.9em; color: #aaa;">Selecciona tu foto:</label>
+                <input type="file" name="foto" accept="image/*" required 
+                       style="margin-top: 10px; width: 100%; color: #eee;">
+            </div>
+
+            <textarea name="descripcion" placeholder="Escribe un pie de foto..." required
+                      style="padding: 12px; border-radius: 6px; background: #2c2c2c; border: none; color: white; resize: none; height: 80px;"></textarea>
+            
+            <button type="submit" style="padding: 12px; border-radius: 6px; background: #0095f6; color: white; border: none; font-weight: bold; cursor: pointer;">
+                Compartir
             </button>
+            
+            <a href="{{ url_for('main_routes.index') }}" style="color: #aaa; text-decoration: none; font-size: 0.85em;">Cancelar</a>
         </form>
-        <a href="{{ url_for('main_routes.home') }}" style="display: inline-block; margin-top: 20px; color: #0095f6; text-decoration: none;">← Volver al inicio</a>
     </div>
 
 </body>
