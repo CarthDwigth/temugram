@@ -34,16 +34,14 @@
 
                 <img src="{{ p[2] }}" class="post-img">
 
-                <div class="post-acciones" style="padding: 10px 16px; display: flex; align-items: center; gap: 10px;">
-                    <form action="{{ url_for('post_routes.reaccionar', post_id=p['id']) }}" method="POST" style="margin: 0;">
+                <div class="post-acciones">
+                    <form action="{{ url_for('post_routes.reaccionar', post_id=p[3]) }}" method="POST" style="margin: 0;">
                         <button type="submit" class="btn-like-mini" style="font-size: 1.5rem; color: #fff; background: none; border: none; cursor: pointer;">
-                            {# Podrías poner una lógica aquí para cambiar el corazón a rojo si el usuario ya dio like #}
                             ❤️
                         </button>
                     </form>
                     <span style="font-weight: 600; font-size: 0.9rem; color: #fff;">
-                        {{ p['total_likes'] }} me gusta
-                    </span>
+                        {{ p[6] or 0 }} me gusta </span>
                 </div>
 
                 <div class="post-info" style="margin-top: 10px;">
@@ -56,19 +54,15 @@
                         {% set lista = comentarios_dic.get(p[3]) %}
                         {% if lista %}
                             {% for c in lista %}
-                                <p style="margin: 5px 0;"><strong>@{{ c.username }}:</strong> {{ c.texto }}</p>
-                                <div class="comentario-item" style="display: flex; justify-content: space-between; align-items: center;">
-                                    <p class="comentario-texto">
-                                        <strong>@{{ c['username'] }}:</strong> {{ c['contenido'] }}
-                                    </p>
-                                    <button class="btn-like-mini" style="font-size: 0.7rem; color: #8e8e8e;">🤍</button>
+                                <div class="comentario-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <p style="margin: 0;"><strong>@{{ c.username }}:</strong> {{ c.texto }}</p>
+                                    <button class="btn-like-mini" style="font-size: 0.7rem; color: #8e8e8e; background:none; border:none;">🤍</button>
                                 </div>
                             {% endfor %}
                         {% else %}
                             <p style="color: grey;">Sin comentarios.</p>
                         {% endif %}
                     </div>
-
                     <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" style="display: flex; gap: 5px; margin-top: 10px;">
                         <input type="text" name="texto" placeholder="Añadir comentario..." required 
                             style="flex-grow: 1; background: #2c2c2c; border: none; color: white; border-radius: 4px; padding: 5px;">

@@ -80,21 +80,33 @@ def comentar(post_id):
 
 @post_routes.route('/reaccionar/<int:post_id>', methods=['POST'])
 def reaccionar(post_id):
+    # Si no está logueado, lo mandamos al login
     if 'user_id' not in session:
         return redirect(url_for('auth_routes.login'))
 
     uid = session['user_id']
-    db = obtener_db() # Tu función para conectar a la DB
+    conn = get_db()
+    cur = conn.cursor()
     
-    # 1. Miramos si ya existe el like
-    reaccion = db.execute('SELECT id FROM reacciones WHERE post_id=? AND usuario_id=?', (post_id, uid)).fetchone()
+    try:
+        # 1. Buscamos si el usuario ya le dio like a este post
+        cur.execute('SELECT id FROM reacciones WHERE post_id=%s AND usuario_id=%s', (post_id, uid))
+        reaccion = cur.fetchone()
 
-    if reaccion:
-        # 2. Si existe, lo quitamos (Dislike)
-        db.execute('DELETE FROM reacciones WHERE post_id=? AND usuario_id=?', (post_id, uid))
-    else:
-        # 3. Si no existe, lo ponemos (Like)
-        db.execute('INSERT INTO reacciones (post_id, usuario_id) VALUES (?, ?)', (post_id, uid))
+        if reaccion:
+            # 2. Si ya existe, lo borramos (Quitar Like)
+            cur.execute('DELETE FROM reacciones WHERE post_id=%s AND usuario_id=%s', (post_id, uid))
+        else:
+            # 3. Si no existe, lo insertamos (Dar Like)
+            cur.execute('INSERT INTO reacciones (post_id, usuario_id) VALUES (%s, %s)', (post_id, uid))
+        
+        conn.commit()
+    except Exception as e:
+        print(f"Error al reaccionar: {e}")
+        conn.rollback()
+    finally:
+        cur.close()
+        conn.close()
     
-    db.commit()
+    # Al terminar, recargamos la página para que vea el cambio en el contador
     return redirect(url_for('main_routes.index'))
