@@ -4,68 +4,78 @@
     <meta charset="UTF-8">
     <title>Post de @{{ post[0] }} - TemuGram</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
-    <style>
-        .post-container-full {
-            display: flex;
-            max-width: 1100px;
-            margin: 20px auto;
-            background: #000;
-            border: 1px solid #333;
-            height: 80vh;
-        }
-        .post-image-side {
-            flex: 1.5;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: zoom-in;
-        }
-        .post-image-side img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .post-info-side {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #121212;
-            border-left: 1px solid #333;
-        }
-    </style>
 </head>
 <body style="background: #000; color: white;">
     <nav class="navbar">
-        <a href="{{ url_for('main_routes.index') }}"><strong>TemuGram</strong></a>
+        <a href="{{ url_for('main_routes.index') }}" class="btn-volver">← Volver al Inicio</a>
+        <strong>TemuGram</strong>
     </nav>
 
     <div class="post-container-full">
-        <div class="post-image-side" onclick="this.requestFullscreen()">
-            <img src="{{ post[2] }}" alt="Post">
+        <div class="post-image-side" id="imageWrapper">
+            <img src="{{ post[2] }}" id="mainImage" alt="Post">
         </div>
 
         <div class="post-info-side">
-            <div style="padding: 15px; border-bottom: 1px solid #333;">
-                <strong>@{{ post[0] }}</strong>
-                <p>{{ post[1] }}</p>
+            <div style="padding: 15px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <span style="font-size: 1.5rem;">{{ post[5] or '👤' }}</span>
+                    <strong>@{{ post[0] }}</strong>
+                </div>
+                <p style="color: #eee; margin-bottom: 15px;">{{ post[1] }}</p>
+                
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <form action="{{ url_for('post_routes.reaccionar', post_id=post[3]) }}" method="POST">
+                        <button type="submit" style="background:none; border:none; color:white; font-size: 1.2rem; cursor:pointer;">❤️</button>
+                    </form>
+                    <span><strong>{{ post[6] or 0 }}</strong> Me gusta</span>
+                </div>
             </div>
-            
-            <div style="flex: 1; overflow-y: auto; padding: 15px;">
+
+            <div class="scroll-comentarios">
                 {% for c in comentarios %}
-                    <div style="margin-bottom: 15px;">
-                        <strong>@{{ c[1] }}</strong>: {{ c[2] }}
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; background: #1a1a1a; padding: 8px; border-radius: 6px;">
+                    <div>
+                        <strong style="font-size: 0.9rem;">@{{ c[1] }}</strong>
+                        <p style="font-size: 0.9rem; margin: 2px 0;">{{ c[2] }}</p>
                     </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <form action="{{ url_for('post_routes.reaccionar_comentario', comentario_id=c[0]) }}" method="POST">
+                            <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-size: 0.8rem;">🤍</button>
+                        </form>
+                        <span style="font-size: 0.7rem; color: #888;">{{ c[4] or 0 }}</span>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
 
             <div style="padding: 15px; border-top: 1px solid #333;">
-                <form action="{{ url_for('post_routes.comentar', post_id=post[3]) }}" method="POST">
-                    <input type="text" name="texto" placeholder="Añadir comentario..." style="width: 80%; background: #222; color: white; border: none; padding: 8px;">
-                    <button type="submit" style="background: #ff4d4d; border: none; color: white; padding: 8px;">Enviar</button>
+                <form action="{{ url_for('post_routes.comentar', post_id=post[3]) }}" method="POST" style="display: flex; gap: 5px;">
+                    <input type="text" name="texto" placeholder="Añadir un comentario..." required 
+                           style="flex: 1; background: #222; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px;">
+                    <button type="submit" style="background: #ff4d4d; border: none; color: white; padding: 8px 15px; border-radius: 4px; font-weight: bold;">Publicar</button>
                 </form>
             </div>
         </div>
     </div>
+
+    <script>
+        const imageWrapper = document.getElementById('imageWrapper');
+        const mainImage = document.getElementById('mainImage');
+
+        mainImage.addEventListener('click', () => {
+            imageWrapper.classList.toggle('img-fullscreen');
+            
+            // Si entra en fullscreen, permitimos cerrarlo al hacer clic en cualquier parte del fondo
+            if(imageWrapper.classList.contains('img-fullscreen')) {
+                imageWrapper.addEventListener('click', closeFullscreen);
+            }
+        });
+
+        function closeFullscreen(e) {
+            imageWrapper.classList.remove('img-fullscreen');
+            imageWrapper.removeEventListener('click', closeFullscreen);
+        }
+    </script>
 </body>
 </html>

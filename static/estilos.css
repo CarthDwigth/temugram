@@ -308,4 +308,38 @@ input[type="text"] {
     background: #ff4d4d; /* Se pone roja cuando pasas el mouse, combinando con tu estilo */
 }
 
+/* --- Estilos para la página de detalle del Post --- */
+.post-container-full {
+    display: flex;
+    max-width: 1200px;
+    margin: 20px auto;
+    background: #121212;
+    border: 1px solid #333;
+    height: 85vh;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.post-image-side {
+    flex: 1.6;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.img-fullscreen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.95);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* ... y el resto de clases ... */
+
 .info-mini a:hover { color: #ff4d4d; }
