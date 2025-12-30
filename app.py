@@ -2,7 +2,7 @@ from flask import Flask
 from routes.auth_routes import auth_routes
 from routes.main_routes import main_routes
 from routes.post_routes import post_routes
-from db import init_db
+from db import get_db
 import os
 
 def create_app():
