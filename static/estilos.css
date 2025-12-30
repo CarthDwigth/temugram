@@ -264,4 +264,20 @@ input[type="text"] {
     color: inherit;
 }
 
+.usuario-rol {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-top: 8px;
+    background-color: #333; /* Color por defecto */
+    color: #fff;
+}
+
+/* Si es Admin, lo ponemos en rojo TemuGram */
+.rol-admin {
+    background-color: #ff4d4d !important;
+}
+
 .info-mini a:hover { color: #ff4d4d; }

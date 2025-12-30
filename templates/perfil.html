@@ -17,22 +17,26 @@
 
     <div class="main-layout">
         <div class="feed-column">
-            <div class="perfil-header" style="display: flex; align-items: center; gap: 30px; margin-bottom: 30px; padding: 20px; background: #1e1e1e; border-radius: 12px; border: 1px solid #333;">
-                <div style="display: flex; flex-direction: column;">
-                    <h1 style="margin: 0; font-size: 2rem;">@{{ user[1] }}</h1>
-                    <span style="background: #ff4d4d; color: white; padding: 2px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; width: fit-content; margin-top: 5px;">
-                        {{ user[2] }}
+            
+            <div class="perfil-header" style="display: flex; align-items: center; gap: 30px; padding: 30px; background: #1e1e1e; border-radius: 12px; border: 1px solid #333; margin-bottom: 30px;">
+                <div style="font-size: 5rem;">{{ user[3] or '👤' }}</div>
+                
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <h1 style="margin: 0; font-size: 2.2rem;">@{{ user[1] }}</h1>
+                    
+                    <span class="usuario-rol {% if user[2]|lower == 'admin' %}rol-admin{% endif %}" 
+                          style="width: fit-content; padding: 2px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; background: #333;">
+                        {{ user[2] or 'Usuario' }}
                     </span>
-                    <p style="margin-top: 10px; color: #aaa;">{{ posts | length }} publicaciones</p>
-                </div>
-                    <h1 style="margin: 0; font-size: 2rem;">@{{ user[1] }}</h1>
-                    <span class="usuario-rol" style="background: #333; padding: 2px 8px; border-radius: 4px;">{{ user[2] or 'Usuario' }}</span>
-                    <p style="margin-top: 10px; color: #aaa;">{{ posts | length }} publicaciones</p>
+
+                    <p style="margin: 10px 0 0 0; color: #aaa; font-size: 1rem;">
+                        <strong>{{ posts | length }}</strong> publicaciones
+                    </p>
 
                     {% if session.get('user_id') == user[0] %}
-                    <form action="{{ url_for('main_routes.cambiar_emoji') }}" method="POST" style="margin-top: 15px;">
-                        <label style="font-size: 0.8em; color: #888; display: block; margin-bottom: 5px;">Cambiar mi avatar:</label>
-                        <select name="emoji" onchange="this.form.submit()" style="padding: 5px; border-radius: 5px; background: #262626; color: white; border: 1px solid #444; cursor: pointer;">
+                    <form action="{{ url_for('main_routes.cambiar_emoji') }}" method="POST" style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 0.8em; color: #888;">Avatar:</span>
+                        <select name="emoji" onchange="this.form.submit()" style="padding: 4px; border-radius: 5px; background: #262626; color: white; border: 1px solid #444; cursor: pointer;">
                             {% for e in ['👤','🔥','🕶️','🐱','👾','👑','🍀','💎','⚽'] %}
                                 <option value="{{ e }}" {% if user[3] == e %}selected{% endif %}>{{ e }}</option>
                             {% endfor %}
@@ -44,36 +48,37 @@
 
             <div class="grid-fotos" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
                 {% for p in posts %}
-                    <div class="foto-card" style="aspect-ratio: 1 / 1; overflow: hidden; border-radius: 4px; border: 1px solid #333;">
+                    <div class="foto-card" style="aspect-ratio: 1 / 1; overflow: hidden; border-radius: 4px; border: 1px solid #333; background: #000;">
                         <img src="{{ p[1] }}" alt="Post" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 {% endfor %}
             </div>
             
             {% if posts|length == 0 %}
-                <div style="text-align: center; padding: 50px; color: #888;">
-                    <p>📸 No hay publicaciones todavía.</p>
+                <div style="text-align: center; padding: 60px; color: #666;">
+                    <p style="font-size: 1.2rem;">📸 Aún no hay publicaciones.</p>
                 </div>
             {% endif %}
         </div>
 
-    <aside class="sidebar-column">
-    <div class="comunidad-card">
-        <h3>👥 Comunidad</h3> 
-        <div class="usuarios-lista">
-            {% for u in usuarios %}
-            <a href="{{ url_for('main_routes.perfil', username=u[1]) }}" class="usuario-item">
-                <span class="usuario-emoji">{{ u[3] or '👤' }}</span>
-                
-                <div class="usuario-info">
-                    <span class="usuario-nombre">@{{ u[1] }}</span>
-                    <small class="usuario-fecha">Miembro desde: {{ u[4].strftime('%d/%m/%Y') if u[4] else 'Reciente' }}</small>
+        <aside class="sidebar-column">
+            <div class="comunidad-card">
+                <h3>👥 Comunidad</h3>
+                <div class="usuarios-lista">
+                    {% for u in usuarios %}
+                    <a href="{{ url_for('main_routes.perfil', username=u[1]) }}" class="usuario-item">
+                        <span class="usuario-emoji">{{ u[3] or '👤' }}</span>
+                        <div class="usuario-info">
+                            <span class="usuario-nombre">@{{ u[1] }}</span>
+                            <small class="usuario-fecha">
+                                {% if u[4] is string %} {{ u[4] }} {% elif u[4] %} {{ u[4].strftime('%d/%m/%Y') }} {% else %} Dic. 2025 {% endif %}
+                            </small>
+                        </div>
+                    </a>
+                    {% endfor %}
                 </div>
-            </a>
-            {% endfor %}
-        </div>
-    </div>
-</aside>
+            </div>
+        </aside>
     </div>
 </body>
 </html>
