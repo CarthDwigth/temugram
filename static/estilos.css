@@ -55,23 +55,36 @@ body {
     color: #ff4d4d !important;
 }
 
-/* Contenedor Maestro */
+/* Centra el layout y limita el ancho máximo */
 .main-layout {
     display: flex;
     justify-content: center;
-    gap: 30px;
-    max-width: 1100px;
-    margin: 20px auto;
-    padding: 0 15px;
+    align-items: flex-start;
+    gap: 40px; /* Más espacio entre el post y la comunidad */
+    max-width: 935px; /* Ancho estándar de Instagram */
+    margin: 30px auto; /* Más separación del navbar */
+    padding: 0 20px;
 }
 
-/* Tarjetas de Posts y Comunidad */
+/* Ajusta el ancho del post */
+.feed-column {
+    flex: 0 1 600px;
+    width: 100%;
+}
+
+/* Ajusta la barra lateral */
+.sidebar-column {
+    flex: 0 0 290px;
+    position: sticky;
+    top: 100px; /* Para que no se pegue al navbar al bajar */
+}
+
+/* Mejora el padding interno de las tarjetas */
 .post, .comunidad-card {
-    background-color: #1e1e1e; /* Gris oscuro para las tarjetas */
+    background-color: #1e1e1e;
     border: 1px solid #333;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 20px;
+    border-radius: 8px; /* Bordes un poco menos redondeados para verse serio */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5); /* Sombra para dar profundidad */
 }
 
 .post-img {
