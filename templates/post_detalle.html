@@ -88,21 +88,38 @@
 
         // 2. Like sin recargar página (AJAX)
         function darLike(postId) {
+            const btn = document.getElementById(`btn-like-${postId}`);
+            const countSpan = document.getElementById(`like-count-${postId}`);
+
+            // Añadimos una clase de "cargando" para evitar clicks dobles
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.7';
+
             fetch(`/reaccionar/${postId}`, { 
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-            .then(response => {
-                if (response.ok) {
-                    const countSpan = document.getElementById(`like-count-${postId}`);
-                    let currentLikes = parseInt(countSpan.innerText);
-                    countSpan.innerText = currentLikes + 1;
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Actualizamos el número REAL que viene de la base de datos
+                    countSpan.innerText = data.total;
                     
-                    const btn = document.getElementById(`btn-like-${postId}`);
-                    btn.style.color = '#ff4d4d';
-                    btn.style.transform = 'scale(1.2)';
-                    setTimeout(() => btn.style.transform = 'scale(1)', 200);
+                    // Si se añadió, ponemos el corazón rojo, si se quitó, blanco
+                    if (data.accion === 'added') {
+                        btn.style.color = '#ff4d4d';
+                        btn.classList.add('active');
+                    } else {
+                        btn.style.color = '#fff';
+                        btn.classList.remove('active');
+                    }
                 }
+            })
+            .catch(err => console.error("Error en like:", err))
+            .finally(() => {
+                // Restauramos el botón para que sea clickable de nuevo
+                btn.style.pointerEvents = 'auto';
+                btn.style.opacity = '1';
             });
         }
     </script>

@@ -78,38 +78,42 @@ def comentar(post_id):
     # 3. Volvemos al inicio para ver el comentario publicado
     return redirect(url_for('main_routes.index'))
 
-@post_routes.route('/reaccionar/<int:post_id>', methods=['POST'])
+@post_routes.route("/reaccionar/<int:post_id>", methods=["POST"])
 def reaccionar(post_id):
-    # Si no está logueado, lo mandamos al login
     if 'user_id' not in session:
-        return redirect(url_for('auth_routes.login'))
-
-    uid = session['user_id']
+        return {"error": "no_auth"}, 401
+    
+    user_id = session['user_id']
     conn = get_db()
     cur = conn.cursor()
-    
-    try:
-        # 1. Buscamos si el usuario ya le dio like a este post
-        cur.execute('SELECT id FROM reacciones WHERE post_id=%s AND usuario_id=%s', (post_id, uid))
-        reaccion = cur.fetchone()
 
-        if reaccion:
-            # 2. Si ya existe, lo borramos (Quitar Like)
-            cur.execute('DELETE FROM reacciones WHERE post_id=%s AND usuario_id=%s', (post_id, uid))
-        else:
-            # 3. Si no existe, lo insertamos (Dar Like)
-            cur.execute('INSERT INTO reacciones (post_id, usuario_id) VALUES (%s, %s)', (post_id, uid))
-        
-        conn.commit()
-    except Exception as e:
-        print(f"Error al reaccionar: {e}")
-        conn.rollback()
-    finally:
-        cur.close()
-        conn.close()
+    # 1. Verificar si ya existe el like
+    cur.execute("SELECT id FROM reacciones WHERE user_id = %s AND post_id = %s", (user_id, post_id))
+    existe = cur.fetchone()
+
+    if existe:
+        # Si existe, lo quitamos (Dislike)
+        cur.execute("DELETE FROM reacciones WHERE id = %s", (existe[0],))
+        accion = "removed"
+    else:
+        # Si no existe, lo ponemos
+        cur.execute("INSERT INTO reacciones (user_id, post_id) VALUES (%s, %s)", (user_id, post_id))
+        accion = "added"
+
+    conn.commit()
     
-    # Al terminar, recargamos la página para que vea el cambio en el contador
-    return redirect(url_for('main_routes.index'))
+    # 2. Obtener el conteo actualizado
+    cur.execute("SELECT COUNT(*) FROM reacciones WHERE post_id = %s", (post_id,))
+    nuevo_total = cur.fetchone()[0]
+    
+    cur.close()
+    conn.close()
+
+    # 3. RESPUESTA INTELIGENTE: Si es AJAX, mandamos JSON. Si no, redirigimos.
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return {"status": "success", "accion": accion, "total": nuevo_total}
+    
+    return redirect(request.referrer or url_for('main_routes.index'))
 
 @post_routes.route('/reaccionar_comentario/<int:comentario_id>', methods=['POST'])
 def reaccionar_comentario(comentario_id):
