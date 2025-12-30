@@ -83,7 +83,7 @@ def reaccionar(post_id):
     if 'user_id' not in session:
         return {"error": "no_auth"}, 401
     
-    user_id = session['user_id']
+    user_id = session['usuario_id']
     conn = get_db()
     cur = conn.cursor()
 
