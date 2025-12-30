@@ -1,21 +1,23 @@
 import psycopg2
-from psycopg2.extras import RealDictCursor
 import os
 
 def get_db():
-    # Render te da la URL completa en esta variable
+    # 1. Obtener la URL de la base de datos de las variables de entorno de Render
     db_url = os.environ.get("DATABASE_URL")
+    
+    # 2. PRIMERO conectamos a la base de datos (Creamos 'conn')
+    conn = psycopg2.connect(db_url)
+    
+    # 3. DESPUÉS llamamos a crear_tablas pasando la conexión ya existente
     crear_tablas(conn)
     
-    # Esto permite que se conecte tanto en local como en la nube
-    conn = psycopg2.connect(db_url)
     return conn
 
 def crear_tablas(conn):
-    # Creamos el cursor a partir de la conexión
+    # Creamos el cursor a partir de la conexión recibida
     cur = conn.cursor()
     
-    # TABLA DE REACCIONES (Versión PostgreSQL)
+    # Tabla de Reacciones (PostgreSQL usa SERIAL para IDs autoincrementales)
     cur.execute('''
         CREATE TABLE IF NOT EXISTS reacciones (
             id SERIAL PRIMARY KEY,
@@ -26,7 +28,7 @@ def crear_tablas(conn):
         )
     ''')
     
-    # TABLA DE SEGUIDORES (Versión PostgreSQL)
+    # Tabla de Seguidores
     cur.execute('''
         CREATE TABLE IF NOT EXISTS seguidores (
             id SERIAL PRIMARY KEY,
@@ -39,3 +41,4 @@ def crear_tablas(conn):
     
     conn.commit()
     cur.close()
+    print("Tablas verificadas exitosamente.")
