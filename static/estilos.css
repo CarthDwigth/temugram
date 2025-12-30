@@ -49,112 +49,106 @@ body {
 .feed-column { flex: 0 1 600px; width: 100%; }
 .sidebar-column { flex: 0 0 290px; position: sticky; top: 100px; }
 
-/* 4. TARJETAS Y POSTS */
+/* 4. EL POST (CONTENEDOR) */
 .post, .comunidad-card {
     background-color: #1e1e1e;
     border: 1px solid #333;
     border-radius: 8px; 
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     margin-bottom: 25px;
+    overflow: hidden;
 }
 
-.post-header, .post-info, .comentarios-seccion {
-    padding: 12px 16px !important; /* Alineación unificada */
+.post-img { 
+    width: 100%; 
+    display: block; 
+    border-top: 1px solid #262626;
+    border-bottom: 1px solid #262626;
+}
+
+/* 5. ÁREAS DE CONTENIDO Y TEXTO */
+.post-header, .post-content-area {
+    padding: 12px 16px !important;
 }
 
 .post-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    border-bottom: 1px solid #262626;
 }
 
-.post-img { width: 100%; display: block; }
+.post-content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Controla el espacio entre Likes, Info y Comentarios */
+}
+
+.post-acciones {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
 .post-info {
     display: flex;
     align-items: baseline;
     gap: 8px;
+    margin-bottom: 5px;
 }
 
-/* 5. TEXTOS Y COMENTARIOS */
-.post-header strong, .post-info strong, .lista-comentarios p strong {
+.post-header strong, .post-info strong, .comentario-item strong {
     font-size: 0.95rem;
     font-weight: 600;
     color: #fff;
 }
 
+/* 6. SECCIÓN DE COMENTARIOS */
+.comentarios-seccion {
+    border-top: 1px solid #262626;
+    padding-top: 10px !important;
+}
+
 .lista-comentarios {
     max-height: 200px; 
     overflow-y: auto;  
-    margin-bottom: 15px;
+    overflow-x: hidden; /* Evita scroll lateral */
 }
 
-.lista-comentarios p {
-    font-size: 0.9rem;
-    margin: 0 0 8px 0;
-    text-align: left;
-}
-
-.comentarios-seccion { border-top: 1px solid #262626; margin-top: 5px; }
-
-/* 6. INPUTS Y BOTONES */
-input[type="text"] {
-    background: #262626;
-    border: 1px solid #363636;
-    color: white;
-    padding: 10px 14px;
-    border-radius: 20px;
+.comentario-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
+    margin-bottom: 8px;
+    box-sizing: border-box;
 }
 
+.comentario-texto {
+    flex: 1;
+    font-size: 0.9rem;
+    margin: 0;
+    word-break: break-word; /* Rompe el texto para que no empuje el borde */
+}
+
+/* 7. BOTONES E INPUTS */
 .btn-like-mini {
     background: none;
     border: none;
     cursor: pointer;
     transition: 0.2s;
+    padding: 0;
 }
 
 .btn-like-mini:hover { transform: scale(1.2); }
 
-/* Eliminamos el espacio entre piezas del post */
-.post-header, .post-acciones, .post-info, .comentarios-seccion {
-    padding: 8px 16px !important; 
-    margin: 0 !important;
-}
-
-/* La imagen debe ser el bloque central sin márgenes */
-.post-img {
+input[type="text"] {
+    background: #262626;
+    border: 1px solid #363636;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 20px;
     width: 100%;
-    display: block;
-    border-top: 1px solid #262626;
-    border-bottom: 1px solid #262626;
+    box-sizing: border-box;
 }
 
-/* Los likes van justo debajo de la foto */
-.post-acciones {
-    padding-top: 12px !important;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* La descripción pegada a los likes */
-.post-info {
-    padding-top: 0 !important; 
-    margin-bottom: 5px !important;
-}
-
-/* Arreglo para comentarios sin scroll horizontal */
-.comentario-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
-    width: 100%;
-}
-
-.comentario-texto {
-    flex: 1; /* El texto ocupa el espacio y el corazón se queda al final */
-    word-break: break-word; /* Evita que el texto largo empuje el borde */
-}
+form { max-width: 100%; margin: 0; }
