@@ -156,3 +156,33 @@ input[type="text"]:focus {
     border-radius: 8px;
     cursor: pointer;
 }
+
+/* Ajustamos para que TODO el texto del post esté alineado a la misma altura */
+.post-header, 
+.post-info, 
+.comentarios-seccion {
+    padding-left: 16px !important;  /* Alineación forzada a la izquierda */
+    padding-right: 16px !important;
+}
+
+/* El texto de la descripción (@Carth Bienvenidos a...) */
+.post-info {
+    display: flex;
+    align-items: baseline; /* Alinea el nombre con el texto en la misma base */
+    gap: 8px;              /* Espacio fijo entre el nombre y la descripción */
+    padding-top: 12px;
+    padding-bottom: 8px;
+}
+
+/* Los comentarios individuales */
+.lista-comentarios p {
+    margin: 0 0 8px 0;    /* Quitamos márgenes raros que los hacen flotar */
+    display: block;
+    text-align: left;     /* Asegura que el texto no se centre por error */
+}
+
+/* El formulario de comentarios */
+.comentarios-seccion form {
+    margin-top: 12px;
+    padding-bottom: 5px;
+}
