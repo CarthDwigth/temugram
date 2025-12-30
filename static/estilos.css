@@ -342,4 +342,48 @@ input[type="text"] {
 }
 /* ... y el resto de clases ... */
 
+/* Botón Volver con estilo TemuGram */
+.btn-volver {
+    text-decoration: none;
+    color: #aaa;
+    font-size: 0.9rem;
+    padding: 8px 15px;
+    border-radius: 20px;
+    background: #1e1e1e;
+    transition: all 0.3s ease;
+}
+.btn-volver:hover {
+    color: #fff;
+    background: #333;
+}
+
+/* Comentarios sin cuadros, más estilo "hilo" */
+.comentario-item-clean {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #222; /* Una línea muy sutil */
+}
+
+/* Botón de Like minimalista (Corazón + Número) */
+.btn-like-clean {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+    padding: 5px;
+    transition: transform 0.2s ease;
+}
+.btn-like-clean:hover {
+    transform: scale(1.1);
+}
+.btn-like-clean.active {
+    color: #ff4d4d; /* Rojo TemuGram al estar activo */
+}
+
 .info-mini a:hover { color: #ff4d4d; }
