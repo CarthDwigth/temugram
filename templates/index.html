@@ -88,16 +88,17 @@
 
     <aside class="sidebar-column">
     <div class="comunidad-card">
-        <h3>👥 Comunidad</h3> <div class="usuarios-lista">
+        <h3>👥 Comunidad</h3> 
+        <div class="usuarios-lista">
             {% for u in usuarios %}
-                <div class="usuario-linea">
-                    <span class="emoji-mini" style="font-size: 1.4rem;">{{ u[3] or '👤' }}</span>
-                    <div class="info-mini">
-                        <a href="{{ url_for('main_routes.perfil', username=u[1]) }}">@{{ u[1] }}</a>
-                        <br>
-                        <small style="color: #888;">{{ u[2] }}</small>
-                    </div>
+            <a href="{{ url_for('main_routes.perfil', username=u[1]) }}" class="usuario-item">
+                <span class="usuario-emoji">{{ u[3] or '👤' }}</span>
+                
+                <div class="usuario-info">
+                    <span class="usuario-nombre">@{{ u[1] }}</span>
+                    <small class="usuario-fecha">Miembro desde: {{ u[4].strftime('%d/%m/%Y') if u[4] else 'Reciente' }}</small>
                 </div>
+            </a>
             {% endfor %}
         </div>
     </div>
