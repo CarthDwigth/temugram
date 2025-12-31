@@ -446,3 +446,72 @@ input[type="text"] {
     padding: 10px 0;
     font-size: 1rem;
 }
+
+/* Quita el margen de la descripción para que no empuje hacia abajo */
+.post-info-side p, .post-info-side span {
+    margin: 0;
+    padding-bottom: 5px;
+}
+
+/* Alinea el corazón con el número de forma compacta */
+.post-stats-detalle {
+    padding: 5px 0 !important; /* Reduce el espacio vertical */
+    display: flex;
+    align-items: center;
+    gap: 4px; /* Espacio mínimo entre el emoji y el texto */
+}
+
+/* Si quieres que el texto diga "1" a secas sin tanto espacio */
+.btn-like-clean span {
+    margin-left: -2px; 
+}
+
+.scroll-comentarios {
+    padding-top: 5px !important; /* Reduce el espacio superior del contenedor */
+}
+
+.comentario-item-clean:first-child {
+    padding-top: 0; /* Quita el padding superior solo al primer comentario */
+}
+
+/* Contenedor de descripción y likes para que estén juntos */
+.post-meta-compacta {
+    padding: 0 16px 10px 16px;
+    border-bottom: 1px solid #262626;
+}
+
+.post-descripcion {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #efefef;
+    padding-bottom: 2px; /* Pegado a los likes */
+}
+
+/* El botón de Like sin espacios extra */
+.btn-like-clean {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex; /* Alineación perfecta */
+    align-items: center;
+    gap: 4px; /* Espacio mínimo corazón-número */
+    padding: 0;
+    font-weight: bold;
+}
+
+.post-stats-detalle {
+    margin-top: 5px;
+}
+
+/* Alineación de la cabecera */
+.post-header-detalle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+}
+
+.usuario-nombre-rojo {
+    color: #ff4d4d !important;
+}
