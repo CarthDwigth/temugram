@@ -126,7 +126,15 @@ def ver_post(post_id):
 
     # 1. Obtener el post con los datos del autor
     cur.execute("""
-        SELECT username, descripcion, url_foto, posts.id, rol, emoji, posts.user_id
+        SELECT 
+            usuarios.username, 
+            posts.descripcion, 
+            posts.url_foto, 
+            posts.id, 
+            usuarios.rol, 
+            usuarios.emoji, 
+            posts.user_id,
+            (SELECT COUNT(*) FROM reacciones WHERE post_id = posts.id) AS total_likes
         FROM posts
         JOIN usuarios ON posts.user_id = usuarios.id
         WHERE posts.id = %s

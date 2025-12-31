@@ -20,13 +20,15 @@
 
         <div class="post-info-side">
             <div style="padding: 15px; border-bottom: 1px solid #222;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
                     <span style="font-size: 1.5rem;">{{ post[5] or '👤' }}</span>
                     <strong style="color: #ff4d4d;">@{{ post[0] }}</strong>
                 </div>
-                <p style="color: #eee; margin-bottom: 15px; font-size: 0.95rem;">{{ post[1] }}</p>
+
+                <p style="color: #eee; margin-bottom: 2px; font-size: 0.95rem;">{{ post[1] }}</p>
                 
-                <div class="post-acciones" style="margin-top: -10px;"> <button onclick="darLike('{{ post[3] }}')" id="btn-like-{{ post[3] }}" class="btn-like-clean" style="display: flex; align-items: center; gap: 4px; padding: 0;">
+                <div class="post-acciones">
+                    <button onclick="darLike('{{ post[3] }}')" id="btn-like-{{ post[3] }}" class="btn-like-clean" style="display: flex; align-items: center; gap: 4px; padding: 0;">
                         ❤️ <span id="like-count-{{ post[3] }}" style="font-size: 0.95rem;">{{ post[7] or 0 }}</span>
                     </button>
                 </div>
