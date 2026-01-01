@@ -1,168 +1,488 @@
-/* Reglas generales */
-:root {
-    --rojo-temu: #ff4d4d;
-    --rojo-hover: #e63939;
-    --bg-negro: #121212;
-    --bg-card: #1e1e1e;
-    --borde: #333;
-    --borde-post: #262626;
-    --texto-gris: #888;
-}
-
+/* =====================================================
+   1. CONFIGURACIÓN BASE
+===================================================== */
 body {
-    background-color: var(--bg-negro);
-    color: #e1e1e1;
     margin: 0;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #121212;
+    color: #e1e1e1;
 }
 
-/* Contenedores */
+a {
+    color: inherit;
+    text-decoration: none;
+}
 
+input[type="text"] {
+    width: 100%;
+    padding: 8px 14px;
+    background: #262626;
+    border: 1px solid #363636;
+    border-radius: 20px;
+    color: #fff;
+    box-sizing: border-box;
+}
+
+/* =====================================================
+   2. NAVBAR
+===================================================== */
 .navbar {
-    background-color: #000000;
-    padding: 15px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--borde);
     position: sticky;
     top: 0;
     z-index: 1000;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 15px 30px;
+    background: #000;
+    border-bottom: 1px solid #333;
 }
 
+.navbar strong {
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.nav-links a {
+    margin-left: 10px;
+    padding: 8px 15px;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+/* Variantes */
+.link-publicar { background: #28a745; color: #fff !important; }
+.link-login    { background: #0095f6; color: #fff !important; }
+.link-registro { border: 1px solid #0095f6; color: #0095f6 !important; }
+.link-salir    { color: #ff4d4d !important; }
+
+/* =====================================================
+   3. LAYOUT GENERAL
+===================================================== */
 .main-layout {
+    max-width: 935px;
+    margin: 30px auto;
+    padding: 0 20px;
+
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    gap: 40px; 
-    max-width: 935px; 
-    margin: 30px auto; 
-    padding: 0 20px;
+    gap: 40px;
 }
 
-.feed-column { flex: 0 1 600px; width: 100%; }
-.sidebar-column { flex: 0 0 290px; position: sticky; top: 100px; }
+.feed-column {
+    flex: 0 1 600px;
+    width: 100%;
+}
 
-/* Post y SideBar */
+.sidebar-column {
+    flex: 0 0 290px;
+    position: sticky;
+    top: 100px;
+}
 
-.post, .comunidad-card, .post-container-full {
-    background-color: var(--bg-card);
-    border: 1px solid var(--borde);
-    border-radius: 8px; 
+/* =====================================================
+   4. TARJETAS (POST / COMUNIDAD)
+===================================================== */
+.post,
+.comunidad-card {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     margin-bottom: 25px;
     overflow: hidden;
 }
 
-.comunidad-card { padding: 20px; } /* Padding extra solo para la sidebar */
+.post-img {
+    width: 100%;
+    display: block;
+    border-top: 1px solid #262626;
+    border-bottom: 1px solid #262626;
+}
 
-/* Componentes post */
+/* =====================================================
+   5. POST – ESTRUCTURA
+===================================================== */
+.post-header,
+.post-content-area {
+    padding: 12px 16px !important;
+}
 
-.post-header, .post-header-detalle {
+.post-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 16px;
-}
-
-.post-img { 
-    width: 100%; 
-    display: block; 
-    border-top: 1px solid var(--borde-post);
-    border-bottom: 1px solid var(--borde-post);
 }
 
 .post-content-area {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 12px 16px;
 }
 
-/* Botones de Navegación */
-.nav-links a {
-    text-decoration: none;
-    font-weight: bold;
-    padding: 8px 15px;
-    border-radius: 6px;
-    transition: 0.3s;
-    margin-left: 10px;
+.post-header strong,
+.post-info strong,
+.comentario-item strong {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
 }
 
-.link-publicar { background-color: #28a745; color: white !important; }
-.link-login { background-color: #0095f6; color: white !important; }
-.link-salir { color: var(--rojo-temu) !important; }
+.post-info {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 5px;
+}
 
-/* Botón de Like */
+.post-acciones {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* =====================================================
+   6. COMENTARIOS (GENERAL)
+===================================================== */
+.comentarios-seccion {
+    border-top: 1px solid #262626;
+    padding-top: 10px !important;
+}
+
+.lista-comentarios {
+    max-height: 160px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #444 #1e1e1e;
+}
+
+/* Scroll Webkit */
+.lista-comentarios::-webkit-scrollbar {
+    width: 5px;
+}
+.lista-comentarios::-webkit-scrollbar-track {
+    background: transparent;
+}
+.lista-comentarios::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 10px;
+}
+.lista-comentarios::-webkit-scrollbar-thumb:hover {
+    background: #ff4d4d;
+}
+
+/* =====================================================
+   7. COMENTARIO ITEM
+===================================================== */
+.comentario-item,
+.comentario-item-clean {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comentario-item {
+    margin-bottom: 8px;
+}
+
+.comentario-item-clean {
+    padding: 10px 0;
+    border-bottom: 1px solid #222;
+}
+
+.comentario-item-clean:first-child {
+    padding-top: 0;
+}
+
+.comentario-texto {
+    flex: 1;
+    font-size: 0.9rem;
+    margin: 0;
+    word-break: break-word;
+}
+
+.comentario-stats {
+    min-width: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.comentario-likes-count {
+    font-size: 0.7rem;
+    color: #8e8e8e;
+    font-weight: 600;
+    margin-top: -2px;
+}
+
+/* =====================================================
+   8. BOTONES LIKE
+===================================================== */
+.btn-like-mini,
 .btn-like-clean {
     background: none;
     border: none;
-    color: #fff;
     cursor: pointer;
+    color: #fff;
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-weight: bold;
-    transition: transform 0.2s;
+    padding: 0;
+    transition: transform 0.2s ease;
 }
 
-.btn-like-clean:hover { transform: scale(1.1); }
-.btn-like-clean.active { color: var(--rojo-temu); }
-
-/* Recuperamos el color blanco y quitamos el subrayado */
-.usuario-item {
-    text-decoration: none;
-    color: white;
+.btn-like-mini:hover,
+.btn-like-clean:hover {
+    transform: scale(1.1);
 }
 
-.usuario-nombre {
-    color: #ffffff !important;
-    font-weight: bold;
+.btn-like-clean.active {
+    color: #ff4d4d;
 }
 
-/* El efecto que tenías: al pasar el mouse se pone rojo */
-.usuario-item:hover .usuario-nombre {
-    color: var(--rojo-temu) !important;
+.btn-like-clean span {
+    margin-left: -2px;
 }
 
-/* Botones específicos */
-.link-publicar { background-color: #28a745 !important; color: white !important; }
-.link-login { background-color: #0095f6 !important; color: white !important; }
-.link-registro { border: 1px solid #0095f6 !important; color: #0095f6 !important; }
-.link-salir { color: var(--rojo-temu) !important; }
-
-/* Aseguramos que tengan el padding y forma de botón */
-.nav-links a {
-    display: inline-block;
-    padding: 8px 15px;
-    border-radius: 6px;
-    font-weight: bold;
-    text-decoration: none;
+/* =====================================================
+   9. FORMULARIO COMENTAR
+===================================================== */
+.form-comentario {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #333;
 }
 
 .btn-comentar-estetico {
-    background-color: var(--rojo-temu);
-    color: white;
+    background: #ff4d4d;
+    color: #fff;
     border: none;
     padding: 6px 15px;
     border-radius: 20px;
+    font-size: 0.85rem;
     font-weight: bold;
     cursor: pointer;
+    transition: 0.3s;
 }
 
-/* El input de texto */
-input[type="text"] {
-    background: #262626;
-    border: 1px solid #363636;
-    color: white;
-    padding: 8px 14px;
+.btn-comentar-estetico:hover {
+    background: #e63939;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(255,77,77,.4);
+}
+
+/* =====================================================
+   10. SIDEBAR – COMUNIDAD
+===================================================== */
+.comunidad-card {
+    padding: 20px;
+}
+
+.comunidad-card h3 {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #fff;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 20px;
+}
+
+.usuarios-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-left: 10px;
+}
+
+.usuario-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.usuario-item:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.usuario-emoji {
+    font-size: 1.5rem;
+}
+
+.usuario-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.usuario-nombre {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.usuario-item:hover .usuario-nombre,
+.info-mini a:hover {
+    color: #ff4d4d;
+}
+
+.usuario-fecha,
+.usuario-rol {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.usuario-rol {
+    margin-top: 8px;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-weight: bold;
+    background: #333;
+    color: #fff;
+}
+
+.rol-admin {
+    background: #ff4d4d !important;
+}
+
+/* =====================================================
+   11. POST DETALLE
+===================================================== */
+.post-container-full {
+    max-width: 1200px;
+    height: 85vh;
+    margin: 20px auto;
+
+    display: flex;
+    background: #121212;
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.post-image-side {
+    flex: 1.6;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.post-image-side img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: zoom-in;
+    transition: transform 0.3s;
+}
+
+/* Fullscreen */
+.img-fullscreen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.95);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.img-fullscreen img {
+    max-width: 95vw;
+    max-height: 95vh;
+    cursor: zoom-out;
+    transform: scale(1.05);
+}
+
+/* =====================================================
+   12. PANEL INFO DETALLE
+===================================================== */
+.post-info-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #121212;
+    border-left: 1px solid #333;
+}
+
+.post-header-detalle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+}
+
+.post-meta-compacta {
+    padding: 0 16px 10px;
+    border-bottom: 1px solid #262626;
+}
+
+.post-descripcion {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #efefef;
+}
+
+.post-stats-detalle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 5px;
+    padding: 5px 0 !important;
+}
+
+/* Scroll detalle */
+.scroll-comentarios {
+    flex: 1;
+    padding: 5px 15px;
+    overflow-y: auto;
+    background: #0a0a0a;
+}
+
+/* =====================================================
+   13. BOTONES AUXILIARES
+===================================================== */
+.btn-volver {
+    padding: 8px 15px;
     border-radius: 20px;
+    font-size: 0.9rem;
+    color: #aaa;
+    background: #1e1e1e;
+    transition: 0.3s;
 }
 
-/* Contenedores */
-/* Contenedores */
-/* Contenedores */
-/* Contenedores */
-/* Contenedores */
-/* Contenedores */
-/* Contenedores */
+.btn-volver:hover {
+    background: #333;
+    color: #fff;
+}
+
+.btn-publicar-rojo {
+    background: #ff4d4d;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-publicar-rojo:hover {
+    background: #ff1a1a;
+    box-shadow: 0 0 10px rgba(255,77,77,.3);
+}
+
+.usuario-nombre-rojo {
+    color: #ff4d4d !important;
+}
