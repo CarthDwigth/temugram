@@ -1,48 +1,33 @@
+/* Reglas generales */
 :root {
     --rojo-temu: #ff4d4d;
     --rojo-hover: #e63939;
     --bg-negro: #121212;
     --bg-card: #1e1e1e;
     --borde: #333;
+    --borde-post: #262626;
     --texto-gris: #888;
-    --radius-pill: 20px;
-    --radius-card: 8px;
 }
 
-/* --- COMPONENTES BASE --- */
-.card-base, .post, .comunidad-card, .post-container-full {
-    background-color: var(--bg-card);
-    border: 1px solid var(--borde);
-    border-radius: var(--radius-card);
-    overflow: hidden;
+body {
+    background-color: var(--bg-negro);
+    color: #e1e1e1;
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* El botón universal de TemuGram */
-.btn-temu {
-    display: inline-flex;
+/* Contenedores */
+
+.navbar {
+    background-color: #000000;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    padding: 8px 18px;
-    border-radius: var(--radius-pill);
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-    text-decoration: none;
-}
-
-.btn-primary { background: var(--rojo-temu); color: white; }
-.btn-primary:hover { background: var(--rojo-hover); transform: translateY(-1px); }
-
-/* Inputs estándar */
-input[type="text"], input[type="password"] {
-    background: #262626;
-    border: 1px solid #363636;
-    color: white;
-    padding: 10px 15px;
-    border-radius: var(--radius-pill);
-    width: 100%;
-    box-sizing: border-box;
+    border-bottom: 1px solid var(--borde);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .main-layout {
@@ -55,5 +40,80 @@ input[type="text"], input[type="password"] {
     padding: 0 20px;
 }
 
-.feed-column { flex: 1; max-width: 600px; }
+.feed-column { flex: 0 1 600px; width: 100%; }
 .sidebar-column { flex: 0 0 290px; position: sticky; top: 100px; }
+
+/* Post y SideBar */
+
+.post, .comunidad-card, .post-container-full {
+    background-color: var(--bg-card);
+    border: 1px solid var(--borde);
+    border-radius: 8px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.comunidad-card { padding: 20px; } /* Padding extra solo para la sidebar */
+
+/* Componentes post */
+
+.post-header, .post-header-detalle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+}
+
+.post-img { 
+    width: 100%; 
+    display: block; 
+    border-top: 1px solid var(--borde-post);
+    border-bottom: 1px solid var(--borde-post);
+}
+
+.post-content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px;
+}
+
+/* Botones y reacciones */
+/* Botones de Navegación */
+.nav-links a {
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 6px;
+    transition: 0.3s;
+    margin-left: 10px;
+}
+
+.link-publicar { background-color: #28a745; color: white !important; }
+.link-login { background-color: #0095f6; color: white !important; }
+.link-salir { color: var(--rojo-temu) !important; }
+
+/* Botón de Like */
+.btn-like-clean {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+.btn-like-clean:hover { transform: scale(1.1); }
+.btn-like-clean.active { color: var(--rojo-temu); }
+
+/* Contenedores */
+/* Contenedores */
+/* Contenedores */
+/* Contenedores */
+/* Contenedores */
+/* Contenedores */
+/* Contenedores */
