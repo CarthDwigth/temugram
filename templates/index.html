@@ -108,12 +108,10 @@
 
 </div> 
 <script>
-/* LIKES DE POSTS - AJAX */
 document.addEventListener('submit', (e) => {
     const form = e.target.closest('.form-comentario');
     if (!form) return;
-
-    e.preventDefault(); // Evita el envío normal
+    e.preventDefault();
 
     const postId = form.dataset.postId;
     const input = form.querySelector('input[name="texto"]');
@@ -121,44 +119,41 @@ document.addEventListener('submit', (e) => {
     const texto = input.value.trim();
     if (!texto) return;
 
-    // ===== 1️⃣ Bloquear input + botón para que no se pueda enviar otro comentario =====
-    input.disabled = true;
-    btn.disabled = true;
-    input.style.opacity = 0.7;
+    input.disabled = true; btn.disabled = true; input.style.opacity=0.7;
 
-    // ===== 2️⃣ Enviar comentario por AJAX =====
     fetch(`/comentar/${postId}`, {
-        method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/x-www-form-urlencoded'
+        method:'POST',
+        headers:{
+            'X-Requested-With':'XMLHttpRequest',
+            'Content-Type':'application/x-www-form-urlencoded'
         },
-        body: new URLSearchParams({ texto })
+        body:new URLSearchParams({texto})
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status !== 'success') throw new Error('Error en backend');
-
-        // ===== 3️⃣ Insertar comentario al inicio de la lista (reales primero) =====
-        const lista = form.previousElementSibling; // .lista-comentarios
-        lista.insertAdjacentHTML('afterbegin', data.html);
-
-        // ===== 4️⃣ Limpiar input + desbloquear =====
-        input.value = '';
-        input.disabled = false;
-        btn.disabled = false;
-        input.style.opacity = 1;
-
-        // Opcional: hacer scroll al primer comentario si quieres
-        // lista.firstElementChild.scrollIntoView({ behavior: "smooth" });
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.status!=='success') throw new Error('Error backend');
+        form.previousElementSibling.insertAdjacentHTML('afterbegin', data.html);
+        input.value=''; input.disabled=false; btn.disabled=false; input.style.opacity=1;
     })
-    .catch(err => {
-        console.error('Error en comentario:', err);
-        input.disabled = false;
-        btn.disabled = false;
-        input.style.opacity = 1;
-    });
+    .catch(err=>{console.error(err); input.disabled=false; btn.disabled=false; input.style.opacity=1; });
 });
+
+// LIKES
+function darLike(postId){
+    fetch(`/reaccionar/${postId}`, {
+        method:'POST',
+        headers:{'X-Requested-With':'XMLHttpRequest'}
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.status!=='success') return;
+        const span=document.getElementById(`like-count-${postId}`);
+        const btn=document.getElementById(`btn-like-${postId}`);
+        span.innerText=data.total;
+        btn.style.color=(data.accion==='added')?'#ff4d4d':'#fff';
+    }).catch(err=>console.error(err));
+}
+
 
 /* ===========================
    OPCIONAL: Delegación futura para likes de comentarios
@@ -180,7 +175,6 @@ document.addEventListener('click', (e) => {
 });
 */
 </script>
-
 
 </body>
 </html>

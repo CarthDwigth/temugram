@@ -1,7 +1,6 @@
 import os
 import requests
-import base64
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, render_template_string
 from db import get_db
 
 post_routes = Blueprint("post_routes", __name__)
@@ -16,10 +15,8 @@ def crear_post():
         descripcion = request.form.get("descripcion")
 
         if foto:
-            # 1. Subir a Freeimage.host
             api_key = os.environ.get("FREEIMAGE_API_KEY")
             url_api = "https://freeimage.host/api/1/upload"
-            
             files = {"source": (foto.filename, foto.read())}
             data = {"key": api_key, "action": "upload", "format": "json"}
             
@@ -29,18 +26,12 @@ def crear_post():
             if response.status_code == 200:
                 url_foto = json_data['image']['url']
                 
-                # 2. Guardar en la Base de Datos
                 conn = get_db()
                 cur = conn.cursor()
-                
-                # Buscamos el ID del usuario logueado
                 cur.execute("SELECT id FROM usuarios WHERE username = %s", (session['username'],))
                 user_id = cur.fetchone()[0]
-                
-                # Insertamos el post
                 cur.execute("INSERT INTO posts (user_id, descripcion, url_foto) VALUES (%s, %s, %s)",
                             (user_id, descripcion, url_foto))
-                
                 conn.commit()
                 cur.close()
                 conn.close()
@@ -49,6 +40,7 @@ def crear_post():
 
     return render_template("publicar.html")
 
+# ==================== COMENTARIOS ====================
 @post_routes.route("/comentar/<int:post_id>", methods=["POST"])
 def comentar(post_id):
     if 'username' not in session:
@@ -60,7 +52,6 @@ def comentar(post_id):
 
     conn = get_db()
     cur = conn.cursor()
-
     cur.execute("SELECT id FROM usuarios WHERE username = %s", (session['username'],))
     user_id = cur.fetchone()[0]
 
@@ -89,59 +80,65 @@ def comentar(post_id):
 
     return jsonify(status="success", html=html)
 
-
+# ==================== LIKES POSTS ====================
 @post_routes.route("/reaccionar/<int:post_id>", methods=["POST"])
 def reaccionar(post_id):
     if 'user_id' not in session:
-        return {"status": "error", "message": "No login"}, 401
+        return jsonify(status="error", message="No login"), 401
     
     user_id = session['user_id']
     conn = get_db()
     cur = conn.cursor()
 
-    # Buscamos usando 'usuario_id' que es como se llama en tu tabla
-    cur.execute("SELECT id FROM reacciones WHERE usuario_id = %s AND post_id = %s", (user_id, post_id))
+    cur.execute("SELECT id FROM reacciones WHERE usuario_id=%s AND post_id=%s", (user_id, post_id))
     existe = cur.fetchone()
 
     if existe:
-        cur.execute("DELETE FROM reacciones WHERE id = %s", (existe[0],))
+        cur.execute("DELETE FROM reacciones WHERE id=%s", (existe[0],))
         accion = "removed"
     else:
         cur.execute("INSERT INTO reacciones (usuario_id, post_id) VALUES (%s, %s)", (user_id, post_id))
         accion = "added"
 
     conn.commit()
-    cur.execute("SELECT COUNT(*) FROM reacciones WHERE post_id = %s", (post_id,))
+    cur.execute("SELECT COUNT(*) FROM reacciones WHERE post_id=%s", (post_id,))
     total = cur.fetchone()[0]
     cur.close()
     conn.close()
 
-    # AQUÍ ESTÁ EL TRUCO:
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return {"status": "success", "accion": accion, "total": total}
+        return jsonify(status="success", accion=accion, total=total)
     
     return redirect(request.referrer or url_for('main_routes.index'))
 
-
+# ==================== LIKES COMENTARIOS ====================
 @post_routes.route('/reaccionar_comentario/<int:comentario_id>', methods=['POST'])
 def reaccionar_comentario(comentario_id):
     if 'user_id' not in session:
-        return redirect(url_for('auth_routes.login'))
+        return jsonify(status="error", message="No login"), 401
     
     usuario_id = session['user_id']
     db = get_db()
     cur = db.cursor()
 
-    cur.execute("SELECT id FROM likes_comentarios WHERE usuario_id = %s AND comentario_id = %s", (usuario_id, comentario_id))
+    cur.execute("SELECT id FROM likes_comentarios WHERE usuario_id=%s AND comentario_id=%s", (usuario_id, comentario_id))
     like_existente = cur.fetchone()
 
     if like_existente:
-        cur.execute("DELETE FROM likes_comentarios WHERE id = %s", (like_existente[0],))
+        cur.execute("DELETE FROM likes_comentarios WHERE id=%s", (like_existente[0],))
+        accion = "removed"
     else:
         cur.execute("INSERT INTO likes_comentarios (usuario_id, comentario_id) VALUES (%s, %s)", (usuario_id, comentario_id))
+        accion = "added"
 
     db.commit()
+    # Contar likes actualizados
+    cur.execute("SELECT COUNT(*) FROM likes_comentarios WHERE comentario_id=%s", (comentario_id,))
+    total = cur.fetchone()[0]
     cur.close()
+    db.close()
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify(status="success", accion=accion, total=total)
     
-    # IMPORTANTE: request.referrer hace que vuelvas a la misma página donde estabas
     return redirect(request.referrer or url_for('main_routes.index'))
