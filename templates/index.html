@@ -136,26 +136,52 @@ function darLike(postId) {
     .catch(err => console.error("Error:", err));
 }
 
-document.addEventListener('click', function(e){
-    if(e.target.classList.contains('btn-like-mini')){
-        e.preventDefault();
-        const form = e.target.closest('form');
-        const span = form.nextElementSibling;
-        const actionUrl = form.action;
+document.addEventListener('submit', function(e) {
+    const form = e.target.closest('.form-comentario');
+    if (!form) return; // no es un formulario de comentario
 
-        fetch(actionUrl, {
-            method: 'POST',
-            headers: {'X-Requested-With': 'XMLHttpRequest'}
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.status === 'success'){
-                span.textContent = data.total;
-                e.target.textContent = data.accion === 'added' ? '❤️' : '🤍';
-            }
-        })
-        .catch(err => console.error(err));
-    }
+    e.preventDefault(); // evita que la página recargue
+
+    const postId = form.dataset.postId;
+    const input = form.querySelector('input[name="texto"]');
+    const btn = form.querySelector('button[type="submit"]');
+    const texto = input.value.trim();
+    if (!texto) return;
+
+    // Bloqueamos mientras se envía
+    input.disabled = true;
+    btn.disabled = true;
+    input.style.opacity = 0.7;
+
+    fetch(`/comentar/${postId}`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({ texto })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status !== 'success') throw new Error('Error en backend');
+
+        // Insertamos el nuevo comentario al inicio de la lista
+        const post = form.closest('.post');
+        const lista = post.querySelector('.lista-comentarios');
+        lista.insertAdjacentHTML('afterbegin', data.html);
+
+        // Limpiamos y desbloqueamos
+        input.value = '';
+        input.disabled = false;
+        btn.disabled = false;
+        input.style.opacity = 1;
+    })
+    .catch(err => {
+        console.error('Error en comentario:', err);
+        input.disabled = false;
+        btn.disabled = false;
+        input.style.opacity = 1;
+    });
 });
 
 </script>
