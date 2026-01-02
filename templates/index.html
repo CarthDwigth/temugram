@@ -117,13 +117,16 @@ document.addEventListener('submit', (e) => {
 
     const postId = form.dataset.postId;
     const input = form.querySelector('input[name="texto"]');
+    const btn = form.querySelector('button[type="submit"]');
     const texto = input.value.trim();
     if (!texto) return;
 
-    // feedback visual
+    // 1️⃣ Evitar doble envío
     input.disabled = true;
+    btn.disabled = true;
     input.style.opacity = 0.7;
 
+    // 2️⃣ Enviamos AJAX
     fetch(`/comentar/${postId}`, {
         method: 'POST',
         headers: {
@@ -132,17 +135,24 @@ document.addEventListener('submit', (e) => {
         },
         body: new URLSearchParams({ texto })
     })
-    .then(res => res.text())
-    .then(() => {
+    .then(res => res.json()) // backend debe devolver JSON {status:'success', html: '<div>...</div>'}
+    .then(data => {
+        if (data.status !== 'success') throw new Error('Error en backend');
+
+        // 3️⃣ Insertar comentario arriba
+        const lista = form.previousElementSibling; // .lista-comentarios
+        lista.insertAdjacentHTML('afterbegin', data.html);
+
+        // 4️⃣ Limpiar input y reactivar
         input.value = '';
         input.disabled = false;
+        btn.disabled = false;
         input.style.opacity = 1;
-        // por ahora recargamos para ver el comentario
-        location.reload();
     })
     .catch(err => {
         console.error('Error en comentario:', err);
         input.disabled = false;
+        btn.disabled = false;
         input.style.opacity = 1;
     });
 });

@@ -52,31 +52,47 @@ def crear_post():
 @post_routes.route("/comentar/<int:post_id>", methods=["POST"])
 def comentar(post_id):
     if 'username' not in session:
-        return redirect(url_for('auth_routes.login'))
-    
-    # IMPORTANTE: name="texto" debe ser igual en tu HTML
+        return jsonify(status="error", message="No login"), 401
+
     texto = request.form.get("texto")
-    
-    if texto:
-        conn = get_db()
-        cur = conn.cursor()
-        
-        # 1. Buscamos el ID del que está comentando
-        cur.execute("SELECT id FROM usuarios WHERE username = %s", (session['username'],))
-        user_id = cur.fetchone()[0]
-        
-        # 2. Insertamos el comentario en la tabla
-        cur.execute("""
-            INSERT INTO comentarios (post_id, user_id, texto) 
-            VALUES (%s, %s, %s)
-        """, (post_id, user_id, texto))
-        
-        conn.commit()
-        cur.close()
-        conn.close()
-    
-    # 3. Volvemos al inicio para ver el comentario publicado
-    return redirect(url_for('main_routes.index'))
+    if not texto:
+        return jsonify(status="error", message="Texto vacío"), 400
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    # 1. Id del usuario
+    cur.execute("SELECT id FROM usuarios WHERE username = %s", (session['username'],))
+    user_id = cur.fetchone()[0]
+
+    # 2. Insertamos el comentario
+    cur.execute("INSERT INTO comentarios (post_id, user_id, texto) VALUES (%s, %s, %s)",
+                (post_id, user_id, texto))
+    conn.commit()
+
+    # 3. Obtener id del comentario recién creado
+    comentario_id = cur.lastrowid
+    cur.execute("SELECT username, texto, id FROM comentarios WHERE id = %s", (comentario_id,))
+    nuevo_comentario = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    # 4. Renderizamos HTML del comentario para enviar al frontend
+    html = render_template_string("""
+    <div class="comentario-item">
+        <p class="comentario-texto">
+            <strong>@{{ nuevo.username }}:</strong> {{ nuevo.texto }}
+        </p>
+        <div class="comentario-stats">
+            <form action="{{ url_for('post_routes.reaccionar_comentario', comentario_id=nuevo.id) }}" method="POST" style="margin: 0;">
+                <button type="submit" class="btn-like-mini">🤍</button>
+            </form>
+            <span class="comentario-likes-count">0</span>
+        </div>
+    </div>
+    """, nuevo={'username': nuevo_comentario[0], 'texto': nuevo_comentario[1], 'id': nuevo_comentario[2]})
+
+    return jsonify(status="success", html=html)
 
 @post_routes.route("/reaccionar/<int:post_id>", methods=["POST"])
 def reaccionar(post_id):
