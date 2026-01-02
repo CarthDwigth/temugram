@@ -539,3 +539,45 @@ input[type="text"] {
 .btn-like-clean.active {
     color: var(--tg-accent); /* tu rojo */
 }
+
+/* NEW */
+.comentario-item {
+    position: relative; /* Para poder posicionar botones dentro */
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.comentario-texto {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.comentario-stats {
+    display: flex;
+    align-items: center;
+    margin-top: 4px;
+    gap: 8px;
+    position: relative; /* para el botón de borrar */
+}
+
+/* Botón de borrar estilo pequeño y arriba a la derecha */
+.btn-borrar-comentario {
+    background: transparent;
+    border: none;
+    color: red;
+    font-size: 0.9rem;
+    cursor: pointer;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    transition: transform 0.2s;
+}
+
+.btn-borrar-comentario:hover {
+    transform: scale(1.2);
+}
