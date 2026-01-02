@@ -37,11 +37,12 @@ def index():
         
         # AQUÍ ESTÁ LA SOLUCIÓN: Añadimos 'id' y 'likes_count'
         comentarios_por_post[pid].append({
-            'id': c[0],           # <--- El c.id que buscaba el HTML
+            'id': c[0],           
             'username': c[1],
             'texto': c[2],
             'emoji': c[3],
-            'likes_count': c[5]   # <--- El numerito de likes
+            'user_id': c[4],        # 🔹 Agregado
+            'likes_count': c[6] if len(c) > 6 else 0  # seguro
         })
 
     # 3. Obtener Usuarios para la barra lateral
