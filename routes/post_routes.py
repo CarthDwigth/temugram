@@ -148,3 +148,28 @@ def reaccionar_comentario(comentario_id):
         return jsonify(status="success", accion=accion, total=total)
     
     return redirect(request.referrer or url_for('main_routes.index'))
+
+@post_routes.route('/borrar_comentario/<int:comentario_id>', methods=['POST'])
+def borrar_comentario(comentario_id):
+    if 'user_id' not in session:
+        return jsonify(status="error", message="No login"), 401
+
+    usuario_id = session['user_id']
+    db = get_db()
+    cur = db.cursor()
+
+    # Verificar que el comentario pertenece al usuario
+    cur.execute("SELECT user_id FROM comentarios WHERE id=%s", (comentario_id,))
+    row = cur.fetchone()
+    if not row or row[0] != usuario_id:
+        cur.close()
+        db.close()
+        return jsonify(status="error", message="No puedes borrar este comentario"), 403
+
+    # Borrar el comentario
+    cur.execute("DELETE FROM comentarios WHERE id=%s", (comentario_id,))
+    db.commit()
+    cur.close()
+    db.close()
+
+    return jsonify(status="success", comentario_id=comentario_id)
