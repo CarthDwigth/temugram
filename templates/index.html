@@ -56,7 +56,7 @@
                     <div class="lista-comentarios">
                         {% set lista = comentarios_dic.get(p[3]) %}
                         {% if lista %}
-                            {% for c in lista %}
+                            {% for c in lista|reverse %}
                                 <div class="comentario-item">
                                     <p class="comentario-texto">
                                         <strong>@{{ c.username }}:</strong> {{ c.texto }}
@@ -74,10 +74,7 @@
                         {% endif %}
                     </div>
                     
-                    <form class="form-comentario"
-                        data-post-id="{{ p[3] }}"
-                        style="display:flex; gap:8px; margin-top:10px;">
-                        
+                    <form class="form-comentario" data-post-id="{{ p[3] }}" style="display: flex; gap: 8px; margin-top: 10px; align-items: center;">
                         <input type="text" name="texto" placeholder="Añadir comentario..." required>
                         <button type="submit" class="btn-comentar-estetico">Comentar</button>
                     </form>
@@ -112,31 +109,44 @@
 </div> 
 <script>
 /* LIKES DE POSTS - AJAX */
-document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.btn-like-clean');
-    if (!btn) return;
+document.addEventListener('submit', (e) => {
+    const form = e.target.closest('.form-comentario');
+    if (!form) return;
 
-    const postId = btn.dataset.postId;
+    e.preventDefault();
 
-    fetch(`/reaccionar/${postId}`, {
+    const postId = form.dataset.postId;
+    const input = form.querySelector('input[name="texto"]');
+    const texto = input.value.trim();
+    if (!texto) return;
+
+    // feedback visual
+    input.disabled = true;
+    input.style.opacity = 0.7;
+
+    fetch(`/comentar/${postId}`, {
         method: 'POST',
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/json'
-        }
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({ texto })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status !== 'success') return;
-
-        // Actualiza el contador
-        btn.querySelector('span').innerText = data.total;
-
-        // Efecto visual con clase activa
-        btn.classList.toggle('active', data.accion === 'added');
+    .then(res => res.text())
+    .then(() => {
+        input.value = '';
+        input.disabled = false;
+        input.style.opacity = 1;
+        // por ahora recargamos para ver el comentario
+        location.reload();
     })
-    .catch(err => console.error('Error en like:', err));
+    .catch(err => {
+        console.error('Error en comentario:', err);
+        input.disabled = false;
+        input.style.opacity = 1;
+    });
 });
+
 
 /* COMENTARIOS - AJAX (temporal reload) */
 document.addEventListener('submit', (e) => {
