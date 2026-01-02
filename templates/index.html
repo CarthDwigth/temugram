@@ -62,11 +62,11 @@
                                         <strong>@{{ c.username }}:</strong> {{ c.texto }}
                                     </p>
                                     <div class="comentario-stats">
-                                        <form action="{{ url_for('post_routes.reaccionar_comentario', comentario_id=c.id) }}" method="POST" style="margin: 0;">
-                                            <button type="submit" class="btn-like-mini">🤍</button>
+                                        <form class="form-comentario" data-post-id="{{ p[3] }}" style="display: flex; gap: 8px; margin-top: 10px; align-items: center;">
+                                            <input type="text" name="texto" placeholder="Añadir comentario..." required
+                                                style="flex: 1; background: #222; border: 1px solid #444; color: white; padding: 10px; border-radius: 20px; font-size: 0.9rem;">
+                                            <button type="submit" class="btn-comentar-estetico">Comentar</button>
                                         </form>
-                                        <span class="comentario-likes-count">{{ c.likes_count or 0 }}</span>
-                                    </div>
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -108,10 +108,34 @@
 
 </div> 
 <script>
-document.addEventListener('submit', (e) => {
+/* ===== LIKES DE POSTS (ya lo tienes funcionando) ===== */
+function darLike(postId) {
+    const btn = document.getElementById(`btn-like-${postId}`);
+    const countSpan = document.getElementById(`like-count-${postId}`);
+
+    fetch(`/reaccionar/${postId}`, { 
+        method: 'POST',
+        headers: { 
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            countSpan.innerText = data.total;
+            btn.style.color = data.accion === 'added' ? '#ff4d4d' : '#fff';
+        }
+    })
+    .catch(err => console.error("Error:", err));
+}
+
+/* ===== COMENTARIOS AJAX ===== */
+document.addEventListener('submit', function(e) {
     const form = e.target.closest('.form-comentario');
     if (!form) return;
-    e.preventDefault();
+
+    e.preventDefault(); // evita recarga
 
     const postId = form.dataset.postId;
     const input = form.querySelector('input[name="texto"]');
@@ -119,61 +143,40 @@ document.addEventListener('submit', (e) => {
     const texto = input.value.trim();
     if (!texto) return;
 
-    input.disabled = true; btn.disabled = true; input.style.opacity=0.7;
+    // Bloqueamos mientras se envía
+    input.disabled = true;
+    btn.disabled = true;
+    input.style.opacity = 0.7;
 
     fetch(`/comentar/${postId}`, {
-        method:'POST',
-        headers:{
-            'X-Requested-With':'XMLHttpRequest',
-            'Content-Type':'application/x-www-form-urlencoded'
-        },
-        body:new URLSearchParams({texto})
-    })
-    .then(res=>res.json())
-    .then(data=>{
-        if(data.status!=='success') throw new Error('Error backend');
-        form.previousElementSibling.insertAdjacentHTML('afterbegin', data.html);
-        input.value=''; input.disabled=false; btn.disabled=false; input.style.opacity=1;
-    })
-    .catch(err=>{console.error(err); input.disabled=false; btn.disabled=false; input.style.opacity=1; });
-});
-
-// LIKES
-function darLike(postId){
-    fetch(`/reaccionar/${postId}`, {
-        method:'POST',
-        headers:{'X-Requested-With':'XMLHttpRequest'}
-    })
-    .then(res=>res.json())
-    .then(data=>{
-        if(data.status!=='success') return;
-        const span=document.getElementById(`like-count-${postId}`);
-        const btn=document.getElementById(`btn-like-${postId}`);
-        span.innerText=data.total;
-        btn.style.color=(data.accion==='added')?'#ff4d4d':'#fff';
-    }).catch(err=>console.error(err));
-}
-
-
-/* ===========================
-   OPCIONAL: Delegación futura para likes de comentarios
-=========================== */
-/*
-document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.btn-like-mini');
-    if (!btn) return;
-
-    const comentarioId = btn.dataset.comentarioId;
-
-    fetch(`/reaccionar_comentario/${comentarioId}`, {
         method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({ texto })
     })
-    .then(res => {
-        // luego actualizamos contador sin recargar
+    .then(res => res.json())
+    .then(data => {
+        if (data.status !== 'success') throw new Error('Error en backend');
+
+        // Insertamos al inicio de la lista de comentarios
+        const lista = form.previousElementSibling; // .lista-comentarios
+        lista.insertAdjacentHTML('afterbegin', data.html);
+
+        // Limpiamos y desbloqueamos
+        input.value = '';
+        input.disabled = false;
+        btn.disabled = false;
+        input.style.opacity = 1;
+    })
+    .catch(err => {
+        console.error('Error en comentario:', err);
+        input.disabled = false;
+        btn.disabled = false;
+        input.style.opacity = 1;
     });
 });
-*/
 </script>
 
 </body>

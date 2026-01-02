@@ -43,7 +43,7 @@ def crear_post():
 # ==================== COMENTARIOS ====================
 @post_routes.route("/comentar/<int:post_id>", methods=["POST"])
 def comentar(post_id):
-    if 'username' not in session:
+    if 'user_id' not in session:
         return jsonify(status="error", message="No login"), 401
 
     texto = request.form.get("texto")
@@ -55,11 +55,17 @@ def comentar(post_id):
     cur.execute("SELECT id FROM usuarios WHERE username = %s", (session['username'],))
     user_id = cur.fetchone()[0]
 
-    cur.execute("INSERT INTO comentarios (post_id, user_id, texto) VALUES (%s, %s, %s)", (post_id, user_id, texto))
+    cur.execute("INSERT INTO comentarios (post_id, user_id, texto) VALUES (%s, %s, %s) RETURNING id", (post_id, user_id, texto))
+    comentario_id = cur.fetchone()[0]
     conn.commit()
 
-    comentario_id = cur.lastrowid
-    cur.execute("SELECT username, texto, id FROM comentarios WHERE id = %s", (comentario_id,))
+    # Traemos username para renderizar
+    cur.execute("""
+        SELECT usuarios.username, comentarios.texto, comentarios.id
+        FROM comentarios
+        JOIN usuarios ON comentarios.user_id = usuarios.id
+        WHERE comentarios.id = %s
+    """, (comentario_id,))
     nuevo_comentario = cur.fetchone()
     cur.close()
     conn.close()
@@ -67,16 +73,16 @@ def comentar(post_id):
     html = render_template_string("""
     <div class="comentario-item">
         <p class="comentario-texto">
-            <strong>@{{ nuevo.username }}:</strong> {{ nuevo.texto }}
+            <strong>@{{ c.username }}:</strong> {{ c.texto }}
         </p>
         <div class="comentario-stats">
-            <form action="{{ url_for('post_routes.reaccionar_comentario', comentario_id=nuevo.id) }}" method="POST" style="margin: 0;">
+            <form action="{{ url_for('post_routes.reaccionar_comentario', comentario_id=c.id) }}" method="POST" style="margin: 0;">
                 <button type="submit" class="btn-like-mini">🤍</button>
             </form>
             <span class="comentario-likes-count">0</span>
         </div>
     </div>
-    """, nuevo={'username': nuevo_comentario[0], 'texto': nuevo_comentario[1], 'id': nuevo_comentario[2]})
+    """, c={'username': nuevo_comentario[0], 'texto': nuevo_comentario[1], 'id': nuevo_comentario[2]})
 
     return jsonify(status="success", html=html)
 
