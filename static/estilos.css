@@ -542,7 +542,7 @@ input[type="text"] {
 
 /* NEW */
 .comentario-item {
-    position: relative; /* Para poder posicionar botones dentro */
+    position: relative;       /* para poder posicionar botones dentro */
     padding: 8px 12px;
     margin-bottom: 6px;
     background-color: #1e1e1e;
@@ -562,22 +562,22 @@ input[type="text"] {
     align-items: center;
     margin-top: 4px;
     gap: 8px;
-    position: relative; /* para el botón de borrar */
 }
 
-/* Botón de borrar estilo pequeño y arriba a la derecha */
+/* Botón de borrar mini y discreto arriba a la derecha */
 .btn-borrar-comentario {
+    position: absolute;
+    top: 2px;
+    right: 2px;
     background: transparent;
     border: none;
-    color: red;
-    font-size: 0.9rem;
+    color: #ff4d4d;
+    font-size: 0.8rem; /* chiquito */
     cursor: pointer;
-    position: absolute;
-    top: 4px;
-    right: 4px;
+    padding: 2px;
     transition: transform 0.2s;
 }
 
 .btn-borrar-comentario:hover {
-    transform: scale(1.2);
+    transform: scale(1.3); /* pequeño efecto hover */
 }

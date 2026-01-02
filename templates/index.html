@@ -56,18 +56,20 @@
                         {% set lista = comentarios_dic.get(p[3]) %}
                         {% if lista %}
                             {% for c in lista|reverse %}
-                                <div class="comentario-item">
+                                <div class="comentario-item" id="comentario-{{ c.id }}">
+                                    {% if session.get('user_id') == c.user_id %}
+                                        <button class="btn-borrar-comentario" data-id="{{ c.id }}">🗑️</button>
+                                    {% endif %}
+
                                     <p class="comentario-texto">
                                         <strong>@{{ c.username }}:</strong> {{ c.texto }}
                                     </p>
+
                                     <div class="comentario-stats">
                                         <form action="{{ url_for('post_routes.reaccionar_comentario', comentario_id=c.id) }}" method="POST" style="margin: 0;">
                                             <button type="submit" class="btn-like-mini">🤍</button>
                                         </form>
-                                        <span class="comentario-likes-count">{{ c.likes_count or 0 }}</span>
-                                        {% if session.get('user_id') == c.user_id %}
-                                            <button class="btn-borrar-comentario" data-id="{{ c.id }}" style="margin-left: 10px; color:red;">🗑️</button>
-                                        {% endif %}
+                                        <span class="comentario-likes-count">{{ c.likes_count }}</span>
                                     </div>
                                 </div>
                             {% endfor %}
