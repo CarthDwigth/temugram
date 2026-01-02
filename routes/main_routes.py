@@ -22,7 +22,7 @@ def index():
 
     # 2. Obtener Comentarios
     cur.execute("""
-        SELECT comentarios.id, username, texto, emoji, post_id,
+        SELECT comentarios.id, username, texto, emoji, comentarios.user_id, post_id,
         (SELECT COUNT(*) FROM likes_comentarios WHERE comentario_id = comentarios.id) AS likes_count
         FROM comentarios
         JOIN usuarios ON comentarios.user_id = usuarios.id
