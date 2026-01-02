@@ -114,75 +114,75 @@
 
 </div> 
 <script>
-/* ===== LIKES DE POSTS (ya lo tienes funcionando) ===== */
-function darLike(postId) {
-    const btn = document.getElementById(`btn-like-${postId}`);
-    const countSpan = document.getElementById(`like-count-${postId}`);
+// ------------------- Likes de posts -------------------
+document.addEventListener('click', function(e){
+    if(e.target.closest('.btn-like-clean')) {
+        e.preventDefault();
+        const btn = e.target.closest('.btn-like-clean');
+        const postId = btn.dataset.postId;
+        const countSpan = btn.querySelector('span');
 
-    fetch(`/reaccionar/${postId}`, { 
-        method: 'POST',
-        headers: { 
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            countSpan.innerText = data.total;
-            btn.style.color = data.accion === 'added' ? '#ff4d4d' : '#fff';
-        }
-    })
-    .catch(err => console.error("Error:", err));
-}
+        fetch(`/reaccionar/${postId}`, { method: 'POST', headers: {'X-Requested-With':'XMLHttpRequest','Content-Type':'application/json'} })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status==='success'){
+                countSpan.textContent = data.total;
+                btn.style.color = data.accion==='added' ? '#ff4d4d' : '#fff';
+            }
+        }).catch(console.error);
+    }
+});
 
-document.addEventListener('submit', function(e) {
+// ------------------- Likes de comentarios -------------------
+document.addEventListener('click', function(e){
+    if(e.target.classList.contains('btn-like-mini')){
+        e.preventDefault();
+        const form = e.target.closest('form');
+        const span = form.closest('.comentario-item').querySelector('.comentario-likes-count');
+        const actionUrl = form.action;
+
+        fetch(actionUrl,{ method:'POST', headers:{'X-Requested-With':'XMLHttpRequest'} })
+        .then(res=>res.json())
+        .then(data=>{
+            if(data.status==='success'){
+                span.textContent = data.total;
+                e.target.textContent = data.accion==='added' ? '❤️' : '🤍';
+            }
+        }).catch(console.error);
+    }
+});
+
+// ------------------- Comentarios AJAX -------------------
+document.addEventListener('submit', function(e){
     const form = e.target.closest('.form-comentario');
-    if (!form) return; // no es un formulario de comentario
-
-    e.preventDefault(); // evita que la página recargue
+    if(!form) return;
+    e.preventDefault();
 
     const postId = form.dataset.postId;
     const input = form.querySelector('input[name="texto"]');
     const btn = form.querySelector('button[type="submit"]');
     const texto = input.value.trim();
-    if (!texto) return;
+    if(!texto) return;
 
-    // Bloqueamos mientras se envía
     input.disabled = true;
     btn.disabled = true;
-    input.style.opacity = 0.7;
 
-    fetch(`/comentar/${postId}`, {
-        method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
+    fetch(`/comentar/${postId}`,{
+        method:'POST',
+        headers:{'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded'},
         body: new URLSearchParams({ texto })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status !== 'success') throw new Error('Error en backend');
-
-        // Insertamos el nuevo comentario al inicio de la lista
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.status!=='success') throw new Error('Error backend');
         const post = form.closest('.post');
         const lista = post.querySelector('.lista-comentarios');
-        lista.insertAdjacentHTML('afterbegin', data.html);
-
-        // Limpiamos y desbloqueamos
-        input.value = '';
-        input.disabled = false;
-        btn.disabled = false;
-        input.style.opacity = 1;
+        lista.insertAdjacentHTML('afterbegin',data.html);
+        input.value=''; input.disabled=false; btn.disabled=false;
     })
-    .catch(err => {
-        console.error('Error en comentario:', err);
-        input.disabled = false;
-        btn.disabled = false;
-        input.style.opacity = 1;
-    });
+    .catch(err=>{console.error(err); input.disabled=false; btn.disabled=false;});
 });
+
 
 </script>
 
