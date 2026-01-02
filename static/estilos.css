@@ -542,42 +542,35 @@ input[type="text"] {
 
 /* NEW */
 .comentario-item {
-    position: relative;       /* para poder posicionar botones dentro */
-    padding: 8px 12px;
+    position: relative;
+    padding: 6px 10px;
     margin-bottom: 6px;
-    background-color: #1e1e1e;
+    background: #1e1e1e;
     border-radius: 10px;
-    display: flex;
-    flex-direction: column;
 }
 
-.comentario-texto {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #fff;
-}
-
-.comentario-stats {
-    display: flex;
-    align-items: center;
-    margin-top: 4px;
-    gap: 8px;
-}
-
-/* Botón de borrar mini y discreto arriba a la derecha */
 .btn-borrar-comentario {
     position: absolute;
-    top: 2px;
-    right: 2px;
+    top: 4px;
+    right: 6px;
     background: transparent;
     border: none;
-    color: #ff4d4d;
-    font-size: 0.8rem; /* chiquito */
+    color: #ff5c5c;
+    font-size: 0.65rem;  /* 🔥 bien pequeño */
+    opacity: 0.6;
     cursor: pointer;
-    padding: 2px;
-    transition: transform 0.2s;
+    padding: 0;
 }
 
 .btn-borrar-comentario:hover {
-    transform: scale(1.3); /* pequeño efecto hover */
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.btn-borrar-comentario {
+    display: none;
+}
+
+.comentario-item:hover .btn-borrar-comentario {
+    display: block;
 }
