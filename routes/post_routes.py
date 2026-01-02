@@ -61,23 +61,18 @@ def comentar(post_id):
     conn = get_db()
     cur = conn.cursor()
 
-    # 1. Id del usuario
     cur.execute("SELECT id FROM usuarios WHERE username = %s", (session['username'],))
     user_id = cur.fetchone()[0]
 
-    # 2. Insertamos el comentario
-    cur.execute("INSERT INTO comentarios (post_id, user_id, texto) VALUES (%s, %s, %s)",
-                (post_id, user_id, texto))
+    cur.execute("INSERT INTO comentarios (post_id, user_id, texto) VALUES (%s, %s, %s)", (post_id, user_id, texto))
     conn.commit()
 
-    # 3. Obtener id del comentario recién creado
     comentario_id = cur.lastrowid
     cur.execute("SELECT username, texto, id FROM comentarios WHERE id = %s", (comentario_id,))
     nuevo_comentario = cur.fetchone()
     cur.close()
     conn.close()
 
-    # 4. Renderizamos HTML del comentario para enviar al frontend
     html = render_template_string("""
     <div class="comentario-item">
         <p class="comentario-texto">
@@ -93,6 +88,7 @@ def comentar(post_id):
     """, nuevo={'username': nuevo_comentario[0], 'texto': nuevo_comentario[1], 'id': nuevo_comentario[2]})
 
     return jsonify(status="success", html=html)
+
 
 @post_routes.route("/reaccionar/<int:post_id>", methods=["POST"])
 def reaccionar(post_id):
