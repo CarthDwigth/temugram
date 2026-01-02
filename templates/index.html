@@ -45,7 +45,6 @@
                             id="btn-like-{{ p[3] }}">
                         ❤️ <span id="like-count-{{ p[3] }}">{{ p[6] or 0 }}</span>
                     </button>
-
                 </div>
 
                 <div class="post-info">
@@ -61,12 +60,6 @@
                                     <p class="comentario-texto">
                                         <strong>@{{ c.username }}:</strong> {{ c.texto }}
                                     </p>
-                                    <div class="comentario-stats">
-                                        <form class="form-comentario" data-post-id="{{ p[3] }}" style="display: flex; gap: 8px; margin-top: 10px; align-items: center;">
-                                            <input type="text" name="texto" placeholder="Añadir comentario..." required
-                                                style="flex: 1; background: #222; border: 1px solid #444; color: white; padding: 10px; border-radius: 20px; font-size: 0.9rem;">
-                                            <button type="submit" class="btn-comentar-estetico">Comentar</button>
-                                        </form>
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -74,14 +67,19 @@
                         {% endif %}
                     </div>
                     
-                    <form class="form-comentario" data-post-id="{{ p[3] }}" style="display: flex; gap: 8px; margin-top: 10px; align-items: center;">
-                        <input type="text" name="texto" placeholder="Añadir comentario..." required>
+                    <!-- Formulario para comentar, solo 1 por post -->
+                    <form class="form-comentario" data-post-id="{{ p[3] }}" 
+                        style="display: flex; gap: 8px; margin-top: 10px; align-items: center;">
+                        <input type="text" name="texto" placeholder="Añadir comentario..." required
+                            style="flex: 1; background: #222; border: 1px solid #444; color: white; padding: 10px; border-radius: 20px; font-size: 0.9rem;">
                         <button type="submit" class="btn-comentar-estetico">Comentar</button>
                     </form>
 
-                </div>
+                </div> <!-- comentarios-seccion -->
 
-            </div> </div> {% endfor %}
+            </div> <!-- post-content-area -->
+        </div> <!-- post -->
+        {% endfor %}
     {% else %}
         <p style="text-align: center;">Aún no hay publicaciones.</p>
     {% endif %}
@@ -129,6 +127,7 @@ function darLike(postId) {
     })
     .catch(err => console.error("Error:", err));
 }
+
 
 /* ===== COMENTARIOS AJAX ===== */
 document.addEventListener('submit', function(e) {
