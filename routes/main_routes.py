@@ -31,19 +31,19 @@ def index():
 
     comentarios_por_post = {}
     for c in comentarios_raw:
-        pid = c[4] # El post_id ahora es el índice 4
+        pid = c[5]  # post_id está en el índice 5
         if pid not in comentarios_por_post:
             comentarios_por_post[pid] = []
-        
-        # AQUÍ ESTÁ LA SOLUCIÓN: Añadimos 'id' y 'likes_count'
+
         comentarios_por_post[pid].append({
-            'id': c[0],           
+            'id': c[0],
             'username': c[1],
             'texto': c[2],
             'emoji': c[3],
-            'user_id': c[4],        # 🔹 Agregado
-            'likes_count': c[6] if len(c) > 6 else 0  # seguro
+            'user_id': c[4],      # correcto
+            'likes_count': c[6]   # likes_count está en el índice 6
         })
+
 
     # 3. Obtener Usuarios para la barra lateral
     cur.execute("SELECT id, username, rol, emoji, fecha_registro FROM usuarios")
