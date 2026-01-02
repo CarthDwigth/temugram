@@ -76,7 +76,8 @@
                     
                     <form class="form-comentario" data-post-id="{{ p[3] }}" style="display: flex; gap: 8px; margin-top: 10px; align-items: center;">
                         <input type="text" name="texto" placeholder="Añadir comentario..." required>
-                        <button type="submit" class="btn-comentar-estetico">Comentar</button>
+                        <!-- Cambiamos el tipo a "button" para evitar el submit por defecto -->
+                        <button type="button" class="btn-comentar-estetico" onclick="enviarComentario(this)">Comentar</button>
                     </form>
 
                 </div>
@@ -113,6 +114,7 @@ document.addEventListener('submit', (e) => {
     const form = e.target.closest('.form-comentario');
     if (!form) return;
 
+    // Evitar envío normal del formulario
     e.preventDefault();
 
     const postId = form.dataset.postId;
@@ -121,12 +123,11 @@ document.addEventListener('submit', (e) => {
     const texto = input.value.trim();
     if (!texto) return;
 
-    // 1️⃣ Evitar doble envío
+    // Bloquear input y botón para evitar doble envío
     input.disabled = true;
     btn.disabled = true;
     input.style.opacity = 0.7;
 
-    // 2️⃣ Enviamos AJAX
     fetch(`/comentar/${postId}`, {
         method: 'POST',
         headers: {
@@ -135,15 +136,15 @@ document.addEventListener('submit', (e) => {
         },
         body: new URLSearchParams({ texto })
     })
-    .then(res => res.json()) // backend debe devolver JSON {status:'success', html: '<div>...</div>'}
+    .then(res => res.json())
     .then(data => {
-        if (data.status !== 'success') throw new Error('Error en backend');
+        if (data.status !== 'success') throw new Error('Error backend');
 
-        // 3️⃣ Insertar comentario arriba
+        // Insertar comentario al inicio
         const lista = form.previousElementSibling; // .lista-comentarios
         lista.insertAdjacentHTML('afterbegin', data.html);
 
-        // 4️⃣ Limpiar input y reactivar
+        // Limpiar y desbloquear
         input.value = '';
         input.disabled = false;
         btn.disabled = false;
@@ -186,6 +187,50 @@ document.addEventListener('submit', (e) => {
     })
     .catch(err => console.error('Error en comentario:', err));
 });
+
+function enviarComentario(btn) {
+    const form = btn.closest('.form-comentario');
+    const input = form.querySelector('input[name="texto"]');
+    const texto = input.value.trim();
+    if (!texto) return;
+
+    const postId = form.dataset.postId;
+
+    // Bloquear mientras se envía
+    input.disabled = true;
+    btn.disabled = true;
+    input.style.opacity = 0.7;
+
+    fetch(`/comentar/${postId}`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({ texto })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status !== 'success') throw new Error('Error backend');
+
+        // Insertar comentario al inicio
+        const lista = form.previousElementSibling;
+        lista.insertAdjacentHTML('afterbegin', data.html);
+
+        // Limpiar y desbloquear
+        input.value = '';
+        input.disabled = false;
+        btn.disabled = false;
+        input.style.opacity = 1;
+    })
+    .catch(err => {
+        console.error('Error en comentario:', err);
+        input.disabled = false;
+        btn.disabled = false;
+        input.style.opacity = 1;
+    });
+}
+
 
 /* ===========================
    OPCIONAL: Delegación futura para likes de comentarios
