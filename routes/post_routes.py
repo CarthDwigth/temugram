@@ -71,18 +71,24 @@ def comentar(post_id):
     conn.close()
 
     html = render_template_string("""
-    <div class="comentario-item">
+    <div class="comentario-item" id="comentario-{{ c.id }}">
         <p class="comentario-texto">
             <strong>@{{ c.username }}:</strong> {{ c.texto }}
         </p>
         <div class="comentario-stats">
+            <!-- Mini-like -->
             <form action="{{ url_for('post_routes.reaccionar_comentario', comentario_id=c.id) }}" method="POST" style="margin: 0;">
                 <button type="submit" class="btn-like-mini">🤍</button>
             </form>
-            <span class="comentario-likes-count">0</span>
+            <span class="comentario-likes-count">{{ c.likes_count or 0 }}</span>
+
+            <!-- Botón de borrar SOLO si es tu comentario -->
+            {% if session.get('user_id') == c.user_id %}
+            <button class="btn-borrar-comentario" data-id="{{ c.id }}">🗑️</button>
+            {% endif %}
         </div>
     </div>
-    """, c={'username': nuevo_comentario[0], 'texto': nuevo_comentario[1], 'id': nuevo_comentario[2]})
+    """, c={'id': nuevo_comentario[2], 'username': nuevo_comentario[0], 'texto': nuevo_comentario[1], 'user_id': user_id, 'likes_count': 0})
 
     return jsonify(status="success", html=html)
 

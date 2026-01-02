@@ -551,13 +551,13 @@ input[type="text"] {
 
 .btn-borrar-comentario {
     position: absolute;
-    top: 4px;
-    right: 6px;
+    top: 2px;
+    right: 2px;
     background: transparent;
     border: none;
     color: #ff5c5c;
-    font-size: 0.65rem;  /* 🔥 bien pequeño */
-    opacity: 0.6;
+    font-size: 0.6rem;
+    opacity: 0.5;
     cursor: pointer;
     padding: 0;
 }
@@ -574,3 +574,4 @@ input[type="text"] {
 .comentario-item:hover .btn-borrar-comentario {
     display: block;
 }
+
