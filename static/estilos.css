@@ -1,11 +1,38 @@
 /* =====================================================
+   TEMUGRAM – VARIABLES DE DISEÑO
+===================================================== */
+:root {
+    /* Colores base */
+    --tg-bg-main: #121212;
+    --tg-bg-card: #1e1e1e;
+    --tg-bg-soft: #262626;
+
+    --tg-border-main: #333;
+
+    --tg-text-main: #ffffff;
+    --tg-text-muted: #888;
+    --tg-text-light: #e1e1e1;
+
+    /* Marca */
+    --tg-red: #ff4d4d;
+    --tg-red-hover: #e63939;
+    --tg-blue: #0095f6;
+    --tg-green: #28a745;
+
+    /* Efectos */
+    --tg-shadow-card: 0 4px 12px rgba(0,0,0,0.5);
+    --tg-radius: 8px;
+    --tg-radius-pill: 20px;
+}
+
+/* =====================================================
    1. CONFIGURACIÓN BASE
 ===================================================== */
 body {
     margin: 0;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: #121212;
-    color: #e1e1e1;
+    background-color: var(--tg-bg-main);
+    color: var(--tg-text-light);
 }
 
 a {
@@ -16,7 +43,7 @@ a {
 input[type="text"] {
     width: 100%;
     padding: 8px 14px;
-    background: #262626;
+    background: --tg-bg-soft;
     border: 1px solid #363636;
     border-radius: 20px;
     color: #fff;
@@ -37,7 +64,7 @@ input[type="text"] {
 
     padding: 15px 30px;
     background: #000;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--tg-border-main);
 }
 
 .navbar strong {
@@ -54,10 +81,10 @@ input[type="text"] {
 }
 
 /* Variantes */
-.link-publicar { background: #28a745; color: #fff !important; }
-.link-login    { background: #0095f6; color: #fff !important; }
-.link-registro { border: 1px solid #0095f6; color: #0095f6 !important; }
-.link-salir    { color: #ff4d4d !important; }
+.link-publicar { background: var(--tg-green); color: #fff !important; }
+.link-login    { background: var(--tg-blue); color: #fff !important; }
+.link-registro { border: 1px solid var(--tg-blue); color: var(--tg-blue) !important; }
+.link-salir    { color: var(--tg-red) !important; }
 
 /* =====================================================
    3. LAYOUT GENERAL
@@ -89,8 +116,8 @@ input[type="text"] {
 ===================================================== */
 .post,
 .comunidad-card {
-    background: #1e1e1e;
-    border: 1px solid #333;
+    background: var(--tg-bg-card);
+    border: 1px solid var(--tg-border-main);
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     margin-bottom: 25px;
@@ -100,8 +127,8 @@ input[type="text"] {
 .post-img {
     width: 100%;
     display: block;
-    border-top: 1px solid #262626;
-    border-bottom: 1px solid #262626;
+    border-top: 1px solid var(--tg-bg-soft);
+    border-bottom: 1px solid var(--tg-bg-soft);
 }
 
 /* =====================================================
@@ -149,7 +176,7 @@ input[type="text"] {
    6. COMENTARIOS (GENERAL)
 ===================================================== */
 .comentarios-seccion {
-    border-top: 1px solid #262626;
+    border-top: 1px solid var(--tg-bg-soft);
     padding-top: 10px !important;
 }
 
@@ -160,7 +187,7 @@ input[type="text"] {
     padding-right: 8px;
 
     scrollbar-width: thin;
-    scrollbar-color: #444 #1e1e1e;
+    scrollbar-color: #444 var(--tg-bg-card);
 }
 
 /* Scroll Webkit */
@@ -175,7 +202,7 @@ input[type="text"] {
     border-radius: 10px;
 }
 .lista-comentarios::-webkit-scrollbar-thumb:hover {
-    background: #ff4d4d;
+    background: var(--tg-red);
 }
 
 /* =====================================================
@@ -244,7 +271,7 @@ input[type="text"] {
 }
 
 .btn-like-clean.active {
-    color: #ff4d4d;
+    color: var(--tg-red);
 }
 
 .btn-like-clean span {
@@ -259,11 +286,11 @@ input[type="text"] {
     gap: 5px;
     margin-top: 10px;
     padding-top: 10px;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--tg-border-main);
 }
 
 .btn-comentar-estetico {
-    background: #ff4d4d;
+    background: var(--tg-red);
     color: #fff;
     border: none;
     padding: 6px 15px;
@@ -275,7 +302,7 @@ input[type="text"] {
 }
 
 .btn-comentar-estetico:hover {
-    background: #e63939;
+    background: var(--tg-red-hover);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(255,77,77,.4);
 }
@@ -292,7 +319,7 @@ input[type="text"] {
     font-size: 1.2rem;
     color: #fff;
     padding-bottom: 10px;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--tg-border-main);
     margin-bottom: 20px;
 }
 
@@ -333,13 +360,13 @@ input[type="text"] {
 
 .usuario-item:hover .usuario-nombre,
 .info-mini a:hover {
-    color: #ff4d4d;
+    color: var(--tg-red);
 }
 
 .usuario-fecha,
 .usuario-rol {
     font-size: 0.75rem;
-    color: #888;
+    color: var(--tg-text-muted);
 }
 
 .usuario-rol {
@@ -347,12 +374,12 @@ input[type="text"] {
     padding: 4px 12px;
     border-radius: 50px;
     font-weight: bold;
-    background: #333;
+    background: var(--tg-border-main);
     color: #fff;
 }
 
 .rol-admin {
-    background: #ff4d4d !important;
+    background: var(--tg-red) !important;
 }
 
 /* =====================================================
@@ -364,8 +391,8 @@ input[type="text"] {
     margin: 20px auto;
 
     display: flex;
-    background: #121212;
-    border: 1px solid #333;
+    background: var(--tg-bg-main);
+    border: 1px solid var(--tg-border-main);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -412,8 +439,8 @@ input[type="text"] {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #121212;
-    border-left: 1px solid #333;
+    background: var(--tg-bg-main);
+    border-left: 1px solid var(--tg-border-main);
 }
 
 .post-header-detalle {
@@ -425,7 +452,7 @@ input[type="text"] {
 
 .post-meta-compacta {
     padding: 0 16px 10px;
-    border-bottom: 1px solid #262626;
+    border-bottom: 1px solid var(--tg-bg-soft);
 }
 
 .post-descripcion {
@@ -458,17 +485,17 @@ input[type="text"] {
     border-radius: 20px;
     font-size: 0.9rem;
     color: #aaa;
-    background: #1e1e1e;
+    background: var(--tg-bg-card);
     transition: 0.3s;
 }
 
 .btn-volver:hover {
-    background: #333;
+    background: var(--tg-border-main);
     color: #fff;
 }
 
 .btn-publicar-rojo {
-    background: #ff4d4d;
+    background: var(--tg-red);
     color: #fff;
     border: none;
     padding: 8px 18px;
@@ -484,5 +511,13 @@ input[type="text"] {
 }
 
 .usuario-nombre-rojo {
-    color: #ff4d4d !important;
+    color: var(--tg-red) !important;
+}
+
+.btn-like-clean {
+    color: #fff;
+}
+
+.btn-like-clean.active {
+    color: var(--tg-accent); /* tu rojo */
 }

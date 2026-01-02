@@ -40,9 +40,12 @@
             <div class="post-content-area">
                 
                 <div class="post-acciones">
-                    <button onclick="darLike('{{ p[3] }}')" id="btn-like-{{ p[3] }}" class="btn-like-clean">
+                    <button class="btn-like-clean"
+                            data-post-id="{{ p[3] }}"
+                            id="btn-like-{{ p[3] }}">
                         ❤️ <span id="like-count-{{ p[3] }}">{{ p[6] or 0 }}</span>
                     </button>
+
                 </div>
 
                 <div class="post-info">
@@ -71,11 +74,14 @@
                         {% endif %}
                     </div>
                     
-                    <form action="{{ url_for('post_routes.comentar', post_id=p[3]) }}" method="POST" style="display: flex; gap: 8px; margin-top: 10px; align-items: center;">
-                        <input type="text" name="texto" placeholder="Añadir comentario..." required 
-                            style="flex-grow: 1; background: #2c2c2c; border: 1px solid #444; color: white; border-radius: 20px; padding: 8px 15px; font-size: 0.9rem;">
+                    <form class="form-comentario"
+                        data-post-id="{{ p[3] }}"
+                        style="display:flex; gap:8px; margin-top:10px;">
+                        
+                        <input type="text" name="texto" placeholder="Añadir comentario..." required>
                         <button type="submit" class="btn-comentar-estetico">Comentar</button>
                     </form>
+
                 </div>
 
             </div> </div> {% endfor %}
@@ -105,36 +111,83 @@
 
 </div> 
 <script>
-function darLike(postId) {
-    // Usamos /reaccionar/ que es la ruta que configuramos en Python
-    fetch(`/reaccionar/${postId}`, { 
+/* LIKES DE POSTS - AJAX */
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-like-clean');
+    if (!btn) return;
+
+    const postId = btn.dataset.postId;
+
+    fetch(`/reaccionar/${postId}`, {
         method: 'POST',
-        headers: { 
-            'X-Requested-With': 'XMLHttpRequest', // Esto es vital para que Flask sepa que es AJAX
-            'Content-Type': 'application/json' 
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
-        const likeSpan = document.getElementById(`like-count-${postId}`);
-        const btn = document.getElementById(`btn-like-${postId}`);
-        
-        if (data.status === 'success') {
-            // Usamos .total porque así lo manda tu Python
-            likeSpan.innerText = data.total; 
-            
-            // Efecto visual: Rojo si dio like, Blanco si lo quitó
-            if (data.accion === 'added') {
-                btn.style.color = '#ff4d4d';
-            } else {
-                btn.style.color = '#fff';
-            }
-        }
+        if (data.status !== 'success') return;
+
+        // Actualiza el contador
+        btn.querySelector('span').innerText = data.total;
+
+        // Efecto visual con clase activa
+        btn.classList.toggle('active', data.accion === 'added');
     })
-    .catch(error => console.error('Error:', error));
-}
+    .catch(err => console.error('Error en like:', err));
+});
+
+/* COMENTARIOS - AJAX (temporal reload) */
+document.addEventListener('submit', (e) => {
+    const form = e.target.closest('.form-comentario');
+    if (!form) return;
+
+    e.preventDefault();
+
+    const postId = form.dataset.postId;
+    const input = form.querySelector('input[name="texto"]');
+    const texto = input.value.trim();
+    if (!texto) return;
+
+    // Enviamos por fetch
+    fetch(`/comentar/${postId}`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({ texto })
+    })
+    .then(res => res.text())
+    .then(() => {
+        // Por ahora recargamos la página para ver el comentario
+        location.reload();
+    })
+    .catch(err => console.error('Error en comentario:', err));
+});
+
+/* ===========================
+   OPCIONAL: Delegación futura para likes de comentarios
+=========================== */
+/*
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-like-mini');
+    if (!btn) return;
+
+    const comentarioId = btn.dataset.comentarioId;
+
+    fetch(`/reaccionar_comentario/${comentarioId}`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => {
+        // luego actualizamos contador sin recargar
+    });
+});
+*/
 </script>
-</script>
-</script>
+
+
 </body>
 </html>
