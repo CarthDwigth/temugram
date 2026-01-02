@@ -60,6 +60,14 @@
                                     <p class="comentario-texto">
                                         <strong>@{{ c.username }}:</strong> {{ c.texto }}
                                     </p>
+                                    <div class="comentario-stats">
+                                        <form action="{{ url_for('post_routes.reaccionar_comentario', comentario_id=c.id) }}" method="POST" style="margin: 0;">
+                                            <button type="submit" class="btn-like-mini">
+                                                {{ '❤️' if c.liked_by_user else '🤍' }}
+                                            </button>
+                                        </form>
+                                        <span class="comentario-likes-count">{{ c.likes_count or 0 }}</span>
+                                    </div>
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -128,54 +136,28 @@ function darLike(postId) {
     .catch(err => console.error("Error:", err));
 }
 
+document.addEventListener('click', function(e){
+    if(e.target.classList.contains('btn-like-mini')){
+        e.preventDefault();
+        const form = e.target.closest('form');
+        const span = form.nextElementSibling;
+        const actionUrl = form.action;
 
-/* ===== COMENTARIOS AJAX ===== */
-document.addEventListener('submit', function(e) {
-    const form = e.target.closest('.form-comentario');
-    if (!form) return;
-
-    e.preventDefault(); // evita recarga
-
-    const postId = form.dataset.postId;
-    const input = form.querySelector('input[name="texto"]');
-    const btn = form.querySelector('button[type="submit"]');
-    const texto = input.value.trim();
-    if (!texto) return;
-
-    // Bloqueamos mientras se envía
-    input.disabled = true;
-    btn.disabled = true;
-    input.style.opacity = 0.7;
-
-    fetch(`/comentar/${postId}`, {
-        method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({ texto })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status !== 'success') throw new Error('Error en backend');
-
-        // Insertamos al inicio de la lista de comentarios
-        const lista = form.previousElementSibling; // .lista-comentarios
-        lista.insertAdjacentHTML('afterbegin', data.html);
-
-        // Limpiamos y desbloqueamos
-        input.value = '';
-        input.disabled = false;
-        btn.disabled = false;
-        input.style.opacity = 1;
-    })
-    .catch(err => {
-        console.error('Error en comentario:', err);
-        input.disabled = false;
-        btn.disabled = false;
-        input.style.opacity = 1;
-    });
+        fetch(actionUrl, {
+            method: 'POST',
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success'){
+                span.textContent = data.total;
+                e.target.textContent = data.accion === 'added' ? '❤️' : '🤍';
+            }
+        })
+        .catch(err => console.error(err));
+    }
 });
+
 </script>
 
 </body>
